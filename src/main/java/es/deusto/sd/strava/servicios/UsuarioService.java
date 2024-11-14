@@ -4,6 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.swing.JOptionPane;
+
 import es.deusto.sd.strava.DTO.*;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
@@ -19,29 +22,40 @@ public class UsuarioService {
         int nuevoId = idCounter++;  // Asegúrate de que idCounter está inicializado y es accesible
         
         // Crear el objeto Usuario
-        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, 0, 0, null, 0, 0, generateToken(), new ArrayList<>(), new HashMap<>());
+        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>());
+        /*(int id, String username, String email, String constrasena,
+    			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
+    			HashMap<Reto, String> retos)*/
+        
         
         // Guardar el usuario
         usuarios.put(usuario.getId(), usuario);
         System.out.println("Usuario registrado");
-        
+
         // Convertimos a UsuarioDTO para devolverlo
         return new UsuarioDTO(usuario);  // Retornamos el DTO del usuario recién registrado
     }
 
     public UsuarioDTO login(String email, String contrasena) {
-    	System.out.println("Login usuario");
-        /*for (Usuario usuario : usuarios.values()) {
-            if (usuario.getEmail().equals(email) && usuario.getContrasena().equals(contrasena)) {
-                usuario.setToken(generateToken());
-                System.out.println("Login exitoso");
-
-                // Convertimos a UsuarioDTO para devolverlo
-                return new UsuarioDTO(usuario);
-            }
+    	try {
+	    	
+	        for (Usuario usuario : usuarios.values()) {
+	      
+	            if (usuario.getEmail().equals(email) && usuario.getContrasena().equals(contrasena)) {
+	                //usuario.setToken(generateToken());
+	                System.out.println("Login exitoso");
+	
+	                // Convertimos a UsuarioDTO para devolverlo
+	                return new UsuarioDTO(usuario);
+	            }
+	        }
+    	}
+    	catch (Exception ex) {
+	        System.out.println("Login fallido");
+	        ex.printStackTrace();
+	        return null;
         }
-        System.out.println("Login fallido");*/
-        return null;
+    	return null;
     }
 
     public void logout(String token) {

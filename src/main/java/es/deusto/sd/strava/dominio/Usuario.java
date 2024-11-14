@@ -34,9 +34,8 @@ public class Usuario implements Serializable{
 	}
 	
 	//Sin valores opcionales
-	public Usuario(int id, String username, String email, String constrasena,
-			String nombre, float peso, float altura, LocalDate fNacimiento,
-			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
+	public Usuario(int id, String username, String email, String contrasena,
+			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos) {
 		super();
 		this.id = id;
@@ -44,35 +43,10 @@ public class Usuario implements Serializable{
 		this.email = email;
 		this.contrasena = contrasena;
 		this.nombre = nombre;
-		this.peso = peso;
-		this.altura = altura;
-		this.fNacimiento = fNacimiento;
-		this.frecCMax = frecCMax;
-		this.frecCReposo = frecCReposo;
 		this.token = token;
 		this.entrenamientos = entrenamientos;
 		this.retos = retos;
 		
-	}
-	
-	//Con valores opcionales
-	public Usuario(int id, String token, String username, String email, String nombre, float peso, float altura,
-			LocalDate fNacimiento, float fecCMax, float fecCReposo, ArrayList<Entrenamiento> entrenamientos,
-			HashMap<Reto, String> retos, String contrasena) {
-		super();
-		this.id = id;
-		this.token = token;
-		this.username = username;
-		this.email = email;
-		this.nombre = nombre;
-		this.peso = peso;
-		this.altura = altura;
-		this.fNacimiento = fNacimiento;
-		this.frecCMax = fecCMax;
-		this.frecCReposo = fecCReposo;
-		this.entrenamientos = entrenamientos;
-		this.retos = retos;
-		this.contrasena = contrasena;
 	}
 	
 	//Getters - Setters

@@ -19,6 +19,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     @Override
     public UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {
         // Llamada al servicio para registrar un usuario y devolver un DTO
+    	
         return usuarioService.registrar(username, contrasena, email, nombre);
     }
 
