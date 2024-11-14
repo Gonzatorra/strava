@@ -16,6 +16,9 @@ public class Cliente {
             if (usuario != null) {
                 System.out.println("Usuario registrado con éxito: " + usuario.getUsername());
             }
+            System.out.println("Esperando...\n");
+            facade.login("A", "D");
+            
 
             // Otros métodos pueden ser llamados de igual forma...
         } catch (Exception e) {

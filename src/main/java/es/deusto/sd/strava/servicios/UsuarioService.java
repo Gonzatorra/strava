@@ -30,7 +30,17 @@ public class UsuarioService {
     }
 
     public UsuarioDTO login(String email, String contrasena) {
-        System.out.println("Usuario ha iniciado sesion");
+    	System.out.println("Login usuario");
+        /*for (Usuario usuario : usuarios.values()) {
+            if (usuario.getEmail().equals(email) && usuario.getContrasena().equals(contrasena)) {
+                usuario.setToken(generateToken());
+                System.out.println("Login exitoso");
+
+                // Convertimos a UsuarioDTO para devolverlo
+                return new UsuarioDTO(usuario);
+            }
+        }
+        System.out.println("Login fallido");*/
         return null;
     }
 

@@ -26,6 +26,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     public UsuarioDTO login(String email, String contrasena) throws RemoteException {
         // Llamada al servicio para login y retorno del DTO
         return usuarioService.login(email, contrasena);
+       
     }
 
     @Override
