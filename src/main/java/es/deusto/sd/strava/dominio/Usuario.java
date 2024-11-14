@@ -1,23 +1,30 @@
-package es.deusto.sd.strava;
+package es.deusto.sd.strava.dominio;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.io.Serializable;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Map;
 
-public class Usuario {
-	//Atributos
-	int id;
-	String token;
-	String username;
-	String email;
-	String nombre;
-	String contrasena;
-	float peso;
-	float altura;
-	double fNacimiento;
-	float fecCMax;
-	float fecCReposo;
-	ArrayList<Entrenamiento> entrenamientos;
-	HashMap<Reto, String> retos;
+import jakarta.persistence.*;
+
+
+public class Usuario implements Serializable{
+	private int id;
+    private String username;
+    private String email;
+    private String contrasena;
+    private String nombre;
+    private float peso;
+    private float altura;
+    private LocalDate fNacimiento;
+    private float frecCMax;
+    private float frecCReposo;
+    private String token;
+    private ArrayList<Entrenamiento> entrenamientos;
+    private HashMap<Reto, String> retos;
+    
 	
 	
 	//Constructores
@@ -27,24 +34,30 @@ public class Usuario {
 	}
 	
 	//Sin valores opcionales
-	public Usuario(int id, String token, String username, String email, String nombre,
-			double fNacimiento, ArrayList<Entrenamiento> entrenamientos,
-			HashMap<Reto, String> retos, String contrasena) {
+	public Usuario(int id, String username, String email, String constrasena,
+			String nombre, float peso, float altura, LocalDate fNacimiento,
+			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
+			HashMap<Reto, String> retos) {
 		super();
 		this.id = id;
-		this.token = token;
 		this.username = username;
 		this.email = email;
+		this.contrasena = contrasena;
 		this.nombre = nombre;
+		this.peso = peso;
+		this.altura = altura;
 		this.fNacimiento = fNacimiento;
+		this.frecCMax = frecCMax;
+		this.frecCReposo = frecCReposo;
+		this.token = token;
 		this.entrenamientos = entrenamientos;
 		this.retos = retos;
-		this.contrasena = contrasena;
+		
 	}
 	
 	//Con valores opcionales
 	public Usuario(int id, String token, String username, String email, String nombre, float peso, float altura,
-			double fNacimiento, float fecCMax, float fecCReposo, ArrayList<Entrenamiento> entrenamientos,
+			LocalDate fNacimiento, float fecCMax, float fecCReposo, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos, String contrasena) {
 		super();
 		this.id = id;
@@ -55,8 +68,8 @@ public class Usuario {
 		this.peso = peso;
 		this.altura = altura;
 		this.fNacimiento = fNacimiento;
-		this.fecCMax = fecCMax;
-		this.fecCReposo = fecCReposo;
+		this.frecCMax = fecCMax;
+		this.frecCReposo = fecCReposo;
 		this.entrenamientos = entrenamientos;
 		this.retos = retos;
 		this.contrasena = contrasena;
@@ -119,28 +132,28 @@ public class Usuario {
 		this.altura = altura;
 	}
 
-	public double getfNacimiento() {
+	public LocalDate getfNacimiento() {
 		return fNacimiento;
 	}
 
-	public void setfNacimiento(double fNacimiento) {
+	public void setfNacimiento(LocalDate fNacimiento) {
 		this.fNacimiento = fNacimiento;
 	}
 
 	public float getFecCMax() {
-		return fecCMax;
+		return frecCMax;
 	}
 
 	public void setFecCMax(float fecCMax) {
-		this.fecCMax = fecCMax;
+		this.frecCMax = fecCMax;
 	}
 
 	public float getFecCReposo() {
-		return fecCReposo;
+		return frecCReposo;
 	}
 
 	public void setFecCReposo(float fecCReposo) {
-		this.fecCReposo = fecCReposo;
+		this.frecCReposo = fecCReposo;
 	}
 
 	public ArrayList<Entrenamiento> getEntrenamientos() {
@@ -170,49 +183,16 @@ public class Usuario {
 
 	
 	//Metodos
-	void registrar(String username, String contrasena, String email) {
-		System.out.println("El usuario se registra");
-		
-	};
-	
-	void login(String email, String contrasena) {
-		System.out.println("El usuario inicia sesion y se le asigna su token");
-		
-	};
-	
-	void logout(String token) {
-		System.out.println("El usuario cierra sesion y se elimina su token");
-	};
-	
-	void eliminarUsuario(Usuario usuario) {
-		System.out.println("Se elimina el usuario");
-		
-	};
-	
-	void actualizarUsuario(Usuario usuario, String contrasena, String nombre, float peso, float altura,
-			float fecCMax, float frecCReposo) {
-		System.out.println("Se ha actualizado el usuario");
-		
-	};
-	
-	ArrayList<Entrenamiento> getEntrenosUsuario(Usuario usuario, double fechaIni, double fechaFin){
-		System.out.println("Se devuelven los entrenamientos del usuario");
-		return null;
-		
-	};
-	
-	ArrayList<Reto> getRetosUsuario(Usuario usuario, String estado){
-		System.out.println("Se devuelven los retos del usuario");
-		return null;
-		
-		
-	};
-	
-	
-	
-	
+	// Otros métodos relacionados con el objeto Usuario, pero sin lógica de negocio
+    public void agregarEntrenamiento(Entrenamiento entrenamiento) {
+        this.entrenamientos.add(entrenamiento);
+    }
 
-	
+    public void agregarReto(Reto reto, String estado) {
+        this.retos.put(reto, estado);
+    }
+
+    // Puedes agregar métodos de validación de datos si es necesario	
 	
 
 	
