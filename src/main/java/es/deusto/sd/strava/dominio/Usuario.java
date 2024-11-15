@@ -157,7 +157,6 @@ public class Usuario implements Serializable{
 
 	
 	//Metodos
-	// Otros métodos relacionados con el objeto Usuario, pero sin lógica de negocio
     public void agregarEntrenamiento(Entrenamiento entrenamiento) {
         this.entrenamientos.add(entrenamiento);
     }
@@ -165,8 +164,6 @@ public class Usuario implements Serializable{
     public void agregarReto(Reto reto, String estado) {
         this.retos.put(reto, estado);
     }
-
-    // Puedes agregar métodos de validación de datos si es necesario	
 	
 
 	

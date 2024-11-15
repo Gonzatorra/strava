@@ -6,6 +6,7 @@ import es.deusto.sd.strava.dominio.Usuario;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.List;
 
 public class RetoDTO implements Serializable{
     // Atributos
@@ -16,8 +17,8 @@ public class RetoDTO implements Serializable{
     private LocalDateTime fecIni;  
     private LocalDateTime fecFin; 
     private float objetivoDistancia;
-    private double objetivoTiempo;
-    private ArrayList<Usuario> participantes;
+    private float objetivoTiempo;
+    private List<Usuario> participantes;
 
     // Constructor
     public RetoDTO(Reto reto) {
@@ -61,11 +62,11 @@ public class RetoDTO implements Serializable{
         return objetivoDistancia;
     }
 
-    public double getObjetivoTiempo() {
+    public float getObjetivoTiempo() {
         return objetivoTiempo;
     }
 
-    public ArrayList<Usuario> getParticipantes() {
+    public List<Usuario> getParticipantes() {
         return participantes;
     }
 
@@ -98,11 +99,17 @@ public class RetoDTO implements Serializable{
         this.objetivoDistancia = objetivoDistancia;
     }
 
-    public void setObjetivoTiempo(double objetivoTiempo) {
+    public void setObjetivoTiempo(float objetivoTiempo) {
         this.objetivoTiempo = objetivoTiempo;
     }
 
-    public void setParticipantes(ArrayList<Usuario> participantes) {
+    public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
     }
+    
+    public Reto toDomain() {
+    	Reto reto = new Reto(id, deporte, usuarioCreador, nombre, fecIni, fecFin, (float) objetivoDistancia, 0.0f, participantes);
+    	return reto;
+    }
+
 }

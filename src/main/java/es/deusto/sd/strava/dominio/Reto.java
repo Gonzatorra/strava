@@ -5,6 +5,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import es.deusto.sd.strava.DTO.RetoDTO;
+
 public class Reto implements Serializable{
 	//Atributos
     private int id;
@@ -14,8 +16,8 @@ public class Reto implements Serializable{
     private LocalDateTime fecIni;
     private LocalDateTime fecFin;
     private float objetivoDistancia;
-    private double objetivoTiempo;
-    private ArrayList<Usuario> participantes;
+    private float objetivoTiempo;
+    private List<Usuario> participantes;
 
     // Constructores
     public Reto() {
@@ -23,7 +25,7 @@ public class Reto implements Serializable{
     }
 
     public Reto(int id, String deporte, Usuario usuarioCreador, String nombre, LocalDateTime fecIni, LocalDateTime fecFin,
-                float objetivoDistancia, double objetivoTiempo, ArrayList<Usuario> participantes) {
+                float objetivoDistancia, float objetivoTiempo, List<Usuario> participantes) {
         this.id = id;
         this.deporte = deporte;
         this.usuarioCreador = usuarioCreador;
@@ -92,30 +94,43 @@ public class Reto implements Serializable{
         this.objetivoDistancia = objetivoDistancia;
     }
 
-    public double getObjetivoTiempo() {
+    public float getObjetivoTiempo() {
         return objetivoTiempo;
     }
 
-    public void setObjetivoTiempo(double objetivoTiempo) {
+    public void setObjetivoTiempo(float objetivoTiempo) {
         this.objetivoTiempo = objetivoTiempo;
     }
 
-    public ArrayList<Usuario> getParticipantes() {
+    public List<Usuario> getParticipantes() {
         return participantes;
     }
 
-    public void setParticipantes(ArrayList<Usuario> participantes) {
+    public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
     }
 
     // Métodos
-    public void actualizarReto(Reto reto, String nombre, double fecIni, double fecFin, float objetivoDistancia,
-                               double objetivoTiempo, Usuario usuarioCreador, String deporte, ArrayList<Usuario> participantes) {
+    public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
+            String deporte, Usuario usuarioCreador, List<Usuario> participantes) {
+    	this.nombre = nombre;
+    	this.fecIni = fecIni;
+    	this.fecFin = fecFin;
+    	this.objetivoDistancia = objetivoDistancia;
+    	this.objetivoTiempo = objetivoTiempo;
+    	this.deporte = deporte;
+    	this.usuarioCreador = usuarioCreador;
+    	this.participantes = participantes;
+}
+    
+    
+    public void actualizarReto(Reto reto, String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
+                               float objetivoTiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) {
         System.out.println("Se actualiza el reto");
 
         reto.setNombre(nombre);
-        reto.setFecIni(LocalDateTime.ofEpochSecond((long) fecIni, 0, java.time.ZoneOffset.UTC));
-        reto.setFecFin(LocalDateTime.ofEpochSecond((long) fecFin, 0, java.time.ZoneOffset.UTC));
+        reto.setFecIni(fecIni);
+        reto.setFecFin(fecFin);
         reto.setObjetivoDistancia(objetivoDistancia);
         reto.setObjetivoTiempo(objetivoTiempo);
         reto.setUsuarioCreador(usuarioCreador);
