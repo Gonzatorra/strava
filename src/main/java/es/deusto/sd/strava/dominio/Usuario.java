@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.persistence.*;
+//import jakarta.persistence.*;
 
 
 public class Usuario implements Serializable{

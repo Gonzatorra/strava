@@ -1,19 +1,26 @@
 package es.deusto.sd.strava.fachada;
 
+import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.servicios.EntrenamientoService;
 import es.deusto.sd.strava.servicios.UsuarioService;
 import es.deusto.sd.strava.dominio.Usuario;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.util.HashMap;
+import java.util.List;
 
 public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     private UsuarioService usuarioService;  // La fachada interactúa con el servicio
+    private EntrenamientoService entrenamientoService;
+
 
     public RemoteFacade() throws RemoteException {
         super();
         this.usuarioService = new UsuarioService();  // Crear una instancia del servicio
+        this.entrenamientoService = new EntrenamientoService();
     }
 
     @Override
@@ -51,4 +58,28 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         usuario.setId(userId);
         usuarioService.actualizarUsuario(usuario, contrasena, nombre, peso, altura, fecCMax, frecCReposo);
     }
+
+	@Override
+	public void crearEntreno(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
+		entrenamientoService.crearEntreno(entrenamientoDTO);
+		
+	}
+
+	@Override
+	public EntrenamientoDTO getEntreno(int idEntreno) throws RemoteException {
+		return entrenamientoService.getEntreno(idEntreno);
+	}
+
+
+	@Override
+	public void actualizarEntreno(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
+		entrenamientoService.actualizarEntreno(entrenamientoDTO);
+		
+	}
+
+	@Override
+	public void eliminarEntreno(int idEntreno) throws RemoteException {
+		entrenamientoService.eliminarEntreno(idEntreno);
+		
+	}
 }
