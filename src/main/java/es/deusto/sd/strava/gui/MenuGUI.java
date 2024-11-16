@@ -3,13 +3,21 @@ package es.deusto.sd.strava.gui;
 import javax.swing.*;
 import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.fachada.IRemoteFacade;
+import es.deusto.sd.strava.servicios.UsuarioService;
+
 import java.awt.*;
 import java.rmi.Naming;
+import java.rmi.RemoteException;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.ArrayList;
+
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
-import java.io.Serializable;
-
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 
 public class MenuGUI extends JFrame {
 
@@ -73,7 +81,8 @@ public class MenuGUI extends JFrame {
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(this, "¡Bienvenido a STRAVA, " + usuario.getUsername() + "!");
                     this.dispose();
-                    new MainAppGUI(usuario).setVisible(true);
+                    MainAppGUI main = new MainAppGUI(usuario);
+                    main.setVisible(true);
                 } else {
                     JOptionPane.showMessageDialog(this, "Parece ser que algo no es correcto, inténtalo otra vez.");
                     usernameField.setText("");
@@ -216,113 +225,305 @@ class MainAppGUI extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Mi Perfil", createProfilePanel());
-        tabbedPane.addTab("Mis Entrenamientos", createTabPanel("Contenido de Mis Entrenamientos"));
-        tabbedPane.addTab("Retos", createTabPanel("Contenido de Retos"));
+        tabbedPane.addTab("Mis Entrenamientos", createTrainPanel());
+        tabbedPane.addTab("Retos", createRetoPanel());
         tabbedPane.addTab("Amigos", createTabPanel("Contenido de Amigos"));
 
         add(tabbedPane);
+
+        // Añadiendo el listener para el cierre de ventana
+        addWindowListener(new WindowAdapter() {
+            @Override
+            public void windowClosing(WindowEvent e) {
+            	setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+                int respuesta = JOptionPane.showConfirmDialog(
+                        MainAppGUI.this,
+                        "¿Seguro que quieres cerrar la ventana?",
+                        "Confirmación",
+                        JOptionPane.YES_NO_OPTION);
+
+                if (respuesta == JOptionPane.YES_OPTION) {
+                    System.out.println("Guardando datos antes de cerrar... NO FUNCIONA NO GUARDA JEEJE");
+                    try {
+                        facade.actualizarUsuario(usuario);
+                    } catch (RemoteException e1) {
+                        e1.printStackTrace();
+                    }
+                    dispose();
+                }
+                else {
+                	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
+                }
+            }
+        });
     }
 
     private JPanel createProfilePanel() {
-    	System.out.println(usuario.getUsername());
-        System.out.println(usuario.getEmail());
-        System.out.println(usuario.getContrasena());
-        System.out.println(usuario.getNombre());
-        System.out.println(usuario.getPeso());
-        System.out.println(usuario.getAltura());
         JPanel profilePanel = new JPanel(new BorderLayout());
         String[] columnNames = {"Atributo", "Valor"};
         Object[][] data = {
-            {"Username", usuario.getUsername()},
-            {"Email", usuario.getEmail()},
-            {"Contraseña", usuario.getContrasena()},
-            {"Nombre", usuario.getNombre()},
-            {"Peso", usuario.getPeso()},
-            {"Altura", usuario.getAltura()},
+                {"Username", usuario.getUsername()},
+                {"Email", usuario.getEmail()},
+                {"Fecha de Nacimiento", usuario.getfNacimiento()},
+                {"Nombre", usuario.getNombre()},
+                {"Peso", usuario.getPeso()},
+                {"Altura", usuario.getAltura()},
+                {"Frecuencia Cardiaca Maxima", usuario.getFecCMax()},
+                {"Frecuencia Cardiaca en Reposo", usuario.getFecCReposo()},
         };
 
-        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+        DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return column == 1; // Solo permite editar la columna "Valor"
+                return false; // Todas las celdas no son editables
             }
         };
 
-        JTable profileTable = new JTable(model);
-        profileTable.setRowHeight(30); // Altura de las filas
-        JTableHeader header = profileTable.getTableHeader();
-        header.setBackground(ORANGE_ACCENT);
-        header.setForeground(Color.WHITE);
-
-        profileTable.setFont(new Font("Arial", Font.PLAIN, 12));
-        profileTable.setGridColor(ORANGE_ACCENT);
-
-        // Boton para guardar los cambios
-        JButton updateButton = new JButton("Guardar Cambios");
-        updateButton.setBackground(ORANGE_ACCENT);
-        updateButton.setForeground(Color.WHITE);
-        updateButton.setFont(new Font("Arial", Font.BOLD, 12));
-        updateButton.setFocusPainted(false);
-        updateButton.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 2));
-
-        updateButton.addActionListener(e -> {
-        	try {
-        	    // Recuperar datos editados
-        	    String updatedUsername = (String) model.getValueAt(0, 1);
-        	    String updatedEmail = (String) model.getValueAt(1, 1);
-        	    String updatedPassword = (String) model.getValueAt(2, 1);
-        	    String updatedName = (String) model.getValueAt(3, 1);
-        	    float updatedWeight = Float.parseFloat(model.getValueAt(4, 1).toString());
-        	    float updatedHeight = Float.parseFloat(model.getValueAt(5, 1).toString());
-
-        	    // Crear un nuevo objeto UsuarioDTO con los nuevos valores (no modificar directamente el original)
-        	    UsuarioDTO nuevoUsuario = new UsuarioDTO();  // Crear un nuevo objeto para evitar modificar el original
-        	    nuevoUsuario.setUsername(updatedUsername);
-        	    nuevoUsuario.setEmail(updatedEmail);
-        	    nuevoUsuario.setContrasena(updatedPassword);
-        	    nuevoUsuario.setNombre(updatedName);
-        	    nuevoUsuario.setPeso(updatedWeight);
-        	    nuevoUsuario.setAltura(updatedHeight);
-
-        	    // Llamar al metodo remoto para actualizar
-        	    facade.actualizarUsuario(nuevoUsuario);
-        	    
-        	    JOptionPane.showMessageDialog(this, "¡Usuario actualizado correctamente!");
-        	    System.out.println("Nuevo usuario:");
-        	    System.out.println(nuevoUsuario.getUsername());
-        	    System.out.println(nuevoUsuario.getEmail());
-        	    System.out.println(nuevoUsuario.getContrasena());
-        	    System.out.println(nuevoUsuario.getNombre());
-        	    System.out.println(nuevoUsuario.getPeso());
-        	    System.out.println(nuevoUsuario.getAltura());
-        	} catch (Exception a) {
-        	    a.printStackTrace();
-        	}
-
+        JButton modButton = new JButton("Modificar Usuario");
+        modButton.setBackground(ORANGE_ACCENT);
+        modButton.setForeground(Color.WHITE);
+        
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.add(modButton);
+        modButton.addActionListener(e -> {
+        	System.out.println("POR AHORA NO MODIFICA");
         });
         
         
-
-
-        JPanel buttonPanel = new JPanel();
-        buttonPanel.setBackground(Color.WHITE);
-        buttonPanel.add(updateButton);
-
+        JTable profileTable = new JTable(tableModel);
+        profileTable.setFocusable(false); // Deshabilitar el foco en las celdas
+        profileTable.setRowSelectionAllowed(false); // Deshabilitar selección de filas
+ 
         profilePanel.add(new JScrollPane(profileTable), BorderLayout.CENTER);
+        JTableHeader header = profileTable.getTableHeader();
         profilePanel.add(buttonPanel, BorderLayout.SOUTH);
+        
+        header.setBackground(ORANGE_ACCENT);
+        header.setForeground(Color.WHITE);
 
         return profilePanel;
     }
 
+    private JPanel createTrainPanel() {
+        JPanel trainPanel = new JPanel(new BorderLayout());
+        String[] columnNames = {"Fecha", "Duración", "Distancia", "Deporte"};
+        
+        DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Todas las celdas no son editables
+            }
+        };
+        
+        
+        //DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+        JTable trainTable = new JTable(tableModel);
+        trainTable.setFocusable(false); // Deshabilitar el foco en las celdas
+        JTableHeader header = trainTable.getTableHeader();
+        header.setBackground(ORANGE_ACCENT);
+        header.setForeground(Color.WHITE);
+        trainPanel.add(new JScrollPane(trainTable), BorderLayout.CENTER);
 
-    private JPanel createTabPanel(String title) {
-        JPanel panel = new JPanel();
-        panel.setBackground(Color.WHITE);
-        JLabel label = new JLabel(title);
-        label.setFont(new Font("Arial", Font.BOLD, 16));
-        panel.add(label);
-        return panel;
+        // Botón para agregar entrenamiento
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Añadir Entrenamiento");
+        JButton modButton = new JButton("Modificar Entrenamiento");
+        JButton delButton = new JButton("Eliminar Entrenamiento");
+        addButton.setBackground(ORANGE_ACCENT);
+        addButton.setForeground(Color.WHITE);
+        buttonPanel.add(addButton);
+        modButton.setBackground(ORANGE_ACCENT);
+        modButton.setForeground(Color.WHITE);
+        buttonPanel.add(modButton);
+        delButton.setBackground(ORANGE_ACCENT);
+        delButton.setForeground(Color.WHITE);
+        buttonPanel.add(delButton);
+        trainPanel.add(buttonPanel, BorderLayout.SOUTH);
+
+        
+        modButton.addActionListener(e -> {
+        	System.out.println("POR AHORA NO MODIFICA");
+        });
+        
+        
+        delButton.addActionListener(e -> {
+        	System.out.println("POR AHORA NO ELIMINA");
+        });
+        
+        
+        // Acción al hacer clic en el botón de añadir
+        addButton.addActionListener(e -> {
+            // Mostrar un formulario para capturar los datos del nuevo entrenamiento
+            JPanel panel = new JPanel(new GridLayout(4, 2));
+
+            JTextField titleField = new JTextField(10);
+            JTextField sportField = new JTextField(10);
+            JTextField durationField = new JTextField(10);
+            JTextField distanceField = new JTextField(10);
+
+            panel.add(new JLabel("Título:"));
+            panel.add(titleField);
+            panel.add(new JLabel("Deporte:"));
+            panel.add(sportField);
+            panel.add(new JLabel("Duración (min):"));
+            panel.add(durationField);
+            panel.add(new JLabel("Distancia (km):"));
+            panel.add(distanceField);
+
+            int option = JOptionPane.showConfirmDialog(
+                    this,
+                    panel,
+                    "Nuevo Entrenamiento",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (option == JOptionPane.OK_OPTION) {
+                // Obtener los valores ingresados
+                String title = titleField.getText();
+                String sport = sportField.getText();
+                int duration;
+                double distance;
+
+                try {
+                    duration = Integer.parseInt(durationField.getText());
+                    distance = Double.parseDouble(distanceField.getText());
+                    
+                    LocalTime time = LocalDateTime.now().toLocalTime();
+                    
+                    // Obtener la hora, minuto y segundo
+                    int hours = time.getHour();
+                    int minutes = time.getMinute();
+                    int seconds = time.getSecond();
+                    
+                    // Convertir todo a horas decimales (float)
+                    float timeInHours = hours + minutes / 60.0f + seconds / 3600.0f;
+                    
+                    // Agregar el entrenamiento a la fachada
+                    //facade.crearEntreno(usuario, title, sport, distance, LocalDateTime.now().toLocalDate(), timeInHours, duration);
+
+                    // Añadir la fila al modelo de la tabla
+                    tableModel.addRow(new Object[]{LocalDateTime.now(), duration, distance, sport});
+
+                    JOptionPane.showMessageDialog(this, "Entrenamiento añadido con éxito. NO SE HA AÑADIDO AL ARRAY SOLO TABLA");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(this, "Por favor, ingresa valores válidos para la duración y distancia.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al agregar el entrenamiento: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        return trainPanel;
     }
+
     
     
+    private JPanel createRetoPanel() {
+        JPanel retoPanel = new JPanel(new BorderLayout());
+        String[] columnNames = {"Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
+        
+        DefaultTableModel retoModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Todas las celdas no son editables
+            }
+        };
+
+        JTable retoTable = new JTable(retoModel);
+        retoTable.setFocusable(false); // Deshabilitar el foco en las celdas
+        JTableHeader header = retoTable.getTableHeader();
+        header.setBackground(ORANGE_ACCENT);
+        header.setForeground(Color.WHITE);
+        retoPanel.add(new JScrollPane(retoTable), BorderLayout.CENTER);
+
+        // Botón para agregar entrenamiento
+        JPanel buttonPanel = new JPanel();
+        JButton addButton = new JButton("Añadir Reto");
+        JButton modButton = new JButton("Modificar Reto");
+        JButton delButton = new JButton("Eliminar Reto");
+        addButton.setBackground(ORANGE_ACCENT);
+        addButton.setForeground(Color.WHITE);
+        buttonPanel.add(addButton);
+        modButton.setBackground(ORANGE_ACCENT);
+        modButton.setForeground(Color.WHITE);
+        buttonPanel.add(modButton);
+        delButton.setBackground(ORANGE_ACCENT);
+        delButton.setForeground(Color.WHITE);
+        buttonPanel.add(delButton);
+        retoPanel.add(buttonPanel, BorderLayout.SOUTH); // Solo se agrega una vez
+
+        modButton.addActionListener(e -> {
+            System.out.println("POR AHORA NO MODIFICA");
+        });
+
+        delButton.addActionListener(e -> {
+            System.out.println("POR AHORA NO ELIMINA");
+        });
+
+        // Acción al hacer clic en el botón de añadir
+        addButton.addActionListener(e -> {
+            JPanel panel = new JPanel(new GridLayout(7, 2)); // Corregido el tamaño del GridLayout
+            
+            JTextField titleField = new JTextField(10);
+            JTextField sportField = new JTextField(10);
+            JTextField creatorField = new JTextField(10);
+            JTextField fecIniField = new JTextField(10);
+            JTextField fecFinField = new JTextField(10);
+            JTextField objDisField = new JTextField(10);
+            JTextField objTempField = new JTextField(10);
+
+            panel.add(new JLabel("Nombre:"));
+            panel.add(titleField);
+            panel.add(new JLabel("Deporte:"));
+            panel.add(sportField);
+            panel.add(new JLabel("Creador:"));
+            panel.add(creatorField);
+            panel.add(new JLabel("Fecha Inicio:"));
+            panel.add(fecIniField);
+            panel.add(new JLabel("Fecha Fin:"));
+            panel.add(fecFinField);
+            panel.add(new JLabel("Objetivo Distancia:"));
+            panel.add(objDisField);
+            panel.add(new JLabel("Objetivo Tiempo:"));
+            panel.add(objTempField);
+
+            int option = JOptionPane.showConfirmDialog(
+                    retoPanel, // Cambiado para usar el panel actual
+                    panel,
+                    "Nuevo Reto",
+                    JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE
+            );
+
+            if (option == JOptionPane.OK_OPTION) {
+                String title = titleField.getText();
+                String sport = sportField.getText();
+                String creator = creatorField.getText();
+                String fecIni = fecIniField.getText();
+                String fecFin = fecFinField.getText();
+                String objDis = objDisField.getText();
+                String objTemp = objTempField.getText();
+
+                try {
+                    retoModel.addRow(new Object[]{title, sport, creator, fecIni, fecFin, objDis, objTemp});
+                    JOptionPane.showMessageDialog(retoPanel, "Reto añadido con éxito.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(retoPanel, "Error al agregar el reto: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        return retoPanel;
+    }
+
+    
+    
+    private JPanel createTabPanel(String content) {
+        JPanel tabPanel = new JPanel();
+        tabPanel.add(new JLabel(content));
+        return tabPanel;
+    }
 }
