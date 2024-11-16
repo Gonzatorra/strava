@@ -1,16 +1,19 @@
 package es.deusto.sd.strava.gui;
 
 import javax.swing.*;
+import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.fachada.IRemoteFacade;
 import java.awt.*;
 import java.rmi.Naming;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
+import java.io.Serializable;
+
 
 public class MenuGUI extends JFrame {
 
-    private static final Color ORANGE_ACCENT = new Color(255, 87, 34); // Naranja característico
+    private static final Color ORANGE_ACCENT = new Color(255, 87, 34);
     private IRemoteFacade facade;
 
     public MenuGUI(IRemoteFacade facade) {
@@ -221,6 +224,12 @@ class MainAppGUI extends JFrame {
     }
 
     private JPanel createProfilePanel() {
+    	System.out.println(usuario.getUsername());
+        System.out.println(usuario.getEmail());
+        System.out.println(usuario.getContrasena());
+        System.out.println(usuario.getNombre());
+        System.out.println(usuario.getPeso());
+        System.out.println(usuario.getAltura());
         JPanel profilePanel = new JPanel(new BorderLayout());
         String[] columnNames = {"Atributo", "Valor"};
         Object[][] data = {
@@ -232,9 +241,15 @@ class MainAppGUI extends JFrame {
             {"Altura", usuario.getAltura()},
         };
 
-        DefaultTableModel model = new DefaultTableModel(data, columnNames);
+        DefaultTableModel model = new DefaultTableModel(data, columnNames) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return column == 1; // Solo permite editar la columna "Valor"
+            }
+        };
+
         JTable profileTable = new JTable(model);
-        profileTable.setRowHeight(30);  // Altura de las filas
+        profileTable.setRowHeight(30); // Altura de las filas
         JTableHeader header = profileTable.getTableHeader();
         header.setBackground(ORANGE_ACCENT);
         header.setForeground(Color.WHITE);
@@ -242,9 +257,63 @@ class MainAppGUI extends JFrame {
         profileTable.setFont(new Font("Arial", Font.PLAIN, 12));
         profileTable.setGridColor(ORANGE_ACCENT);
 
+        // Boton para guardar los cambios
+        JButton updateButton = new JButton("Guardar Cambios");
+        updateButton.setBackground(ORANGE_ACCENT);
+        updateButton.setForeground(Color.WHITE);
+        updateButton.setFont(new Font("Arial", Font.BOLD, 12));
+        updateButton.setFocusPainted(false);
+        updateButton.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 2));
+
+        updateButton.addActionListener(e -> {
+        	try {
+        	    // Recuperar datos editados
+        	    String updatedUsername = (String) model.getValueAt(0, 1);
+        	    String updatedEmail = (String) model.getValueAt(1, 1);
+        	    String updatedPassword = (String) model.getValueAt(2, 1);
+        	    String updatedName = (String) model.getValueAt(3, 1);
+        	    float updatedWeight = Float.parseFloat(model.getValueAt(4, 1).toString());
+        	    float updatedHeight = Float.parseFloat(model.getValueAt(5, 1).toString());
+
+        	    // Crear un nuevo objeto UsuarioDTO con los nuevos valores (no modificar directamente el original)
+        	    UsuarioDTO nuevoUsuario = new UsuarioDTO();  // Crear un nuevo objeto para evitar modificar el original
+        	    nuevoUsuario.setUsername(updatedUsername);
+        	    nuevoUsuario.setEmail(updatedEmail);
+        	    nuevoUsuario.setContrasena(updatedPassword);
+        	    nuevoUsuario.setNombre(updatedName);
+        	    nuevoUsuario.setPeso(updatedWeight);
+        	    nuevoUsuario.setAltura(updatedHeight);
+
+        	    // Llamar al metodo remoto para actualizar
+        	    facade.actualizarUsuario(nuevoUsuario);
+        	    
+        	    JOptionPane.showMessageDialog(this, "¡Usuario actualizado correctamente!");
+        	    System.out.println("Nuevo usuario:");
+        	    System.out.println(nuevoUsuario.getUsername());
+        	    System.out.println(nuevoUsuario.getEmail());
+        	    System.out.println(nuevoUsuario.getContrasena());
+        	    System.out.println(nuevoUsuario.getNombre());
+        	    System.out.println(nuevoUsuario.getPeso());
+        	    System.out.println(nuevoUsuario.getAltura());
+        	} catch (Exception a) {
+        	    a.printStackTrace();
+        	}
+
+        });
+        
+        
+
+
+        JPanel buttonPanel = new JPanel();
+        buttonPanel.setBackground(Color.WHITE);
+        buttonPanel.add(updateButton);
+
         profilePanel.add(new JScrollPane(profileTable), BorderLayout.CENTER);
+        profilePanel.add(buttonPanel, BorderLayout.SOUTH);
+
         return profilePanel;
     }
+
 
     private JPanel createTabPanel(String title) {
         JPanel panel = new JPanel();
@@ -254,4 +323,6 @@ class MainAppGUI extends JFrame {
         panel.add(label);
         return panel;
     }
+    
+    
 }

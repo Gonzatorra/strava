@@ -49,6 +49,27 @@ public class Usuario implements Serializable{
 		
 	}
 	
+	public Usuario(int id, String username, String email, String contrasena,
+			String nombre, float peso, float altura, LocalDate fNacimiento,
+			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
+			HashMap<Reto, String> retos) {
+		super();
+		this.id = id;
+		this.username = username;
+		this.email = email;
+		this.contrasena = contrasena;
+		this.nombre = nombre;
+		this.peso = peso;
+		this.altura = altura;
+		this.fNacimiento = fNacimiento;
+		this.frecCMax = frecCMax;
+		this.frecCReposo = frecCReposo;
+		this.token = token;
+		this.entrenamientos = entrenamientos;
+		this.retos = retos;
+		
+	}
+	
 	//Getters - Setters
 	public int getId() {
 		return id;

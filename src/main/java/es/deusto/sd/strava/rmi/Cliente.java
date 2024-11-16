@@ -27,7 +27,10 @@ public class Cliente {
                 System.out.println("Usuario registrado con éxito: " + usuario.getUsername());
             }
             System.out.println("Esperando...\n");
-            facade.login("A", "D");
+            user.setEmail("juanpepe@mail.com");
+            UsuarioDTO usuario2 = new UsuarioDTO(user);
+            facade.actualizarUsuario(usuario2);
+            System.out.println("Usuario actualizado: " + usuario.getEmail());
             
             //Entrenamiento
             Entrenamiento entrenamiento = new Entrenamiento(1, user, "Behobia", "Running", 5.0f, LocalDateTime.now(), 6.30f, 30.0);

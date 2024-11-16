@@ -17,7 +17,7 @@ public interface IRemoteFacade extends Remote {
     UsuarioDTO login(String email, String contrasena) throws RemoteException;
     void logout(String token) throws RemoteException;
     void eliminarUsuario(int userId) throws RemoteException;
-    void actualizarUsuario(int userId, String contrasena, String nombre, float peso, float altura, float fecCMax, float frecCReposo) throws RemoteException;
+    void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
     
     //Para entrenamiento
     void crearEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;

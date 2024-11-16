@@ -18,7 +18,7 @@ import java.util.List;
 
 public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
-    private UsuarioService usuarioService;  // La fachada interactúa con el servicio
+    private UsuarioService usuarioService;
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
 
@@ -33,7 +33,6 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     @Override
     public UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {
         // Llamada al servicio para registrar un usuario y devolver un DTO
-    	
         return usuarioService.registrar(username, contrasena, email, nombre);
     }
 
@@ -59,11 +58,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     }
 
     @Override
-    public void actualizarUsuario(int userId, String contrasena, String nombre, float peso, float altura, float fecCMax, float frecCReposo) throws RemoteException {
-        // Llamada al servicio para actualizar el usuario
-        Usuario usuario = new Usuario();
-        usuario.setId(userId);
-        usuarioService.actualizarUsuario(usuario, contrasena, nombre, peso, altura, fecCMax, frecCReposo);
+    public void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException{
+        usuarioService.actualizarUsuario(usuarioDTO);
     }
 
 	@Override

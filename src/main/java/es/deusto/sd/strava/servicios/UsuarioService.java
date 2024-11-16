@@ -14,19 +14,16 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class UsuarioService {
 
-    private static Map<Integer, Usuario> usuarios = new HashMap<>(); // Uso de HashMap para acceso más eficiente
-    private static int idCounter = 1;  // Para asignar IDs únicos
+    private static HashMap<Integer, Usuario> usuarios = new HashMap<>(); // Uso de HashMap para acceso mas eficiente
+    private static int idCounter = 1;  // Para asignar IDs unicos
 
     public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
         // Generamos un nuevo id para el usuario
-        int nuevoId = idCounter++;  // Asegúrate de que idCounter está inicializado y es accesible
+        int nuevoId = idCounter++;
         
         // Crear el objeto Usuario
         Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>());
-        /*(int id, String username, String email, String constrasena,
-    			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
-    			HashMap<Reto, String> retos)*/
-        
+           
         
         // Guardar el usuario
         usuarios.put(usuario.getId(), usuario);
@@ -80,17 +77,17 @@ public class UsuarioService {
         }
     }
 
-    public void actualizarUsuario(Usuario usuario, String contrasena, String nombre, float peso, float altura,
-                                   float fecCMax, float frecCReposo) {
-        if (usuarios.containsKey(usuario.getId())) {
-            usuario.setContrasena(contrasena);
-            usuario.setNombre(nombre);
-            usuario.setPeso(peso);
-            usuario.setAltura(altura);
-            usuario.setFecCMax(fecCMax);
-            usuario.setFecCReposo(frecCReposo);
-            System.out.println("Se ha actualizado el usuario");
+    public void actualizarUsuario(UsuarioDTO usuarioDTO) {
+    	Usuario usuario = usuarios.get(usuarioDTO.getId());
+        if (usuario != null) {
+        	usuario.setUsername(usuarioDTO.getUsername());
+        	usuario.setEmail(usuarioDTO.getEmail());
+        	usuario.setContrasena(usuario.getContrasena());
+        	usuario.setNombre(usuarioDTO.getNombre());
+        	usuario.setPeso(usuarioDTO.getPeso());
+        	usuario.setAltura(usuarioDTO.getAltura());
         }
+        
     }
 
     public List<Entrenamiento> getEntrenosUsuario(Usuario usuario, double fechaIni, double fechaFin) {

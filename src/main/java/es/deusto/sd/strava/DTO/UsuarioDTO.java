@@ -11,6 +11,8 @@ import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 
 public class UsuarioDTO implements Serializable{
+	private static final long serialVersionUID = 1L;
+
     // Atributos
 	private int id;
     private String username;
@@ -28,7 +30,7 @@ public class UsuarioDTO implements Serializable{
 
     
     // Constructores
-        public UsuarioDTO(Usuario usuario) {
+    public UsuarioDTO(Usuario usuario) {
         this.id = usuario.getId();
         this.username = usuario.getUsername();
         this.email = usuario.getEmail();
@@ -43,8 +45,18 @@ public class UsuarioDTO implements Serializable{
         this.entrenamientos = usuario.getEntrenamientos();
         this.retos = usuario.getRetos();
     }
+    
+    
+    
 
-	
+	public UsuarioDTO() {
+		super();
+		// TODO Auto-generated constructor stub
+	}
+
+
+
+
 	//Getters - Setters
 	public int getId() {
 		return id;
