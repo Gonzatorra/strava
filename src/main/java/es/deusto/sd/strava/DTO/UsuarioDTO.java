@@ -162,6 +162,35 @@ public class UsuarioDTO implements Serializable{
 		this.retos = retos;
 	}
 	
+	public Usuario toDomain() {
+	    Usuario usuario = new Usuario();
+	    usuario.setId(this.id);
+	    usuario.setUsername(this.username);
+	    usuario.setEmail(this.email);
+	    usuario.setContrasena(this.contrasena);
+	    usuario.setNombre(this.nombre);
+	    usuario.setPeso(this.peso);
+	    usuario.setAltura(this.altura);
+	    usuario.setfNacimiento(this.fNacimiento);
+	    usuario.setFecCMax(this.fecCMax);
+	    usuario.setFecCReposo(this.fecCReposo);
+	    usuario.setToken(this.token);
+
+	    if (this.entrenamientos != null) {
+	        usuario.setEntrenamientos(new ArrayList<>(this.entrenamientos));
+	    }
+
+	    if (this.retos != null) {
+	        HashMap<Reto, String> retosMap = new HashMap<>();
+	        for (Map.Entry<Reto, String> entry : this.retos.entrySet()) {
+	            retosMap.put(entry.getKey(), entry.getValue());
+	        }
+	        usuario.setRetos(retosMap);
+	    }
+
+	    return usuario;
+	}
+	
 	
 	
 }
