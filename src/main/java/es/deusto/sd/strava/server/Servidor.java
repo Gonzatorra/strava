@@ -1,10 +1,13 @@
 package es.deusto.sd.strava.server;
 
 import java.rmi.RemoteException;
+import java.time.LocalDateTime;
 
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.RetoDTO;
+import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
+import es.deusto.sd.strava.dominio.Usuario;
 import es.deusto.sd.strava.fachada.*;
 
 public class Servidor {
@@ -26,20 +29,18 @@ public class Servidor {
     }
     
     //Entrenamientos
-    public void procesarCrearEntrenamiento(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
-        facade.crearEntreno(entrenamientoDTO);
+    public void procesarCrearEntrenamiento(Usuario usuario, String titulo, String deporte, double distancia,
+    		LocalDateTime fechaIni, float horaInicio, double duracion) throws RemoteException {
+    	facade.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
     }
 
-    public EntrenamientoDTO procesarObtenerEntrenamiento(int id) throws RemoteException {
-        return facade.getEntreno(id);
+    public void procesarActualizarEntrenamiento(Entrenamiento entrenamiento, LocalDateTime distancia, double fechaIni,
+                 float horaInicio, double duracion) throws RemoteException {
+    	facade.actualizarEntreno(entrenamiento, fechaIni, distancia, horaInicio, duracion);
     }
 
-    public void procesarActualizarEntrenamiento(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
-        facade.actualizarEntreno(entrenamientoDTO);
-    }
-
-    public void procesarEliminarEntrenamiento(int id) throws RemoteException {
-        facade.eliminarEntreno(id);
+    public void procesarEliminarEntrenamiento(Entrenamiento entrenamiento) throws RemoteException {
+    	facade.eliminarEntreno(entrenamiento);
     }
     
     // Retos

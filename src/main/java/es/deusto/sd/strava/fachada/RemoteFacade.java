@@ -6,6 +6,7 @@ import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.servicios.EntrenamientoService;
 import es.deusto.sd.strava.servicios.RetoService;
 import es.deusto.sd.strava.servicios.UsuarioService;
+import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 
@@ -62,29 +63,6 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         usuarioService.actualizarUsuario(usuarioDTO);
     }
 
-	@Override
-	public void crearEntreno(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
-		entrenamientoService.crearEntreno(entrenamientoDTO);
-		
-	}
-
-	@Override
-	public EntrenamientoDTO getEntreno(int idEntreno) throws RemoteException {
-		return entrenamientoService.getEntreno(idEntreno);
-	}
-
-
-	@Override
-	public void actualizarEntreno(EntrenamientoDTO entrenamientoDTO) throws RemoteException {
-		entrenamientoService.actualizarEntreno(entrenamientoDTO);
-		
-	}
-
-	@Override
-	public void eliminarEntreno(int idEntreno) throws RemoteException {
-		entrenamientoService.eliminarEntreno(idEntreno);
-		
-	}
 
 	@Override
 	public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
@@ -128,5 +106,31 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	public void actualizarReto(Reto reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia,
 			float tiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) throws RemoteException {
 		retoService.actualizarReto(reto, nombre, fechaIni, fechaFin, distancia, tiempo, usuarioCreador, deporte, participantes);
+	}
+
+	@Override
+	public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni,
+			float horaInicio, double duracion) throws RemoteException {
+		entrenamientoService.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
+		
+	}
+
+	@Override
+	public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni,
+			float horaInicio, double duracion) throws RemoteException {
+		entrenamientoService.actualizarEntreno(entrenamiento, distancia, fechaIni, horaInicio, duracion);
+		
+	}
+
+	@Override
+	public void eliminarEntreno(Entrenamiento entrenamiento) throws RemoteException {
+		entrenamientoService.eliminarEntreno(entrenamiento);
+		
+	}
+
+	@Override
+	public void visualizarEntreno(EntrenamientoDTO entrenamiento) throws RemoteException {
+		entrenamientoService.visualizarEntreno(entrenamiento);
+		
 	}
 }

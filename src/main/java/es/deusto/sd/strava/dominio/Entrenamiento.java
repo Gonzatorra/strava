@@ -9,13 +9,13 @@ public class Entrenamiento implements Serializable{
     private Usuario usuario;
     private String titulo;
     private String deporte;
-    private float distancia;
+    private double distancia;
     private LocalDateTime fecIni;
     private float horaIni;
     private double duracion;
 
     // Constructores
-    public Entrenamiento(int id, Usuario usuario, String titulo, String deporte, float distancia, 
+    public Entrenamiento(int id, Usuario usuario, String titulo, String deporte, double distancia, 
                           LocalDateTime fecIni, float horaIni, double duracion) {
         this.id = id;
         this.usuario = usuario;
@@ -62,11 +62,11 @@ public class Entrenamiento implements Serializable{
         this.deporte = deporte;
     }
 
-    public float getDistancia() {
+    public double getDistancia() {
         return distancia;
     }
 
-    public void setDistancia(float distancia) {
+    public void setDistancia(double distancia) {
         this.distancia = distancia;
     }
 

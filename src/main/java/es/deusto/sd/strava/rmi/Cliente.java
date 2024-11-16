@@ -33,17 +33,19 @@ public class Cliente {
             System.out.println("Usuario actualizado: " + usuario.getEmail());
             
             //Entrenamiento
-            Entrenamiento entrenamiento = new Entrenamiento(1, user, "Behobia", "Running", 5.0f, LocalDateTime.now(), 6.30f, 30.0);
-            EntrenamientoDTO entrenamientoDTO = new EntrenamientoDTO(entrenamiento);
-            facade.crearEntreno(entrenamientoDTO);
-            System.out.println("Entrenamiento creado con éxito: " + entrenamientoDTO.getTitulo());
-
-            entrenamientoDTO.setTitulo("San Silvestre");
-            facade.actualizarEntreno(entrenamientoDTO);
-            System.out.println("Entrenamiento actualizado: " + entrenamientoDTO.getTitulo());
-
-            facade.eliminarEntreno(entrenamientoDTO.getId());
-            System.out.println("Entrenamiento eliminado con ID: " + entrenamientoDTO.getId());
+            Entrenamiento entreno = new Entrenamiento(0, user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
+            facade.crearEntreno(user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
+            System.out.println("Entreno creado con éxito: " + entreno.getTitulo());
+            
+            EntrenamientoDTO entrenamientoDTO = new EntrenamientoDTO(entreno);
+            facade.visualizarEntreno(entrenamientoDTO);
+            
+            entrenamientoDTO.setDistancia(10.0f);
+            facade.actualizarEntreno(entrenamientoDTO.toDomain(), 10.0, LocalDateTime.now(), 7.0f, 45.0);
+            System.out.println("Entreno actualizado con éxito: " + entrenamientoDTO.getDistancia());
+            
+            facade.eliminarEntreno(entrenamientoDTO.toDomain());
+            System.out.println("Entrenamiento eliminado con éxito.\n");
             
             //Reto
             List<Usuario> participantes = new ArrayList<>();

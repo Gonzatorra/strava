@@ -12,7 +12,7 @@ public class EntrenamientoDTO implements Serializable{
     private Usuario usuario;
     private String titulo;
     private String deporte;
-    private float distancia;
+    private double distancia;
     private LocalDateTime fecIni; 
     private float horaIni;
     private double duracion;
@@ -47,7 +47,7 @@ public class EntrenamientoDTO implements Serializable{
         return deporte;
     }
 
-    public float getDistancia() {
+    public double getDistancia() {
         return distancia;
     }
 
@@ -80,7 +80,7 @@ public class EntrenamientoDTO implements Serializable{
         this.deporte = deporte;
     }
 
-    public void setDistancia(float distancia) {
+    public void setDistancia(double distancia) {
         this.distancia = distancia;
     }
 
@@ -89,6 +89,10 @@ public class EntrenamientoDTO implements Serializable{
     }
 
     public void setHoraIni(float horaIni) {
+    }
+    
+    public Entrenamiento toDomain() {
+        return new Entrenamiento(id, usuario, titulo, deporte, distancia, fecIni, horaIni, duracion);
     }
 
 

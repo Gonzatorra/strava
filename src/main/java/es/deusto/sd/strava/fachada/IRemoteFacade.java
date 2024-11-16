@@ -3,6 +3,7 @@ package es.deusto.sd.strava.fachada;
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 
@@ -20,10 +21,10 @@ public interface IRemoteFacade extends Remote {
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
     
     //Para entrenamiento
-    void crearEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
-    EntrenamientoDTO getEntreno(int idEntreno) throws java.rmi.RemoteException;
-    void actualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
-    void eliminarEntreno(int idEntreno) throws java.rmi.RemoteException;
+    void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void eliminarEntreno(Entrenamiento entrenamiento) throws java.rmi.RemoteException;
+    void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     
     //Para Reto
     void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
