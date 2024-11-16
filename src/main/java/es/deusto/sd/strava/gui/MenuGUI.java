@@ -350,8 +350,8 @@ class MainAppGUI extends JFrame {
 
     private JPanel createTrainPanel() {
         JPanel trainPanel = new JPanel(new BorderLayout());
-        String[] columnNames = {"Fecha", "Duración", "Distancia", "Deporte"};
-        
+        String[] columnNames = {"Fecha", "Título", "Duración", "Distancia", "Deporte"};
+
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
@@ -392,11 +392,11 @@ class MainAppGUI extends JFrame {
                 return;
             }
 
-            JPanel panel = new JPanel(new GridLayout(4, 2));
-            JTextField titleField = new JTextField((String) tableModel.getValueAt(selectedRow, 0));
-            JTextField sportField = new JTextField((String) tableModel.getValueAt(selectedRow, 3));
-            JTextField durationField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 1)));
-            JTextField distanceField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 2)));
+            JPanel panel = new JPanel(new GridLayout(5, 2));
+            JTextField titleField = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
+            JTextField sportField = new JTextField((String) tableModel.getValueAt(selectedRow, 4));
+            JTextField durationField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 2)));
+            JTextField distanceField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 3)));
 
             panel.add(new JLabel("Título:"));
             panel.add(titleField);
@@ -433,11 +433,10 @@ class MainAppGUI extends JFrame {
                         Double.parseDouble(durationField.getText())
                     );
 
-                    // Update table
-                    tableModel.setValueAt(titleField.getText(), selectedRow, 0);
-                    tableModel.setValueAt(sportField.getText(), selectedRow, 3);
-                    tableModel.setValueAt(Integer.parseInt(durationField.getText()), selectedRow, 1);
-                    tableModel.setValueAt(Double.parseDouble(distanceField.getText()), selectedRow, 2);
+                    tableModel.setValueAt(titleField.getText(), selectedRow, 1);
+                    tableModel.setValueAt(sportField.getText(), selectedRow, 4);
+                    tableModel.setValueAt(Integer.parseInt(durationField.getText()), selectedRow, 2);
+                    tableModel.setValueAt(Double.parseDouble(distanceField.getText()), selectedRow, 3);
 
                     JOptionPane.showMessageDialog(this, "Entrenamiento modificado con éxito.");
                 } catch (Exception ex) {
@@ -445,7 +444,7 @@ class MainAppGUI extends JFrame {
                     ex.printStackTrace();
                 }
             }
-        });  
+        }); 
         
         delButton.addActionListener(e -> {
             int selectedRow = trainTable.getSelectedRow();
@@ -454,21 +453,31 @@ class MainAppGUI extends JFrame {
                 return;
             }
 
-            int confirm = JOptionPane.showConfirmDialog(this, "¿Está seguro de que desea eliminar este entrenamiento?", "Confirmar Eliminación", JOptionPane.YES_NO_OPTION);
+            int confirm = JOptionPane.showConfirmDialog(
+                this,
+                "¿Está seguro de que desea eliminar este entrenamiento?",
+                "Confirmar Eliminación",
+                JOptionPane.YES_NO_OPTION
+            );
+
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDateTime date = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
+                    String titulo = (String) tableModel.getValueAt(selectedRow, 1);
+                    int duracion = ((Number) tableModel.getValueAt(selectedRow, 2)).intValue();
+                    float distancia = ((Number) tableModel.getValueAt(selectedRow, 3)).floatValue();
+                    String deporte = (String) tableModel.getValueAt(selectedRow, 4);
 
                     Entrenamiento entrenamiento = new Entrenamiento(
                         selectedRow,
                         usuario.toDomain(),
-                        (String) tableModel.getValueAt(selectedRow, 0),
-                        (String) tableModel.getValueAt(selectedRow, 3),
-                        Float.parseFloat(tableModel.getValueAt(selectedRow, 2).toString()),
+                        titulo,
+                        deporte,
+                        distancia,
                         date,
                         0.0f,
-                        Double.parseDouble(tableModel.getValueAt(selectedRow, 1).toString())
+                        duracion
                     );
 
                     facade.eliminarEntreno(entrenamiento);
@@ -485,7 +494,7 @@ class MainAppGUI extends JFrame {
         
         
         addButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new GridLayout(4, 2));
+            JPanel panel = new JPanel(new GridLayout(5, 2));
 
             JTextField titleField = new JTextField(10);
             JTextField sportField = new JTextField(10);
@@ -530,6 +539,7 @@ class MainAppGUI extends JFrame {
 
                     tableModel.addRow(new Object[]{
                         now.format(formatter),
+                        title,
                         duration,
                         distance,
                         sport
