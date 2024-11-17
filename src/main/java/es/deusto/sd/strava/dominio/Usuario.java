@@ -18,7 +18,7 @@ public class Usuario implements Serializable{
     private String nombre;
     private float peso;
     private float altura;
-    private LocalDate fNacimiento;
+    private java.util.Date fNacimiento;
     private float frecCMax;
     private float frecCReposo;
     private String token;
@@ -50,7 +50,7 @@ public class Usuario implements Serializable{
 	}
 	
 	public Usuario(int id, String username, String email, String contrasena,
-			String nombre, float peso, float altura, LocalDate fNacimiento,
+			String nombre, float peso, float altura, java.util.Date fNacimiento,
 			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos) {
 		super();
@@ -127,11 +127,11 @@ public class Usuario implements Serializable{
 		this.altura = altura;
 	}
 
-	public LocalDate getfNacimiento() {
+	public java.util.Date getfNacimiento() {
 		return fNacimiento;
 	}
 
-	public void setfNacimiento(LocalDate fNacimiento) {
+	public void setfNacimiento(java.util.Date fNacimiento) {
 		this.fNacimiento = fNacimiento;
 	}
 

@@ -213,6 +213,7 @@ class MainAppGUI extends JFrame {
     private IRemoteFacade facade;
 
     public MainAppGUI(UsuarioDTO usuario) {
+
         this.usuario = usuario;
         try {
             facade = (IRemoteFacade) Naming.lookup("rmi://localhost/RemoteFacade");
@@ -261,53 +262,77 @@ class MainAppGUI extends JFrame {
         });
     }
 
+    
     private JPanel createProfilePanel() {
         JPanel profilePanel = new JPanel(new BorderLayout());
         String[] columnNames = {"Atributo", "Valor"};
+        
+        // Mask the password with asterisks
+        String contrasena = "*".repeat(usuario.getContrasena().length());
+        
         Object[][] data = {
-                {"Username", usuario.getUsername()},
-                {"Email", usuario.getEmail()},
-                {"Fecha de Nacimiento", usuario.getfNacimiento()},
-                {"Nombre", usuario.getNombre()},
-                {"Peso", usuario.getPeso()},
-                {"Altura", usuario.getAltura()},
-                {"Frecuencia Cardiaca Maxima", usuario.getFecCMax()},
-                {"Frecuencia Cardiaca en Reposo", usuario.getFecCReposo()},
+            {"Username", usuario.getUsername()},
+            {"Email", usuario.getEmail()},
+            {"Contrasena", contrasena}, // Masked password
+            {"Fecha de Nacimiento", usuario.getfNacimiento()},
+            {"Nombre", usuario.getNombre()},
+            {"Peso", usuario.getPeso()},
+            {"Altura", usuario.getAltura()},
+            {"Frecuencia Cardiaca Maxima", usuario.getFecCMax()},
+            {"Frecuencia Cardiaca en Reposo", usuario.getFecCReposo()},
         };
 
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Todas las celdas no son editables
+                return false; // All cells are non-editable
             }
         };
 
         JButton modButton = new JButton("Modificar Usuario");
         modButton.setBackground(ORANGE_ACCENT);
         modButton.setForeground(Color.WHITE);
-        
+
         JPanel buttonPanel = new JPanel();
         buttonPanel.add(modButton);
+
         modButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new GridLayout(5, 2));
+            JPanel panel = new JPanel(new GridLayout(7, 2)); // Adjusted for additional row
             JTextField usernameField = new JTextField(usuario.getUsername());
             JTextField emailField = new JTextField(usuario.getEmail());
+            JPasswordField contraField = new JPasswordField(usuario.getContrasena()); // Show actual password
             JTextField nameField = new JTextField(usuario.getNombre());
             JTextField weightField = new JTextField(String.valueOf(usuario.getPeso()));
             JTextField heightField = new JTextField(String.valueOf(usuario.getAltura()));
+
+            // Add JDateChooser for Fecha de Nacimiento
+            JLabel dobLabel = new JLabel("Fecha de Nacimiento:");
+            com.toedter.calendar.JDateChooser dateChooser = new com.toedter.calendar.JDateChooser();
+            dateChooser.setDate(usuario.getfNacimiento());
+            dateChooser.setDateFormatString("yyyy-MM-dd");
 
             panel.add(new JLabel("Username:"));
             panel.add(usernameField);
             panel.add(new JLabel("Email:"));
             panel.add(emailField);
+            panel.add(new JLabel("Contrasena:"));
+            panel.add(contraField);
             panel.add(new JLabel("Name:"));
             panel.add(nameField);
+            panel.add(dobLabel);
+            panel.add(dateChooser); // Add the JDateChooser to the panel
             panel.add(new JLabel("Weight (kg):"));
             panel.add(weightField);
             panel.add(new JLabel("Height (cm):"));
             panel.add(heightField);
 
-            int option = JOptionPane.showConfirmDialog(this, panel, "Modificar Usuario", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(
+                profilePanel,
+                panel,
+                "Modificar Usuario",
+                JOptionPane.OK_CANCEL_OPTION,
+                JOptionPane.PLAIN_MESSAGE
+            );
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
@@ -317,36 +342,49 @@ class MainAppGUI extends JFrame {
                     usuario.setPeso(Float.parseFloat(weightField.getText()));
                     usuario.setAltura(Float.parseFloat(heightField.getText()));
 
+                    // Update the password
+                    char[] passwordChars = contraField.getPassword();
+                    usuario.setContrasena(new String(passwordChars));
+
+                    // Update Fecha de Nacimiento
+                    java.util.Date selectedDate = dateChooser.getDate();
+                    if (selectedDate != null) {
+                        usuario.setfNacimiento(new java.sql.Date(selectedDate.getTime()));
+                    }
+
                     facade.actualizarUsuario(usuario);
 
+                    // Update values in the table (masked password)
                     tableModel.setValueAt(usuario.getUsername(), 0, 1);
                     tableModel.setValueAt(usuario.getEmail(), 1, 1);
-                    tableModel.setValueAt(usuario.getNombre(), 2, 1);
-                    tableModel.setValueAt(usuario.getPeso(), 3, 1);
-                    tableModel.setValueAt(usuario.getAltura(), 4, 1);
+                    tableModel.setValueAt("*".repeat(usuario.getContrasena().length()), 2, 1); // Masked password
+                    tableModel.setValueAt(usuario.getfNacimiento(), 3, 1);
+                    tableModel.setValueAt(usuario.getNombre(), 4, 1);
+                    tableModel.setValueAt(usuario.getPeso(), 5, 1);
+                    tableModel.setValueAt(usuario.getAltura(), 6, 1);
 
-                    JOptionPane.showMessageDialog(this, "Usuario actualizado con éxito.");
+                    JOptionPane.showMessageDialog(profilePanel, "Usuario actualizado con éxito.");
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al actualizar usuario: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(profilePanel, "Error al actualizar usuario: " + ex.getMessage());
                     ex.printStackTrace();
                 }
             }
         });
-        
-        
+
         JTable profileTable = new JTable(tableModel);
-        profileTable.setFocusable(false); // Deshabilitar el foco en las celdas
-        profileTable.setRowSelectionAllowed(false); // Deshabilitar selección de filas
- 
+        profileTable.setFocusable(false); // Disable focus on cells
+        profileTable.setRowSelectionAllowed(false); // Disable row selection
+
         profilePanel.add(new JScrollPane(profileTable), BorderLayout.CENTER);
         JTableHeader header = profileTable.getTableHeader();
         profilePanel.add(buttonPanel, BorderLayout.SOUTH);
-        
+
         header.setBackground(ORANGE_ACCENT);
         header.setForeground(Color.WHITE);
 
         return profilePanel;
     }
+
 
     private JPanel createTrainPanel() {
         JPanel trainPanel = new JPanel(new BorderLayout());
@@ -558,7 +596,6 @@ class MainAppGUI extends JFrame {
         return trainPanel;
     }
 
-    
     
     private JPanel createRetoPanel() {
         JPanel retoPanel = new JPanel(new BorderLayout());
@@ -801,7 +838,6 @@ class MainAppGUI extends JFrame {
         return retoPanel;
     }
 
-    
     
     private JPanel createTabPanel(String content) {
         JPanel tabPanel = new JPanel();

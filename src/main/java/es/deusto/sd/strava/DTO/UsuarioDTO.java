@@ -21,7 +21,7 @@ public class UsuarioDTO implements Serializable{
     private String nombre;
     private float peso;
     private float altura;
-    private LocalDate fNacimiento;
+    private java.util.Date fNacimiento;
     private float fecCMax;
     private float fecCReposo;
     private String token;
@@ -114,11 +114,11 @@ public class UsuarioDTO implements Serializable{
 		this.altura = altura;
 	}
 
-	public LocalDate getfNacimiento() {
+	public java.util.Date getfNacimiento() {
 		return fNacimiento;
 	}
 
-	public void setfNacimiento(LocalDate fNacimiento) {
+	public void setfNacimiento(java.util.Date fNacimiento) {
 		this.fNacimiento = fNacimiento;
 	}
 
