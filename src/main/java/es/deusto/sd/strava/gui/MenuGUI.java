@@ -285,7 +285,7 @@ class MainAppGUI extends JFrame {
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // All cells are non-editable
+                return false; //All cells are non-editable
             }
         };
 
@@ -297,15 +297,14 @@ class MainAppGUI extends JFrame {
         buttonPanel.add(modButton);
 
         modButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new GridLayout(7, 2)); // Adjusted for additional row
+            JPanel panel = new JPanel(new GridLayout(7, 2));
             JTextField usernameField = new JTextField(usuario.getUsername());
             JTextField emailField = new JTextField(usuario.getEmail());
-            JPasswordField contraField = new JPasswordField(usuario.getContrasena()); // Show actual password
+            JPasswordField contraField = new JPasswordField(usuario.getContrasena());
             JTextField nameField = new JTextField(usuario.getNombre());
             JTextField weightField = new JTextField(String.valueOf(usuario.getPeso()));
             JTextField heightField = new JTextField(String.valueOf(usuario.getAltura()));
 
-            // Add JDateChooser for Fecha de Nacimiento
             JLabel dobLabel = new JLabel("Fecha de Nacimiento:");
             com.toedter.calendar.JDateChooser dateChooser = new com.toedter.calendar.JDateChooser();
             dateChooser.setDate(usuario.getfNacimiento());
@@ -320,7 +319,7 @@ class MainAppGUI extends JFrame {
             panel.add(new JLabel("Name:"));
             panel.add(nameField);
             panel.add(dobLabel);
-            panel.add(dateChooser); // Add the JDateChooser to the panel
+            panel.add(dateChooser);
             panel.add(new JLabel("Weight (kg):"));
             panel.add(weightField);
             panel.add(new JLabel("Height (cm):"));
@@ -342,7 +341,6 @@ class MainAppGUI extends JFrame {
                     usuario.setPeso(Float.parseFloat(weightField.getText()));
                     usuario.setAltura(Float.parseFloat(heightField.getText()));
 
-                    // Update the password
                     char[] passwordChars = contraField.getPassword();
                     usuario.setContrasena(new String(passwordChars));
 
@@ -357,7 +355,7 @@ class MainAppGUI extends JFrame {
                     // Update values in the table (masked password)
                     tableModel.setValueAt(usuario.getUsername(), 0, 1);
                     tableModel.setValueAt(usuario.getEmail(), 1, 1);
-                    tableModel.setValueAt("*".repeat(usuario.getContrasena().length()), 2, 1); // Masked password
+                    tableModel.setValueAt("*".repeat(usuario.getContrasena().length()), 2, 1);
                     tableModel.setValueAt(usuario.getfNacimiento(), 3, 1);
                     tableModel.setValueAt(usuario.getNombre(), 4, 1);
                     tableModel.setValueAt(usuario.getPeso(), 5, 1);
