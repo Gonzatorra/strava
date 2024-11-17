@@ -13,7 +13,7 @@ import es.deusto.sd.strava.dominio.Usuario;
 public class UsuarioDTO implements Serializable{
 	private static final long serialVersionUID = 1L;
 
-    // Atributos
+    //atributos
 	private int id;
     private String username;
     private String email;
@@ -29,7 +29,7 @@ public class UsuarioDTO implements Serializable{
     private HashMap<Reto, String> retos;
 
     
-    // Constructores
+    //constructores
     public UsuarioDTO(Usuario usuario) {
         this.id = usuario.getId();
         this.username = usuario.getUsername();
@@ -57,7 +57,7 @@ public class UsuarioDTO implements Serializable{
 
 
 
-	//Getters - Setters
+	//getters - setters
 	public int getId() {
 		return id;
 	}

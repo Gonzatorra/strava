@@ -11,7 +11,7 @@ public class GestionAutentificacion {
     private IRemoteFacade facade;
 
     public GestionAutentificacion() throws RemoteException {
-        this.facade = new RemoteFacade();  // Creamos la fachada
+        this.facade = new RemoteFacade();  //crear fachada
     }
 
     public void registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {

@@ -9,7 +9,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class RetoDTO implements Serializable{
-    // Atributos
+    //atributos
     private int id;
     private String deporte;
     private Usuario usuarioCreador;
@@ -20,7 +20,7 @@ public class RetoDTO implements Serializable{
     private float objetivoTiempo;
     private List<Usuario> participantes;
 
-    // Constructor
+    //constructor
     public RetoDTO(Reto reto) {
         this.id = reto.getId();
         this.deporte = reto.getDeporte();
@@ -33,7 +33,7 @@ public class RetoDTO implements Serializable{
         this.participantes = reto.getParticipantes();
     }
 
-    // Getters
+    //getters
     public int getId() {
         return id;
     }
@@ -70,7 +70,7 @@ public class RetoDTO implements Serializable{
         return participantes;
     }
 
-    // Setters
+    //setters
     public void setId(int id) {
         this.id = id;
     }

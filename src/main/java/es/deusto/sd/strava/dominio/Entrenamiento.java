@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Entrenamiento implements Serializable{
-    // Atributos
+    //atributos
     private int id;
     private Usuario usuario;
     private String titulo;
@@ -14,7 +14,7 @@ public class Entrenamiento implements Serializable{
     private float horaIni;
     private double duracion;
 
-    // Constructores
+    //constructores
     public Entrenamiento(int id, Usuario usuario, String titulo, String deporte, double distancia, 
                           LocalDateTime fecIni, float horaIni, double duracion) {
         this.id = id;
@@ -29,7 +29,7 @@ public class Entrenamiento implements Serializable{
     
     
 
-    // Getters - Setters
+    //getters - setters
     public int getId() {
         return id;
     }
@@ -94,7 +94,7 @@ public class Entrenamiento implements Serializable{
         this.duracion = duracion;
     }
 
-    // Métodos
+    //metodos
     public void actualizarEntreno(Entrenamiento entreno, double distancia, double fechaIni,
                                   float horaInicio, double duracion) {
         System.out.println("Se actualiza el entrenamiento");
@@ -106,6 +106,6 @@ public class Entrenamiento implements Serializable{
 
     public void eliminarEntreno(Entrenamiento entreno) {
         System.out.println("Se elimina el entrenamiento");
-        // Si estuviera en una lista o colección, eliminaría el objeto aquí.
+        //si estuviera en una lista o colección, eliminaría el objeto aquí.
     }
 }

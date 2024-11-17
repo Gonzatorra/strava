@@ -15,20 +15,21 @@ public class Servidor {
     private IRemoteFacade facade;
 
     public Servidor() throws RemoteException {
-        this.facade = new RemoteFacade();  // Creamos la fachada
+        this.facade = new RemoteFacade();  //creamos fachada
     }
 
+    //usuario
     public void procesarRegistro(String username, String contrasena, String email, String nombre) throws RemoteException {
-        // Lógica para procesar el registro en el servidor
+        //registro en servidor
         facade.registrarUsuario(username, contrasena, email, nombre);
     }
 
     public void procesarLogin(String email, String contrasena) throws RemoteException {
-        // Lógica para procesar el login en el servidor
+        //login en servidor
         facade.login(email, contrasena);
     }
     
-    //Entrenamientos
+    //entrenamientos
     public void procesarCrearEntrenamiento(Usuario usuario, String titulo, String deporte, double distancia,
     		LocalDateTime fechaIni, float horaInicio, double duracion) throws RemoteException {
     	facade.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
@@ -43,7 +44,7 @@ public class Servidor {
     	facade.eliminarEntreno(entrenamiento);
     }
     
-    // Retos
+    //retos
     public void procesarCrearReto(RetoDTO reto) throws RemoteException {
         facade.crearReto(
             reto.getNombre(),

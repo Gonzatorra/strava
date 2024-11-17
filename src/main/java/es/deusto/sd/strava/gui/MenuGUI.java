@@ -44,17 +44,17 @@ public class MenuGUI extends JFrame {
 
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel(new GridBagLayout());
-        loginPanel.setBackground(Color.WHITE); // Fondo blanco para el login
+        loginPanel.setBackground(Color.WHITE); 
         GridBagConstraints gbc = new GridBagConstraints();
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
         JLabel usernameLabel = createStyledLabel("Username:");
         JTextField usernameField = new JTextField(15);
-        usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
         JLabel passwordLabel = createStyledLabel("Password:");
         JPasswordField passwordField = new JPasswordField(15);
-        passwordField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        passwordField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1)); 
 
         JButton loginButton = createStyledButton("Login");
 
@@ -110,16 +110,16 @@ public class MenuGUI extends JFrame {
 
         JLabel usernameLabel = createStyledLabel("Username:");
         JTextField usernameField = new JTextField(15);
-        usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
         JLabel passwordLabel = createStyledLabel("Password:");
         JPasswordField passwordField = new JPasswordField(15);
-        passwordField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        passwordField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1)); 
         JLabel emailLabel = createStyledLabel("Email:");
         JTextField emailField = new JTextField(15);
-        emailField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        emailField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
         JLabel nameLabel = createStyledLabel("Name:");
         JTextField nameField = new JTextField(15);
-        nameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  // Borde de color naranja
+        nameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
 
         JButton registerButton = createStyledButton("Registrar");
 
@@ -192,7 +192,7 @@ public class MenuGUI extends JFrame {
         button.setForeground(Color.WHITE);
         button.setFocusPainted(false);
         button.setFont(new Font("Arial", Font.BOLD, 12));
-        button.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 2));  // Borde de color naranja
+        button.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 2));
         return button;
     }
 
@@ -206,7 +206,7 @@ public class MenuGUI extends JFrame {
     }
 }
 
-// Nueva clase para la ventana principal después del login
+//nueva clase para la ventana principal después del login
 class MainAppGUI extends JFrame {
     private static final Color ORANGE_ACCENT = new Color(255, 87, 34);
     private UsuarioDTO usuario;
@@ -235,7 +235,7 @@ class MainAppGUI extends JFrame {
 
         add(tabbedPane);
 
-        // Añadiendo el listener para el cierre de ventana
+        //listener para el cierre de ventana
         addWindowListener(new WindowAdapter() {
             @Override
             public void windowClosing(WindowEvent e) {
@@ -267,13 +267,13 @@ class MainAppGUI extends JFrame {
         JPanel profilePanel = new JPanel(new BorderLayout());
         String[] columnNames = {"Atributo", "Valor"};
         
-        // Mask the password with asterisks
+        
         String contrasena = "*".repeat(usuario.getContrasena().length());
         
         Object[][] data = {
             {"Username", usuario.getUsername()},
             {"Email", usuario.getEmail()},
-            {"Contrasena", contrasena}, // Masked password
+            {"Contrasena", contrasena}, 
             {"Fecha de Nacimiento", usuario.getfNacimiento()},
             {"Nombre", usuario.getNombre()},
             {"Peso", usuario.getPeso()},
@@ -285,7 +285,7 @@ class MainAppGUI extends JFrame {
         DefaultTableModel tableModel = new DefaultTableModel(data, columnNames) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; //All cells are non-editable
+                return false; 
             }
         };
 
@@ -342,9 +342,9 @@ class MainAppGUI extends JFrame {
                     usuario.setAltura(Float.parseFloat(heightField.getText()));
 
                     char[] passwordChars = contraField.getPassword();
-                    usuario.setContrasena(new String(passwordChars));//no funciona????
+                    usuario.setContrasena(new String(passwordChars));
 
-                    // Update Fecha de Nacimiento
+                    
                     java.util.Date selectedDate = dateChooser.getDate();
                     if (selectedDate != null) {
                         usuario.setfNacimiento(new java.sql.Date(selectedDate.getTime()));
@@ -352,7 +352,7 @@ class MainAppGUI extends JFrame {
 
                     facade.actualizarUsuario(usuario);
 
-                    // Update values in the table (masked password)
+                    
                     tableModel.setValueAt(usuario.getUsername(), 0, 1);
                     tableModel.setValueAt(usuario.getEmail(), 1, 1);
                     tableModel.setValueAt("*".repeat(usuario.getContrasena().length()), 2, 1);
@@ -370,8 +370,8 @@ class MainAppGUI extends JFrame {
         });
 
         JTable profileTable = new JTable(tableModel);
-        profileTable.setFocusable(false); // Disable focus on cells
-        profileTable.setRowSelectionAllowed(false); // Disable row selection
+        profileTable.setFocusable(false);
+        profileTable.setRowSelectionAllowed(false);
 
         profilePanel.add(new JScrollPane(profileTable), BorderLayout.CENTER);
         JTableHeader header = profileTable.getTableHeader();
@@ -391,20 +391,20 @@ class MainAppGUI extends JFrame {
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Todas las celdas no son editables
+                return false;
             }
         };
         
         
-        //DefaultTableModel model = new DefaultTableModel(columnNames, 0);
+       
         JTable trainTable = new JTable(tableModel);
-        trainTable.setFocusable(false); // Deshabilitar el foco en las celdas
+        trainTable.setFocusable(false); 
         JTableHeader header = trainTable.getTableHeader();
         header.setBackground(ORANGE_ACCENT);
         header.setForeground(Color.WHITE);
         trainPanel.add(new JScrollPane(trainTable), BorderLayout.CENTER);
 
-        // Botón para agregar entrenamiento
+       
         JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton("Añadir Entrenamiento");
         JButton modButton = new JButton("Modificar Entrenamiento");
@@ -602,18 +602,18 @@ class MainAppGUI extends JFrame {
         DefaultTableModel retoModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; // Todas las celdas no son editables
+                return false; 
             }
         };
 
         JTable retoTable = new JTable(retoModel);
-        retoTable.setFocusable(false); // Deshabilitar el foco en las celdas
+        retoTable.setFocusable(false); 
         JTableHeader header = retoTable.getTableHeader();
         header.setBackground(ORANGE_ACCENT);
         header.setForeground(Color.WHITE);
         retoPanel.add(new JScrollPane(retoTable), BorderLayout.CENTER);
 
-        // Botón para agregar entrenamiento
+        
         JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton("Añadir Reto");
         JButton modButton = new JButton("Modificar Reto");
@@ -627,7 +627,7 @@ class MainAppGUI extends JFrame {
         delButton.setBackground(ORANGE_ACCENT);
         delButton.setForeground(Color.WHITE);
         buttonPanel.add(delButton);
-        retoPanel.add(buttonPanel, BorderLayout.SOUTH); // Solo se agrega una vez
+        retoPanel.add(buttonPanel, BorderLayout.SOUTH); 
 
         modButton.addActionListener(e -> {
             int selectedRow = retoTable.getSelectedRow();
@@ -636,15 +636,15 @@ class MainAppGUI extends JFrame {
                 return;
             }
 
-            // Create the input form panel
+         
             JPanel panel = new JPanel(new GridLayout(7, 2));
-            JTextField titleField = new JTextField((String) retoModel.getValueAt(selectedRow, 0)); // Name
-            JTextField sportField = new JTextField((String) retoModel.getValueAt(selectedRow, 1)); // Sport
-            JTextField creatorField = new JTextField(usuario.getNombre()); // Creator name
-            JTextField startDateField = new JTextField(retoModel.getValueAt(selectedRow, 3).toString()); // Start Date
-            JTextField endDateField = new JTextField(retoModel.getValueAt(selectedRow, 4).toString()); // End Date
-            JTextField distanceField = new JTextField(retoModel.getValueAt(selectedRow, 5).toString()); // Objective Distance
-            JTextField timeField = new JTextField(retoModel.getValueAt(selectedRow, 6).toString()); // Objective Time
+            JTextField titleField = new JTextField((String) retoModel.getValueAt(selectedRow, 0));
+            JTextField sportField = new JTextField((String) retoModel.getValueAt(selectedRow, 1));
+            JTextField creatorField = new JTextField(usuario.getNombre()); 
+            JTextField startDateField = new JTextField(retoModel.getValueAt(selectedRow, 3).toString());
+            JTextField endDateField = new JTextField(retoModel.getValueAt(selectedRow, 4).toString());
+            JTextField distanceField = new JTextField(retoModel.getValueAt(selectedRow, 5).toString()); 
+            JTextField timeField = new JTextField(retoModel.getValueAt(selectedRow, 6).toString()); 
 
             panel.add(new JLabel("Nombre:"));
             panel.add(titleField);
@@ -725,12 +725,12 @@ class MainAppGUI extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String nombre = (String) retoModel.getValueAt(selectedRow, 0);  // Reto name
-                    String deporte = (String) retoModel.getValueAt(selectedRow, 1);  // Sport
-                    LocalDateTime fecIni = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 3), formatter); // Start Date
-                    LocalDateTime fecFin = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 4), formatter); // End Date
-                    float objetivoDistancia = Float.parseFloat(retoModel.getValueAt(selectedRow, 5).toString()); // Objective Distance
-                    float objetivoTiempo = Float.parseFloat(retoModel.getValueAt(selectedRow, 6).toString()); // Objective Time
+                    String nombre = (String) retoModel.getValueAt(selectedRow, 0); 
+                    String deporte = (String) retoModel.getValueAt(selectedRow, 1);
+                    LocalDateTime fecIni = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 3), formatter); 
+                    LocalDateTime fecFin = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 4), formatter); 
+                    float objetivoDistancia = Float.parseFloat(retoModel.getValueAt(selectedRow, 5).toString());
+                    float objetivoTiempo = Float.parseFloat(retoModel.getValueAt(selectedRow, 6).toString());
 
                     Reto reto = new Reto(
                         selectedRow,
@@ -756,7 +756,7 @@ class MainAppGUI extends JFrame {
             }
         });
 
-        // Acción al hacer clic en el botón de añadir
+
         addButton.addActionListener(e -> {
             JPanel panel = new JPanel(new GridLayout(7, 2));
 
@@ -801,7 +801,7 @@ class MainAppGUI extends JFrame {
                     float objTiempo = Float.parseFloat(objTempField.getText());
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-                    // Use facade to add Reto
+                   
                     facade.crearReto(
                         title,
                         fecIni,
@@ -813,13 +813,13 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
-                    // Add to table using formatted LocalDateTime
+                  
                     retoModel.addRow(new Object[]{
                         title,
                         sport,
                         usuario.getNombre(),
-                        fecIni.format(formatter),  // Format LocalDateTime as String
-                        fecFin.format(formatter),  // Format LocalDateTime as String
+                        fecIni.format(formatter),  
+                        fecFin.format(formatter), 
                         objDistancia,
                         objTiempo
                     });

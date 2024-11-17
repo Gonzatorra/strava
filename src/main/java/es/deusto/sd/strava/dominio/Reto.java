@@ -8,7 +8,7 @@ import java.util.List;
 import es.deusto.sd.strava.DTO.RetoDTO;
 
 public class Reto implements Serializable{
-	//Atributos
+	//atributos
     private int id;
     private String deporte;
     private Usuario usuarioCreador;
@@ -19,9 +19,9 @@ public class Reto implements Serializable{
     private float objetivoTiempo;
     private List<Usuario> participantes;
 
-    // Constructores
+    //constructores
     public Reto() {
-        // Constructor vacío
+        //constructor vacío
     }
 
     public Reto(int id, String deporte, Usuario usuarioCreador, String nombre, LocalDateTime fecIni, LocalDateTime fecFin,
@@ -37,7 +37,7 @@ public class Reto implements Serializable{
         this.participantes = participantes;
     }
 
-    // Getters y Setters
+    //getters y setters
     public int getId() {
         return id;
     }
@@ -110,7 +110,7 @@ public class Reto implements Serializable{
         this.participantes = participantes;
     }
 
-    // Métodos
+    //metodos
     public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
             String deporte, Usuario usuarioCreador, List<Usuario> participantes) {
     	this.nombre = nombre;
@@ -143,10 +143,10 @@ public class Reto implements Serializable{
                 + "participante. Si es creador, se elimina todo el reto");
         
         if (usuario.equals(reto.getUsuarioCreador())) {
-            // Eliminar el reto completo
+            //eliminar reto completo
             System.out.println("El creador elimina el reto.");
         } else {
-            // Eliminar al participante de la lista
+            //eliminar al participante de la lista
             reto.getParticipantes().remove(usuario);
             System.out.println("El usuario se elimina del reto.");
         }

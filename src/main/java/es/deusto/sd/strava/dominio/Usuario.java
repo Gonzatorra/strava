@@ -27,13 +27,13 @@ public class Usuario implements Serializable{
     
 	
 	
-	//Constructores
+	//constructores
 	public Usuario() {
 		super();
 		// TODO Auto-generated constructor stub
 	}
 	
-	//Sin valores opcionales
+	//sin valores opcionales
 	public Usuario(int id, String username, String email, String contrasena,
 			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos) {
@@ -70,7 +70,7 @@ public class Usuario implements Serializable{
 		
 	}
 	
-	//Getters - Setters
+	//getters - setters
 	public int getId() {
 		return id;
 	}
@@ -177,7 +177,7 @@ public class Usuario implements Serializable{
 	}
 
 	
-	//Metodos
+	//metodos
     public void agregarEntrenamiento(Entrenamiento entrenamiento) {
         this.entrenamientos.add(entrenamiento);
     }

@@ -26,34 +26,34 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     public RemoteFacade() throws RemoteException {
         super();
-        this.usuarioService = new UsuarioService();  // Crear una instancia del servicio
+        this.usuarioService = new UsuarioService();  //crear instancia del servicio
         this.entrenamientoService = new EntrenamientoService();
         this.retoService = new RetoService();
     }
 
     @Override
     public UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {
-        // Llamada al servicio para registrar un usuario y devolver un DTO
+        
         return usuarioService.registrar(username, contrasena, email, nombre);
     }
 
     @Override
     public UsuarioDTO login(String username, String contrasena) throws RemoteException {
-        // Llamada al servicio para login y retorno del DTO
+        
         return usuarioService.login(username, contrasena);
        
     }
 
     @Override
     public void logout(String token) throws RemoteException {
-        // Llamada al servicio para hacer logout
+        
         usuarioService.logout(token);
     }
 
     @Override
     public void eliminarUsuario(int userId) throws RemoteException {
-        // Llamada al servicio para eliminar un usuario
-        Usuario usuario = new Usuario();  // Crear un objeto de usuario (si es necesario)
+        
+        Usuario usuario = new Usuario();  
         usuario.setId(userId);
         usuarioService.eliminarUsuario(usuario);
     }

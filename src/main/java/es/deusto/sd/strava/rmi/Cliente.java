@@ -19,7 +19,7 @@ public class Cliente {
         try {
             IRemoteFacade facade = (IRemoteFacade) Naming.lookup("rmi://localhost/RemoteFacade");
 
-            // Usamos la fachada a través de RMI
+            //usamos fachada a través de RMI
             UsuarioDTO usuario = facade.registrarUsuario("juan", "1234", "juan@mail.com", "Juan Pérez");
             Usuario user = new Usuario(0, "juan", "juan@mail.com", "1234", "Juan Pérez", null, null, null); //creo esto para hacer el entrenamiento
             
@@ -32,7 +32,7 @@ public class Cliente {
             facade.actualizarUsuario(usuario2);
             System.out.println("Usuario actualizado: " + usuario.getEmail());
             
-            //Entrenamiento
+            //entrenamiento
             Entrenamiento entreno = new Entrenamiento(0, user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
             facade.crearEntreno(user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
             System.out.println("Entreno creado con éxito: " + entreno.getTitulo());
@@ -47,7 +47,7 @@ public class Cliente {
             facade.eliminarEntreno(entrenamientoDTO.toDomain());
             System.out.println("Entrenamiento eliminado con éxito.\n");
             
-            //Reto
+            //reto
             List<Usuario> participantes = new ArrayList<>();
             participantes.add(user);
             

@@ -14,19 +14,20 @@ import java.util.ArrayList;
 import java.util.List;
 
 public interface IRemoteFacade extends Remote {
+	//usuario
     UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException;
     UsuarioDTO login(String email, String contrasena) throws RemoteException;
     void logout(String token) throws RemoteException;
     void eliminarUsuario(int userId) throws RemoteException;
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
     
-    //Para entrenamiento
+    //entrenamiento
     void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
     void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
     void eliminarEntreno(Entrenamiento entrenamiento) throws java.rmi.RemoteException;
     void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     
-    //Para Reto
+    //reto
     void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
     void aceptarReto(Usuario usuario, Reto reto) throws RemoteException;
     void visualizarReto(RetoDTO retoDTO, String estado) throws RemoteException;

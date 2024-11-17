@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class EntrenamientoDTO implements Serializable{
-    // Atributos
+    //atributos
     private int id;
     private Usuario usuario;
     private String titulo;
@@ -17,7 +17,7 @@ public class EntrenamientoDTO implements Serializable{
     private float horaIni;
     private double duracion;
 
-    // Constructor
+    //constructor
     public EntrenamientoDTO(Entrenamiento entenamiento) {
         this.id = entenamiento.getId();
         this.usuario = entenamiento.getUsuario();
@@ -30,7 +30,7 @@ public class EntrenamientoDTO implements Serializable{
         
     }
 
-    // Getters
+    //getters
     public int getId() {
         return id;
     }
@@ -63,7 +63,7 @@ public class EntrenamientoDTO implements Serializable{
         return duracion;
     }
 
-    // Setters
+    //setters
     public void setId(int id) {
         this.id = id;
     }
