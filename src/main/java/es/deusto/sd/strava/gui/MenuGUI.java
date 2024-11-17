@@ -342,7 +342,7 @@ class MainAppGUI extends JFrame {
                     usuario.setAltura(Float.parseFloat(heightField.getText()));
 
                     char[] passwordChars = contraField.getPassword();
-                    usuario.setContrasena(new String(passwordChars));
+                    usuario.setContrasena(new String(passwordChars));//no funciona????
 
                     // Update Fecha de Nacimiento
                     java.util.Date selectedDate = dateChooser.getDate();
