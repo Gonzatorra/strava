@@ -12,6 +12,7 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -109,14 +110,14 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni,
+	public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
 			float horaInicio, double duracion) throws RemoteException {
 		entrenamientoService.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
 		
 	}
 
 	@Override
-	public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni,
+	public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni,
 			float horaInicio, double duracion) throws RemoteException {
 		entrenamientoService.actualizarEntreno(entrenamiento, distancia, fechaIni, horaInicio, duracion);
 		

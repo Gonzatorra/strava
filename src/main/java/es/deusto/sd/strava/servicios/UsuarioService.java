@@ -14,35 +14,30 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class UsuarioService {
 
-    private static HashMap<Integer, Usuario> usuarios = new HashMap<>(); // Uso de HashMap para acceso mas eficiente
-    private static int idCounter = 1;  // Para asignar IDs unicos
+    private static HashMap<Integer, Usuario> usuarios = new HashMap<>(); 
+    private static int idCounter = 1;  //para signar IDs unicos
 
     public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
-        // Generamos un nuevo id para el usuario
+        
         int nuevoId = idCounter++;
         
-        // Crear el objeto Usuario
         Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>());
            
-        
-        // Guardar el usuario
         usuarios.put(usuario.getId(), usuario);
         System.out.println("Usuario registrado");
 
-        // Convertimos a UsuarioDTO para devolverlo
-        return new UsuarioDTO(usuario);  // Retornamos el DTO del usuario recién registrado
+        return new UsuarioDTO(usuario);
     }
 
-    public UsuarioDTO login(String email, String contrasena) {
+    public UsuarioDTO login(String username, String contrasena) {
     	try {
 	    	
 	        for (Usuario usuario : usuarios.values()) {
 	      
-	            if (usuario.getEmail().equals(email) && usuario.getContrasena().equals(contrasena)) {
+	            if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
 	                //usuario.setToken(generateToken());
 	                System.out.println("Login exitoso");
 	
-	                // Convertimos a UsuarioDTO para devolverlo
 	                return new UsuarioDTO(usuario);
 	            }
 	        }
@@ -67,7 +62,7 @@ public class UsuarioService {
     }
 
     private String generateToken() {
-        return "token-" + System.currentTimeMillis();  // Generación más dinámica de un token
+        return "token-" + System.currentTimeMillis(); 
     }
 
     public void eliminarUsuario(Usuario usuario) {
@@ -82,11 +77,20 @@ public class UsuarioService {
         if (usuario != null) {
         	usuario.setUsername(usuarioDTO.getUsername());
         	usuario.setEmail(usuarioDTO.getEmail());
-        	usuario.setContrasena(usuario.getContrasena());
+        	usuario.setContrasena(usuarioDTO.getContrasena());
         	usuario.setNombre(usuarioDTO.getNombre());
         	usuario.setPeso(usuarioDTO.getPeso());
         	usuario.setAltura(usuarioDTO.getAltura());
+        	usuario.setfNacimiento(usuarioDTO.getfNacimiento());
+        	
+        	
+        	usuario.setEntrenamientos(usuarioDTO.getEntrenamientos());
+        	usuario.setRetos(usuarioDTO.getRetos());
+        	usuarios.put(usuarioDTO.getId(), usuario);
+        	System.out.println(usuario.getUsername()+usuario.getContrasena()+usuario.getEntrenamientos());
         }
+        
+        
         
     }
 

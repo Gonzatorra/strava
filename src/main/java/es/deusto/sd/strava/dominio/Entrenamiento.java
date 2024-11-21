@@ -1,7 +1,7 @@
 package es.deusto.sd.strava.dominio;
 
 import java.io.Serializable;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public class Entrenamiento implements Serializable{
     //atributos   
@@ -11,13 +11,13 @@ public class Entrenamiento implements Serializable{
     private String titulo;
     private String deporte;
     private double distancia;
-    private LocalDateTime fecIni;
+    private LocalDate fecIni;
     private float horaIni;
     private double duracion;
 
     //constructores
     public Entrenamiento(int id, Usuario usuario, String titulo, String deporte, double distancia, 
-                          LocalDateTime fecIni, float horaIni, double duracion) {
+                          LocalDate fecIni, float horaIni, double duracion) {
         this.id = id;
         this.usuario = usuario;
         this.titulo = titulo;
@@ -71,11 +71,11 @@ public class Entrenamiento implements Serializable{
         this.distancia = distancia;
     }
 
-    public LocalDateTime getFecIni() {
+    public LocalDate getFecIni() {
         return fecIni;
     }
 
-    public void setFecIni(LocalDateTime fecIni) {
+    public void setFecIni(LocalDate fecIni) {
         this.fecIni = fecIni;
     }
 
@@ -100,7 +100,7 @@ public class Entrenamiento implements Serializable{
                                   float horaInicio, double duracion) {
         System.out.println("Se actualiza el entrenamiento");
         entreno.setDistancia((float) distancia);
-        entreno.setFecIni(LocalDateTime.ofEpochSecond((long) fechaIni, 0, java.time.ZoneOffset.UTC));
+        entreno.setFecIni(LocalDate.ofEpochDay((long) fechaIni));
         entreno.setHoraIni(horaInicio);
         entreno.setDuracion(duracion);
     }

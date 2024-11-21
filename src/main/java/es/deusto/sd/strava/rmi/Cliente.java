@@ -9,6 +9,7 @@ import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 
 import java.rmi.Naming;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -33,15 +34,15 @@ public class Cliente {
             System.out.println("Usuario actualizado: " + usuario.getEmail());
             
             //entrenamiento
-            Entrenamiento entreno = new Entrenamiento(0, user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
-            facade.crearEntreno(user, "Behobia 1", "Running", 5.0, LocalDateTime.now(), 6.30f, 30.0);
+            Entrenamiento entreno = new Entrenamiento(0, user, "Behobia 1", "Running", 5.0, LocalDate.now(), 6.30f, 30.0);
+            facade.crearEntreno(user, "Behobia 1", "Running", 5.0, LocalDate.now(), 6.30f, 30.0);
             System.out.println("Entreno creado con éxito: " + entreno.getTitulo());
             
             EntrenamientoDTO entrenamientoDTO = new EntrenamientoDTO(entreno);
             facade.visualizarEntreno(entrenamientoDTO);
             
             entrenamientoDTO.setDistancia(10.0f);
-            facade.actualizarEntreno(entrenamientoDTO.toDomain(), 10.0, LocalDateTime.now(), 7.0f, 45.0);
+            facade.actualizarEntreno(entrenamientoDTO.toDomain(), 10.0, LocalDate.now(), 7.0f, 45.0);
             System.out.println("Entreno actualizado con éxito: " + entrenamientoDTO.getDistancia());
             
             facade.eliminarEntreno(entrenamientoDTO.toDomain());

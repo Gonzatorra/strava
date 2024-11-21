@@ -9,6 +9,7 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +23,8 @@ public interface IRemoteFacade extends Remote {
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
     
     //entrenamiento
-    void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
-    void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
     void eliminarEntreno(Entrenamiento entrenamiento) throws java.rmi.RemoteException;
     void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     

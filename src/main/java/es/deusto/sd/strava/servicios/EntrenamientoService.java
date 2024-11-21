@@ -1,6 +1,8 @@
 package es.deusto.sd.strava.servicios;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
@@ -9,14 +11,16 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class EntrenamientoService {
 
-    public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDateTime fechaIni,
+    public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
                              float horaInicio, double duracion) {
         Entrenamiento entrenamiento = new Entrenamiento(0, usuario, titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
-        
+        ArrayList<Entrenamiento> entrenamientos= usuario.getEntrenamientos();
+        entrenamientos.add(entrenamiento);
+        usuario.setEntrenamientos(entrenamientos);
         System.out.println("Entrenamiento creado: " + entrenamiento.getTitulo());
     }
 
-    public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDateTime fechaIni,
+    public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni,
                                   float horaInicio, double duracion) {
         entrenamiento.setDistancia((float) distancia);
         entrenamiento.setFecIni(fechaIni);

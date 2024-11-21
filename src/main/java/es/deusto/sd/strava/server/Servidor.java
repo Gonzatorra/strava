@@ -1,6 +1,7 @@
 package es.deusto.sd.strava.server;
 
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
@@ -16,6 +17,9 @@ public class Servidor {
 
     public Servidor() throws RemoteException {
         this.facade = new RemoteFacade();  //creamos fachada
+
+        
+        
     }
 
     //usuario
@@ -31,11 +35,11 @@ public class Servidor {
     
     //entrenamientos
     public void procesarCrearEntrenamiento(Usuario usuario, String titulo, String deporte, double distancia,
-    		LocalDateTime fechaIni, float horaInicio, double duracion) throws RemoteException {
+    		LocalDate fechaIni, float horaInicio, double duracion) throws RemoteException {
     	facade.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
     }
 
-    public void procesarActualizarEntrenamiento(Entrenamiento entrenamiento, LocalDateTime distancia, double fechaIni,
+    public void procesarActualizarEntrenamiento(Entrenamiento entrenamiento, LocalDate distancia, double fechaIni,
                  float horaInicio, double duracion) throws RemoteException {
     	facade.actualizarEntreno(entrenamiento, fechaIni, distancia, horaInicio, duracion);
     }

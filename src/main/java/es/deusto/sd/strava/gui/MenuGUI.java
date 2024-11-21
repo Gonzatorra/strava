@@ -11,6 +11,7 @@ import es.deusto.sd.strava.servicios.UsuarioService;
 import java.awt.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
@@ -396,7 +397,23 @@ class MainAppGUI extends JFrame {
             }
         };
         
-        
+        //cargar entrenamientos
+        ArrayList<Entrenamiento> entrenos= usuario.getEntrenamientos();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        for (Entrenamiento e: entrenos) {
+        	int horas = (int) e.getHoraIni(); // Parte entera (horas)
+            int minutos = (int) ((e.getHoraIni() - horas) * 60); // Fracción convertida a minutos
+
+            // Crear un LocalTime
+            LocalTime hora = LocalTime.of(horas, minutos);
+        	tableModel.addRow(new Object[]{
+                    e.getFecIni().toString() + hora.toString(),
+                    e.getTitulo(),
+                    e.getDuracion(),
+                    e.getDistancia(),
+                    e.getDeporte()
+                });
+        }
        
         JTable trainTable = new JTable(tableModel);
         trainTable.setFocusable(false); 
@@ -448,25 +465,32 @@ class MainAppGUI extends JFrame {
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime date = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
-
+                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter2);
+                    
+                    LocalDate fecha = dateTime.toLocalDate();
+                    LocalTime horaLT = dateTime.toLocalTime();
+                    int horas = horaLT.getHour();
+                    int minutos = horaLT.getMinute();
+                    float hora = horas + minutos / 60.0f;
+                    
+                    
                     Entrenamiento entrenamiento = new Entrenamiento(
                         selectedRow,
                         usuario.toDomain(),
                         titleField.getText(),
                         sportField.getText(),
                         Float.parseFloat(distanceField.getText()),
-                        date,
-                        0.0f,
+                        fecha,
+                        hora,
                         Double.parseDouble(durationField.getText())
                     );
 
                     facade.actualizarEntreno(
                         entrenamiento,
                         Float.parseFloat(distanceField.getText()),
-                        date,
-                        0.0f,
+                        fecha,
+                        hora,
                         Double.parseDouble(durationField.getText())
                     );
 
@@ -499,8 +523,15 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime date = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
+                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter2);
+                    
+                    LocalDate fecha = dateTime.toLocalDate();
+                    LocalTime horaLT = dateTime.toLocalTime();
+                    int horas = horaLT.getHour();
+                    int minutos = horaLT.getMinute();
+                    float hora = horas + minutos / 60.0f;
+                    
                     String titulo = (String) tableModel.getValueAt(selectedRow, 1);
                     int duracion = ((Number) tableModel.getValueAt(selectedRow, 2)).intValue();
                     float distancia = ((Number) tableModel.getValueAt(selectedRow, 3)).floatValue();
@@ -512,8 +543,8 @@ class MainAppGUI extends JFrame {
                         titulo,
                         deporte,
                         distancia,
-                        date,
-                        0.0f,
+                        fecha,
+                        hora,
                         duracion
                     );
 
@@ -562,15 +593,20 @@ class MainAppGUI extends JFrame {
                     int duration = Integer.parseInt(durationField.getText());
                     float distance = Float.parseFloat(distanceField.getText());
                     LocalDateTime now = LocalDateTime.now();
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDate fecha = now.toLocalDate();
+                    LocalTime horaLT = now.toLocalTime();
+                    int horas = horaLT.getHour();
+                    int minutos = horaLT.getMinute();
+                    float hora = horas + minutos / 60.0f;
 
                     facade.crearEntreno(
                         usuario.toDomain(),
                         title,
                         sport,
                         distance,
-                        now,
-                        0.0f,
+                        fecha,
+                        hora,
                         duration
                     );
 

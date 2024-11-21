@@ -4,6 +4,7 @@ import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Usuario;
 
 import java.io.Serializable;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class EntrenamientoDTO implements Serializable{
@@ -13,7 +14,7 @@ public class EntrenamientoDTO implements Serializable{
     private String titulo;
     private String deporte;
     private double distancia;
-    private LocalDateTime fecIni; 
+    private LocalDate fecIni; 
     private float horaIni;
     private double duracion;
 
@@ -51,7 +52,7 @@ public class EntrenamientoDTO implements Serializable{
         return distancia;
     }
 
-    public LocalDateTime getFecIni() {
+    public LocalDate getFecIni() {
         return fecIni;
     }
 
@@ -84,7 +85,7 @@ public class EntrenamientoDTO implements Serializable{
         this.distancia = distancia;
     }
 
-    public void setFecIni(LocalDateTime fecIni) {
+    public void setFecIni(LocalDate fecIni) {
         this.fecIni = fecIni;
     }
 

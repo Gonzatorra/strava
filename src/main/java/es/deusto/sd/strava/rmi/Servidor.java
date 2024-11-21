@@ -1,6 +1,7 @@
 package es.deusto.sd.strava.rmi;
 
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.dominio.Usuario;
 import es.deusto.sd.strava.fachada.*;
 
 import java.rmi.Remote;
@@ -8,6 +9,7 @@ import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
+import java.time.LocalDate;
 
 public class Servidor {
 
@@ -16,6 +18,7 @@ public class Servidor {
     public Servidor() {
         try {
             this.facade = new RemoteFacade();
+            
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -49,10 +52,18 @@ public class Servidor {
 
             //registrar stub en registro RMI como "RemoteFacade"
             registry.rebind("RemoteFacade", stub);
-
+            
+            Usuario usuAna= new Usuario();
+            LocalDate fecha = LocalDate.of(2024, 8, 23);
+            UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
+            servidor.facade.crearEntreno(usuario.toDomain(), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            
             System.out.println("Servidor RMI listo y esperando conexiones...");
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        
+        
     }
 }
