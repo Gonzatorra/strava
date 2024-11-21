@@ -4,7 +4,8 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 public class Entrenamiento implements Serializable{
-    //atributos
+    //atributos   
+	
     private int id;
     private Usuario usuario;
     private String titulo;
