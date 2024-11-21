@@ -49,7 +49,7 @@ public class MenuGUI extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel usernameLabel = createStyledLabel("Username:");
+        JLabel usernameLabel = createStyledLabel("Correo: ");
         JTextField usernameField = new JTextField(15);
         usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
         JLabel passwordLabel = createStyledLabel("Password:");
@@ -167,6 +167,7 @@ public class MenuGUI extends JFrame {
                 UsuarioDTO usuario = facade.registrarUsuario(username, password, email, name);
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(this, "Usuario registrado con éxito: " + usuario.getUsername());
+                    
                 } else {
                     JOptionPane.showMessageDialog(this, "Error al registrar el usuario.");
                 }
