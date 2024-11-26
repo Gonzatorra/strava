@@ -296,7 +296,28 @@ class MainAppGUI extends JFrame {
         modButton.setForeground(Color.WHITE);
 
         JPanel buttonPanel = new JPanel();
-        buttonPanel.add(modButton);
+        buttonPanel.add(modButton);        
+        
+        JButton logoutButton = new JButton("Logout");
+        logoutButton.setBackground(ORANGE_ACCENT);
+        logoutButton.setForeground(Color.WHITE);
+
+        logoutButton.addActionListener(e -> {
+            int confirm = JOptionPane.showConfirmDialog(
+                profilePanel,
+                "¿Estás seguro de que quieres cerrar sesión?",
+                "Confirmar Logout",
+                JOptionPane.YES_NO_OPTION,
+                JOptionPane.WARNING_MESSAGE
+            );
+
+            if (confirm == JOptionPane.YES_OPTION) {
+                JOptionPane.showMessageDialog(profilePanel, "Sesión cerrada correctamente.");
+                System.exit(0); 
+            }
+        });
+        buttonPanel.add(logoutButton);
+        
 
         modButton.addActionListener(e -> {
             JPanel panel = new JPanel(new GridLayout(7, 2));
@@ -368,7 +389,9 @@ class MainAppGUI extends JFrame {
                     JOptionPane.showMessageDialog(profilePanel, "Error al actualizar usuario: " + ex.getMessage());
                     ex.printStackTrace();
                 }
+                
             }
+            
         });
 
         JTable profileTable = new JTable(tableModel);
