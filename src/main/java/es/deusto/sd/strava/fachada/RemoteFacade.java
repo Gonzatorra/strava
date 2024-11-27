@@ -66,10 +66,10 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
 
 	@Override
-	public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
+	public Reto crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
 			float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes)
 			throws RemoteException {
-		retoService.crearReto(nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo, deporte, usuarioCreador, participantes);
+		 return retoService.crearReto(nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo, deporte, usuarioCreador, participantes);
 		
 	}
 
@@ -110,9 +110,9 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
+	public Entrenamiento crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
 			float horaInicio, double duracion) throws RemoteException {
-		entrenamientoService.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
+		return entrenamientoService.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
 		
 	}
 

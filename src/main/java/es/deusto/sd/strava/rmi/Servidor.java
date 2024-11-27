@@ -1,6 +1,8 @@
 package es.deusto.sd.strava.rmi;
 
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.dominio.Entrenamiento;
+import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 import es.deusto.sd.strava.fachada.*;
 
@@ -10,6 +12,9 @@ import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 public class Servidor {
 
@@ -53,10 +58,19 @@ public class Servidor {
             //registrar stub en registro RMI como "RemoteFacade"
             registry.rebind("RemoteFacade", stub);
             
-            Usuario usuAna= new Usuario();
+            
             LocalDate fecha = LocalDate.of(2024, 8, 23);
+            LocalDateTime fecha1 = LocalDateTime.now();
+            LocalDateTime fecha2 = LocalDateTime.of(2024, 8, 23, 0, 0);
+            List<Usuario> challengers = new ArrayList<Usuario>();
+            
+            
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
-            servidor.facade.crearEntreno(usuario.toDomain(), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            Entrenamiento entreno= servidor.facade.crearEntreno(usuario.toDomain(), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            challengers.add(usuario.toDomain());
+            Reto reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", usuario.toDomain(), challengers);
+            usuario.getEntrenamientos().add(entreno);
+            usuario.getRetos().put(reto, "prueba");
             
             System.out.println("Servidor RMI listo y esperando conexiones...");
         } catch (Exception e) {

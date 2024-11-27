@@ -23,13 +23,13 @@ public interface IRemoteFacade extends Remote {
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
     
     //entrenamiento
-    void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    Entrenamiento crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
     void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
     void eliminarEntreno(Entrenamiento entrenamiento) throws java.rmi.RemoteException;
     void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     
     //reto
-    void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
+    Reto crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
     void aceptarReto(Usuario usuario, Reto reto) throws RemoteException;
     void visualizarReto(RetoDTO retoDTO, String estado) throws RemoteException;
     void actualizarReto(Reto reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia, float tiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) throws RemoteException;

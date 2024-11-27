@@ -10,11 +10,12 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class RetoService {
 
-    public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
+    public Reto crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
                           String deporte, Usuario usuarioCreador, List<Usuario> participantes) {
         Reto reto = new Reto(0, deporte, usuarioCreador, nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo, participantes);
-        
+        usuarioCreador.getRetos().put(reto, "prueba");
         System.out.println("Reto creado: " + reto.getNombre());
+        return reto;
     }
 
     public void aceptarReto(Usuario usuario, Reto reto) {

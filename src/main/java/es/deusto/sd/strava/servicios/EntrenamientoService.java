@@ -11,13 +11,12 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class EntrenamientoService {
 
-    public void crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
+    public Entrenamiento crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
                              float horaInicio, double duracion) {
         Entrenamiento entrenamiento = new Entrenamiento(0, usuario, titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
-        ArrayList<Entrenamiento> entrenamientos= usuario.getEntrenamientos();
-        entrenamientos.add(entrenamiento);
-        usuario.setEntrenamientos(entrenamientos);
+        usuario.getEntrenamientos().add(entrenamiento);
         System.out.println("Entrenamiento creado: " + entrenamiento.getTitulo());
+        return entrenamiento;
     }
 
     public void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni,

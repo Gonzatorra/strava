@@ -16,6 +16,8 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
@@ -231,7 +233,7 @@ class MainAppGUI extends JFrame {
         JTabbedPane tabbedPane = new JTabbedPane();
 
         tabbedPane.addTab("Mi Perfil", createProfilePanel());
-        tabbedPane.addTab("Mis Entrenamientos", createTrainPanel());
+        tabbedPane.addTab("Entrenamientos", createTrainPanel());
         tabbedPane.addTab("Retos", createRetoPanel());
         tabbedPane.addTab("Amigos", createTabPanel("Contenido de Amigos"));
 
@@ -313,7 +315,9 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 JOptionPane.showMessageDialog(profilePanel, "Sesión cerrada correctamente.");
-                System.exit(0); 
+                dispose();
+                new MenuGUI(facade).setVisible(true);
+                
             }
         });
         buttonPanel.add(logoutButton);
@@ -659,12 +663,31 @@ class MainAppGUI extends JFrame {
         JPanel retoPanel = new JPanel(new BorderLayout());
         String[] columnNames = {"Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
         
+       
+        
         DefaultTableModel retoModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false; 
             }
         };
+        
+        HashMap<Reto, String> retos = usuario.getRetos();
+        for (Reto r : retos.keySet()) { // Iterate through the Reto objects in the HashMap
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Format for date/time
+            retoModel.addRow(new Object[]{
+                r.getNombre(),
+                r.getDeporte(),
+                r.getUsuarioCreador().getUsername(),
+                r.getFecIni().format(formatter), // Assuming fecIni is a LocalDateTime
+                r.getFecFin().format(formatter), // Assuming fecFin is a LocalDateTime
+                r.getObjetivoDistancia(),
+                r.getObjetivoTiempo()
+            });
+        }
+
+        
+        
 
         JTable retoTable = new JTable(retoModel);
         retoTable.setFocusable(false); 
