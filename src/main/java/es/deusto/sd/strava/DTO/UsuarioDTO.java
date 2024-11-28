@@ -30,7 +30,26 @@ public class UsuarioDTO implements Serializable{
 
     
     //constructores
-    public UsuarioDTO() {
+    public UsuarioDTO(Usuario usuario) {
+        this.id = usuario.getId();
+        this.username = usuario.getUsername();
+        this.email = usuario.getEmail();
+        this.contrasena = usuario.getContrasena();
+        this.nombre = usuario.getNombre();
+        this.peso = usuario.getPeso();
+        this.altura = usuario.getAltura();
+        this.fNacimiento = usuario.getfNacimiento();
+        this.fecCMax = usuario.getFecCMax();
+        this.fecCReposo = usuario.getFecCReposo();
+        this.token = usuario.getToken();
+        this.entrenamientos = usuario.getEntrenamientos();
+        this.retos = usuario.getRetos();
+    }
+    
+    
+    
+
+	public UsuarioDTO() {
 		super();
 		// TODO Auto-generated constructor stub
 	}

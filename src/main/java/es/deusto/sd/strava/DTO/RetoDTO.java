@@ -21,14 +21,19 @@ public class RetoDTO implements Serializable{
     private List<Usuario> participantes;
 
     //constructor
-      
-    public RetoDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public RetoDTO(Reto reto) {
+        this.id = reto.getId();
+        this.deporte = reto.getDeporte();
+        this.usuarioCreador = reto.getUsuarioCreador();
+        this.nombre = reto.getNombre();
+        this.fecIni = reto.getFecIni();
+        this.fecFin = reto.getFecFin();
+        this.objetivoDistancia = reto.getObjetivoDistancia();
+        this.objetivoTiempo = reto.getObjetivoTiempo();
+        this.participantes = reto.getParticipantes();
+    }
 
-
-	//getters
+    //getters
     public int getId() {
         return id;
     }
@@ -100,6 +105,11 @@ public class RetoDTO implements Serializable{
 
     public void setParticipantes(List<Usuario> participantes) {
         this.participantes = participantes;
+    }
+    
+    public Reto toDomain() {
+    	Reto reto = new Reto(id, deporte, usuarioCreador, nombre, fecIni, fecFin, (float) objetivoDistancia, 0.0f, participantes);
+    	return reto;
     }
 
 }

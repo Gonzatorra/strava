@@ -19,14 +19,19 @@ public class EntrenamientoDTO implements Serializable{
     private double duracion;
 
     //constructor
-   public EntrenamientoDTO() {
-		super();
-		// TODO Auto-generated constructor stub
-	}
+    public EntrenamientoDTO(Entrenamiento entenamiento) {
+        this.id = entenamiento.getId();
+        this.usuario = entenamiento.getUsuario();
+        this.titulo = entenamiento.getTitulo();
+        this.deporte = entenamiento.getDeporte();
+        this.distancia = entenamiento.getDistancia();
+        this.fecIni = entenamiento.getFecIni();
+        this.horaIni = entenamiento.getHoraIni();
+        this.duracion = entenamiento.getDuracion();
+        
+    }
 
-
-
-	//getters
+    //getters
     public int getId() {
         return id;
     }
@@ -86,13 +91,10 @@ public class EntrenamientoDTO implements Serializable{
 
     public void setHoraIni(float horaIni) {
     }
-
-
-
-	public void setDuracion(double duracion) {
-		this.duracion = duracion;
-	}
     
-    
+    public Entrenamiento toDomain() {
+        return new Entrenamiento(id, usuario, titulo, deporte, distancia, fecIni, horaIni, duracion);
+    }
+
 
 }

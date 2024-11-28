@@ -8,7 +8,6 @@ import java.util.Map;
 import javax.swing.JOptionPane;
 
 import es.deusto.sd.strava.DTO.*;
-import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
@@ -27,7 +26,7 @@ public class UsuarioService {
         usuarios.put(usuario.getId(), usuario);
         System.out.println("Usuario registrado");
 
-        return UsuarioAssembler.toDTO(usuario);
+        return new UsuarioDTO(usuario);
     }
 
     public UsuarioDTO login(String username, String contrasena) {
@@ -39,7 +38,7 @@ public class UsuarioService {
 	                //usuario.setToken(generateToken());
 	                System.out.println("Login exitoso");
 	
-	                return UsuarioAssembler.toDTO(usuario);
+	                return new UsuarioDTO(usuario);
 	            }
 	        }
     	}
