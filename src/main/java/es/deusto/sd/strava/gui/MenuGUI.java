@@ -513,6 +513,7 @@ class MainAppGUI extends JFrame {
                         Double.parseDouble(durationField.getText())
                     );
 
+                    
                     facade.actualizarEntreno(
                         entrenamiento,
                         Float.parseFloat(distanceField.getText()),
