@@ -6,8 +6,4 @@ public abstract class servicioAuth {
 		return true;
 	}
 
-	public String obtenerInfoUsuario(String token) {
-		return "ana";
-		
-	}
 }

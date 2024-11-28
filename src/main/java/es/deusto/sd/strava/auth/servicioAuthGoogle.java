@@ -8,11 +8,5 @@ public class servicioAuthGoogle extends servicioAuth{
 		return super.validarToken(token);
 	}
 
-	@Override
-	public String obtenerInfoUsuario(String token) {
-		// TODO Auto-generated method stub
-		return super.obtenerInfoUsuario(token);
-	}
-
 	
 }
