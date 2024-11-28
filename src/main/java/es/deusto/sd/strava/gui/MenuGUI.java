@@ -3,6 +3,7 @@ package es.deusto.sd.strava.gui;
 import javax.swing.*;
 import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.*;
+import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.fachada.IRemoteFacade;
@@ -504,7 +505,7 @@ class MainAppGUI extends JFrame {
                     
                     Entrenamiento entrenamiento = new Entrenamiento(
                         selectedRow,
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         titleField.getText(),
                         sportField.getText(),
                         Float.parseFloat(distanceField.getText()),
@@ -567,7 +568,7 @@ class MainAppGUI extends JFrame {
 
                     Entrenamiento entrenamiento = new Entrenamiento(
                         selectedRow,
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         titulo,
                         deporte,
                         distancia,
@@ -629,7 +630,7 @@ class MainAppGUI extends JFrame {
                     float hora = horas + minutos / 60.0f;
 
                     facade.crearEntreno(
-                        usuario.toDomain(),
+                    	UsuarioAssembler.toDomain(usuario),
                         title,
                         sport,
                         distance,
@@ -756,7 +757,7 @@ class MainAppGUI extends JFrame {
                     Reto reto = new Reto(
                         selectedRow,
                         sportField.getText(),
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         titleField.getText(),
                         fecIni,
                         fecFin,
@@ -772,7 +773,7 @@ class MainAppGUI extends JFrame {
                         fecFin,
                         Float.parseFloat(distanceField.getText()),
                         Float.parseFloat(timeField.getText()),
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         sportField.getText(),
                         new ArrayList<>()
                     );
@@ -819,7 +820,7 @@ class MainAppGUI extends JFrame {
                     Reto reto = new Reto(
                         selectedRow,
                         deporte,
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         nombre,
                         fecIni,
                         fecFin,
@@ -828,7 +829,7 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
-                    facade.eliminarReto(usuario.toDomain(), reto);
+                    facade.eliminarReto(UsuarioAssembler.toDomain(usuario), reto);
 
                     retoModel.removeRow(selectedRow);
 
@@ -893,7 +894,7 @@ class MainAppGUI extends JFrame {
                         objDistancia,
                         objTiempo,
                         sport,
-                        usuario.toDomain(),
+                        UsuarioAssembler.toDomain(usuario),
                         new ArrayList<>()
                     );
 

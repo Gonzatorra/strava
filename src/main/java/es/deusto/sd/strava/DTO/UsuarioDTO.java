@@ -30,25 +30,6 @@ public class UsuarioDTO implements Serializable{
 
     
     //constructores
-    public UsuarioDTO(Usuario usuario) {
-        this.id = usuario.getId();
-        this.username = usuario.getUsername();
-        this.email = usuario.getEmail();
-        this.contrasena = usuario.getContrasena();
-        this.nombre = usuario.getNombre();
-        this.peso = usuario.getPeso();
-        this.altura = usuario.getAltura();
-        this.fNacimiento = usuario.getfNacimiento();
-        this.fecCMax = usuario.getFecCMax();
-        this.fecCReposo = usuario.getFecCReposo();
-        this.token = usuario.getToken();
-        this.entrenamientos = usuario.getEntrenamientos();
-        this.retos = usuario.getRetos();
-    }
-    
-    
-    
-
 	public UsuarioDTO() {
 		super();
 		// TODO Auto-generated constructor stub
@@ -161,7 +142,7 @@ public class UsuarioDTO implements Serializable{
 	public void setRetos(HashMap<Reto, String> retos) {
 		this.retos = retos;
 	}
-	
+/*	
 	public Usuario toDomain() {
 	    Usuario usuario = new Usuario();
 	    usuario.setId(this.id);
@@ -190,7 +171,7 @@ public class UsuarioDTO implements Serializable{
 
 	    return usuario;
 	}
-	
+*/	
 	
 	
 }

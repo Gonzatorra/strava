@@ -1,6 +1,7 @@
 package es.deusto.sd.strava.rmi;
 
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
@@ -66,9 +67,9 @@ public class Servidor {
             
             
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
-            Entrenamiento entreno= servidor.facade.crearEntreno(usuario.toDomain(), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
-            challengers.add(usuario.toDomain());
-            Reto reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", usuario.toDomain(), challengers);
+            Entrenamiento entreno= servidor.facade.crearEntreno(UsuarioAssembler.toDomain(usuario), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            challengers.add(UsuarioAssembler.toDomain(usuario));
+            Reto reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", UsuarioAssembler.toDomain(usuario), challengers);
             usuario.getEntrenamientos().add(entreno);
             usuario.getRetos().put(reto, "prueba");
             
