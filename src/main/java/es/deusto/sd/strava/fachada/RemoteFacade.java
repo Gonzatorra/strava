@@ -80,8 +80,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public void visualizarReto(RetoDTO retoDTO, String estado) throws RemoteException {
-		retoService.visualizarReto(retoDTO, estado);
+	public HashMap<Integer,Reto> visualizarReto() throws RemoteException {
+		return retoService.visualizarReto();
 		
 	}
 

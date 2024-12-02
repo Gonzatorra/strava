@@ -71,11 +71,8 @@ public class Servidor {
             challengers.add(UsuarioAssembler.toDomain(usuario));
             Reto reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", UsuarioAssembler.toDomain(usuario), challengers);
             usuario.getEntrenamientos().add(entreno);
-            facade.actualizarUsuario(usuario);
             usuario.getRetos().put(reto, "prueba");
-            
-            System.out.println(usuario.getEntrenamientos().get(0).getDeporte());
-            System.out.println(usuario.getRetos());
+            facade.actualizarUsuario(usuario);
             
             System.out.println("Servidor RMI listo y esperando conexiones...");
         } catch (Exception e) {

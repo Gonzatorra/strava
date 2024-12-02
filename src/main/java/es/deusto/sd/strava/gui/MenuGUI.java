@@ -6,6 +6,7 @@ import es.deusto.sd.strava.DTO.*;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
+import es.deusto.sd.strava.dominio.Usuario;
 import es.deusto.sd.strava.fachada.IRemoteFacade;
 import es.deusto.sd.strava.servicios.UsuarioService;
 
@@ -18,6 +19,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.table.DefaultTableModel;
@@ -660,46 +662,47 @@ class MainAppGUI extends JFrame {
 
         return trainPanel;
     }
-
     
     private JPanel createRetoPanel() {
-        JPanel retoPanel = new JPanel(new BorderLayout());
-        String[] columnNames = {"Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
-        
-       
-        
-        DefaultTableModel retoModel = new DefaultTableModel(columnNames, 0) {
+        JTabbedPane tabbedPane = new JTabbedPane();
+        JPanel mainPanel = new JPanel(new BorderLayout());
+
+        // Nombres de las columnas con la nueva columna "ID"
+        String[] columnNames = {"ID", "Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
+
+        // **Pestaña de retos aceptados**
+        JPanel acceptedPanel = new JPanel(new BorderLayout());
+        DefaultTableModel acceptedModel = new DefaultTableModel(columnNames, 0) {
             @Override
             public boolean isCellEditable(int row, int column) {
-                return false; 
+                return false;
             }
         };
-        
-        HashMap<Reto, String> retos = usuario.getRetos();
-        for (Reto r : retos.keySet()) { // Iterate through the Reto objects in the HashMap
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"); // Format for date/time
-            retoModel.addRow(new Object[]{
+
+        // Llenar el modelo con retos aceptados por el usuario
+        HashMap<Reto, String> retosAceptados = usuario.getRetos();
+        for (Reto r : retosAceptados.keySet()) {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            acceptedModel.addRow(new Object[]{
+                r.getId(), // Asumiendo que Reto tiene un método getId()
                 r.getNombre(),
                 r.getDeporte(),
                 r.getUsuarioCreador().getUsername(),
-                r.getFecIni().format(formatter), // Assuming fecIni is a LocalDateTime
-                r.getFecFin().format(formatter), // Assuming fecFin is a LocalDateTime
+                r.getFecIni().format(formatter),
+                r.getFecFin().format(formatter),
                 r.getObjetivoDistancia(),
                 r.getObjetivoTiempo()
             });
         }
 
-        
-        
+        JTable acceptedTable = new JTable(acceptedModel);
+        acceptedTable.setFocusable(false);
+        JTableHeader acceptedHeader = acceptedTable.getTableHeader();
+        acceptedHeader.setBackground(ORANGE_ACCENT);
+        acceptedHeader.setForeground(Color.WHITE);
+        acceptedPanel.add(new JScrollPane(acceptedTable), BorderLayout.CENTER);
 
-        JTable retoTable = new JTable(retoModel);
-        retoTable.setFocusable(false); 
-        JTableHeader header = retoTable.getTableHeader();
-        header.setBackground(ORANGE_ACCENT);
-        header.setForeground(Color.WHITE);
-        retoPanel.add(new JScrollPane(retoTable), BorderLayout.CENTER);
-
-        
+        // Botones de acción para modificar y eliminar retos
         JPanel buttonPanel = new JPanel();
         JButton addButton = new JButton("Añadir Reto");
         JButton modButton = new JButton("Modificar Reto");
@@ -713,24 +716,100 @@ class MainAppGUI extends JFrame {
         delButton.setBackground(ORANGE_ACCENT);
         delButton.setForeground(Color.WHITE);
         buttonPanel.add(delButton);
-        retoPanel.add(buttonPanel, BorderLayout.SOUTH); 
+        acceptedPanel.add(buttonPanel, BorderLayout.SOUTH);
 
+        // Lógica para añadir un reto
+        addButton.addActionListener(e -> {
+            JPanel panel = new JPanel(new GridLayout(7, 2));
+            JTextField titleField = new JTextField();
+            JTextField sportField = new JTextField();
+            JTextField creatorField = new JTextField(usuario.getNombre());
+            JTextField startDateField = new JTextField();
+            JTextField endDateField = new JTextField();
+            JTextField distanceField = new JTextField();
+            JTextField timeField = new JTextField();
+
+            panel.add(new JLabel("Nombre:"));
+            panel.add(titleField);
+            panel.add(new JLabel("Deporte:"));
+            panel.add(sportField);
+            panel.add(new JLabel("Creador:"));
+            panel.add(creatorField);
+            panel.add(new JLabel("Fecha Inicio (yyyy-MM-dd HH:mm:ss):"));
+            panel.add(startDateField);
+            panel.add(new JLabel("Fecha Fin (yyyy-MM-dd HH:mm:ss):"));
+            panel.add(endDateField);
+            panel.add(new JLabel("Objetivo Distancia:"));
+            panel.add(distanceField);
+            panel.add(new JLabel("Objetivo Tiempo:"));
+            panel.add(timeField);
+
+            int option = JOptionPane.showConfirmDialog(this, panel, "Añadir Reto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+
+            if (option == JOptionPane.OK_OPTION) {
+                try {
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                    LocalDateTime fecIni = LocalDateTime.parse(startDateField.getText(), formatter);
+                    LocalDateTime fecFin = LocalDateTime.parse(endDateField.getText(), formatter);
+
+                    Reto reto = new Reto(
+                        0, // ID se generará
+                        sportField.getText(),
+                        UsuarioAssembler.toDomain(usuario),
+                        titleField.getText(),
+                        fecIni,
+                        fecFin,
+                        Float.parseFloat(distanceField.getText()),
+                        Float.parseFloat(timeField.getText()),
+                        new ArrayList<>()
+                    );
+
+                    facade.crearReto(
+                        titleField.getText(),
+                        fecIni,
+                        fecFin,
+                        Float.parseFloat(distanceField.getText()),
+                        Float.parseFloat(timeField.getText()),
+                        sportField.getText(),
+                        UsuarioAssembler.toDomain(usuario),
+                        new ArrayList<>()
+                    );
+
+                    acceptedModel.addRow(new Object[]{
+                        reto.getId(),
+                        reto.getNombre(),
+                        reto.getDeporte(),
+                        reto.getUsuarioCreador().getUsername(),
+                        reto.getFecIni().format(formatter),
+                        reto.getFecFin().format(formatter),
+                        reto.getObjetivoDistancia(),
+                        reto.getObjetivoTiempo()
+                    });
+
+                    JOptionPane.showMessageDialog(this, "Reto añadido con éxito.");
+                } catch (Exception ex) {
+                    JOptionPane.showMessageDialog(this, "Error al añadir el reto: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
+            }
+        });
+
+        // Lógica para modificar un reto
         modButton.addActionListener(e -> {
-            int selectedRow = retoTable.getSelectedRow();
+            int selectedRow = acceptedTable.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Seleccione un reto para modificar.");
                 return;
             }
 
-         
             JPanel panel = new JPanel(new GridLayout(7, 2));
-            JTextField titleField = new JTextField((String) retoModel.getValueAt(selectedRow, 0));
-            JTextField sportField = new JTextField((String) retoModel.getValueAt(selectedRow, 1));
-            JTextField creatorField = new JTextField(usuario.getNombre()); 
-            JTextField startDateField = new JTextField(retoModel.getValueAt(selectedRow, 3).toString());
-            JTextField endDateField = new JTextField(retoModel.getValueAt(selectedRow, 4).toString());
-            JTextField distanceField = new JTextField(retoModel.getValueAt(selectedRow, 5).toString()); 
-            JTextField timeField = new JTextField(retoModel.getValueAt(selectedRow, 6).toString()); 
+            JTextField titleField = new JTextField((String) acceptedModel.getValueAt(selectedRow, 1));
+            JTextField sportField = new JTextField((String) acceptedModel.getValueAt(selectedRow, 2));
+            JTextField creatorField = new JTextField(usuario.getNombre());
+            JTextField startDateField = new JTextField(acceptedModel.getValueAt(selectedRow, 4).toString());
+            JTextField endDateField = new JTextField(acceptedModel.getValueAt(selectedRow, 5).toString());
+            JTextField distanceField = new JTextField(acceptedModel.getValueAt(selectedRow, 6).toString());
+            JTextField timeField = new JTextField(acceptedModel.getValueAt(selectedRow, 7).toString());
 
             panel.add(new JLabel("Nombre:"));
             panel.add(titleField);
@@ -779,12 +858,12 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
-                    retoModel.setValueAt(titleField.getText(), selectedRow, 0);
-                    retoModel.setValueAt(sportField.getText(), selectedRow, 1);
-                    retoModel.setValueAt(startDateField.getText(), selectedRow, 3);
-                    retoModel.setValueAt(endDateField.getText(), selectedRow, 4);
-                    retoModel.setValueAt(distanceField.getText(), selectedRow, 5);
-                    retoModel.setValueAt(timeField.getText(), selectedRow, 6);
+                    acceptedModel.setValueAt(titleField.getText(), selectedRow, 1);
+                    acceptedModel.setValueAt(sportField.getText(), selectedRow, 2);
+                    acceptedModel.setValueAt(startDateField.getText(), selectedRow, 4);
+                    acceptedModel.setValueAt(endDateField.getText(), selectedRow, 5);
+                    acceptedModel.setValueAt(distanceField.getText(), selectedRow, 6);
+                    acceptedModel.setValueAt(timeField.getText(), selectedRow, 7);
 
                     JOptionPane.showMessageDialog(this, "Reto modificado con éxito.");
                 } catch (Exception ex) {
@@ -794,8 +873,9 @@ class MainAppGUI extends JFrame {
             }
         });
 
+        // Lógica para eliminar un reto
         delButton.addActionListener(e -> {
-            int selectedRow = retoTable.getSelectedRow();
+            int selectedRow = acceptedTable.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Seleccione un reto para eliminar.");
                 return;
@@ -811,29 +891,13 @@ class MainAppGUI extends JFrame {
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    String nombre = (String) retoModel.getValueAt(selectedRow, 0); 
-                    String deporte = (String) retoModel.getValueAt(selectedRow, 1);
-                    LocalDateTime fecIni = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 3), formatter); 
-                    LocalDateTime fecFin = LocalDateTime.parse((String) retoModel.getValueAt(selectedRow, 4), formatter); 
-                    float objetivoDistancia = Float.parseFloat(retoModel.getValueAt(selectedRow, 5).toString());
-                    float objetivoTiempo = Float.parseFloat(retoModel.getValueAt(selectedRow, 6).toString());
 
-                    Reto reto = new Reto(
-                        selectedRow,
-                        deporte,
-                        UsuarioAssembler.toDomain(usuario),
-                        nombre,
-                        fecIni,
-                        fecFin,
-                        objetivoDistancia,
-                        objetivoTiempo,
-                        new ArrayList<>()
-                    );
+                    int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
+                    HashMap<Integer,Reto> retosD= facade.visualizarReto();
+                    
+                    facade.eliminarReto(UsuarioAssembler.toDomain(usuario), retosD.get(retoId));
 
-                    facade.eliminarReto(UsuarioAssembler.toDomain(usuario), reto);
-
-                    retoModel.removeRow(selectedRow);
-
+                    acceptedModel.removeRow(selectedRow);
                     JOptionPane.showMessageDialog(this, "Reto eliminado con éxito.");
                 } catch (Exception ex) {
                     JOptionPane.showMessageDialog(this, "Error al eliminar el reto: " + ex.getMessage());
@@ -842,87 +906,134 @@ class MainAppGUI extends JFrame {
             }
         });
 
+        // **Pestaña de añadir reto**
+        JPanel addPanel = new JPanel(new BorderLayout());
 
-        addButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new GridLayout(7, 2));
+        // Definir las columnas para la tabla
+        String[] columnNames1 = {"ID", "Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
 
-            JTextField titleField = new JTextField(10);
-            JTextField sportField = new JTextField(10);
-            JTextField creatorField = new JTextField(usuario.getNombre());
-            JTextField fecIniField = new JTextField(10);
-            JTextField fecFinField = new JTextField(10);
-            JTextField objDisField = new JTextField(10);
-            JTextField objTempField = new JTextField(10);
+        // Crear el modelo de la tabla para mostrar los retos disponibles para aceptar
+        DefaultTableModel acceptModel = new DefaultTableModel(columnNames1, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Evitar que las celdas sean editables
+            }
+        };
 
-            panel.add(new JLabel("Nombre:"));
-            panel.add(titleField);
-            panel.add(new JLabel("Deporte:"));
-            panel.add(sportField);
-            panel.add(new JLabel("Creador:"));
-            panel.add(creatorField);
-            panel.add(new JLabel("Fecha Inicio (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(fecIniField);
-            panel.add(new JLabel("Fecha Fin (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(fecFinField);
-            panel.add(new JLabel("Objetivo Distancia:"));
-            panel.add(objDisField);
-            panel.add(new JLabel("Objetivo Tiempo:"));
-            panel.add(objTempField);
+        // Crear la tabla para mostrar los retos disponibles
+        JTable acceptTable = new JTable(acceptModel);
+        JTableHeader acceptHeader = acceptTable.getTableHeader();
+        acceptHeader.setBackground(ORANGE_ACCENT);
+        acceptHeader.setForeground(Color.WHITE);
+        addPanel.add(new JScrollPane(acceptTable), BorderLayout.CENTER);
 
-            int option = JOptionPane.showConfirmDialog(
-                    retoPanel,
-                    panel,
-                    "Nuevo Reto",
-                    JOptionPane.OK_CANCEL_OPTION,
-                    JOptionPane.PLAIN_MESSAGE
-            );
+        // Panel de búsqueda
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel searchLabel = new JLabel("Buscar por:");
+        JComboBox<String> searchCriteria = new JComboBox<>(new String[]{"Nombre", "Deporte"});
+        JTextField searchField = new JTextField(15);
+        JButton searchButton = new JButton("Buscar");
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchCriteria);
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
 
-            if (option == JOptionPane.OK_OPTION) {
-                try {
-                    String title = titleField.getText();
-                    String sport = sportField.getText();
-                    LocalDateTime fecIni = LocalDateTime.parse(fecIniField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    LocalDateTime fecFin = LocalDateTime.parse(fecFinField.getText(), DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
-                    float objDistancia = Float.parseFloat(objDisField.getText());
-                    float objTiempo = Float.parseFloat(objTempField.getText());
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        addPanel.add(searchPanel, BorderLayout.NORTH);
 
-                   
-                    facade.crearReto(
-                        title,
-                        fecIni,
-                        fecFin,
-                        objDistancia,
-                        objTiempo,
-                        sport,
-                        UsuarioAssembler.toDomain(usuario),
-                        new ArrayList<>()
-                    );
+        // Funcionalidad de búsqueda en los retos disponibles
+        searchButton.addActionListener(e -> {
+            String criteria = (String) searchCriteria.getSelectedItem();
+            String searchTerm = searchField.getText().toLowerCase();
+            acceptModel.setRowCount(0); // Limpiar la tabla antes de buscar
 
-                  
-                    retoModel.addRow(new Object[]{
-                        title,
-                        sport,
-                        usuario.getNombre(),
-                        fecIni.format(formatter),  
-                        fecFin.format(formatter), 
-                        objDistancia,
-                        objTiempo
-                    });
+            HashMap<Integer, Reto> retosDisponibles = null;
+            try {
+                retosDisponibles = facade.visualizarReto();
+            } catch (RemoteException ex) {
+                ex.printStackTrace();
+            }
 
-                    JOptionPane.showMessageDialog(this, "Reto añadido con éxito.");
-                } catch (NumberFormatException ex) {
-                    JOptionPane.showMessageDialog(this, "Por favor, ingresa valores válidos para la distancia y tiempo.");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al agregar el reto: " + ex.getMessage());
-                    ex.printStackTrace();
+            if (retosDisponibles != null) {
+                for (Reto r : retosDisponibles.values()) {
+                    if ((criteria.equals("Nombre") && r.getNombre().toLowerCase().contains(searchTerm)) ||
+                        (criteria.equals("Deporte") && r.getDeporte().toLowerCase().contains(searchTerm))) {
+                        acceptModel.addRow(new Object[]{
+                            r.getId(),
+                            r.getNombre(),
+                            r.getDeporte(),
+                            r.getUsuarioCreador().getUsername(),
+                            r.getFecIni().toString(),
+                            r.getFecFin().toString(),
+                            r.getObjetivoDistancia(),
+                            r.getObjetivoTiempo()
+                        });
+                    }
                 }
             }
         });
-        return retoPanel;
+
+        // Botón para aceptar el reto seleccionado
+        JButton acceptSelectedButton = new JButton("Aceptar Reto");
+        acceptSelectedButton.setBackground(ORANGE_ACCENT);
+        acceptSelectedButton.setForeground(Color.WHITE);
+        searchPanel.add(acceptSelectedButton);
+
+        // Acción para aceptar el reto seleccionado
+        acceptSelectedButton.addActionListener(e -> {
+            int selectedRow = acceptTable.getSelectedRow();
+            if (selectedRow != -1) {
+                int idReto = (int) acceptModel.getValueAt(selectedRow, 0);
+                HashMap<Integer, Reto> retosDisponibles = null;
+                try {
+                    retosDisponibles = facade.visualizarReto();
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                }
+
+                if (retosDisponibles != null && retosDisponibles.containsKey(idReto)) {
+                    Reto retoSeleccionado = retosDisponibles.get(idReto);
+
+                    // Verificar si el usuario ya ha aceptado el reto
+                    if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
+                    	
+                    	
+                  
+                        retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
+                        // Agregar el reto a la lista de retos aceptados
+                        acceptedModel.addRow(new Object[]{
+                            retoSeleccionado.getId(),
+                            retoSeleccionado.getNombre(),
+                            retoSeleccionado.getDeporte(),
+                            retoSeleccionado.getUsuarioCreador().getUsername(),
+                            retoSeleccionado.getFecIni().toString(),
+                            retoSeleccionado.getFecFin().toString(),
+                            retoSeleccionado.getObjetivoDistancia(),
+                            retoSeleccionado.getObjetivoTiempo()
+                        });
+                        JOptionPane.showMessageDialog(addPanel, "Reto aceptado con éxito.");
+                    }
+                    	
+                    	
+                    	
+                    	else {
+                        JOptionPane.showMessageDialog(addPanel, "Ya has aceptado este reto.");
+                    }
+                }
+            } else {
+                JOptionPane.showMessageDialog(addPanel, "Seleccione un reto para aceptar.");
+            }
+        });
+
+
+        tabbedPane.addTab("Mis Retos", acceptedPanel);
+        tabbedPane.addTab("Añadir Reto", addPanel);
+
+        mainPanel.add(tabbedPane, BorderLayout.CENTER);
+        return mainPanel;
     }
 
-    
+
+
     private JPanel createTabPanel(String content) {
         JPanel tabPanel = new JPanel();
         tabPanel.add(new JLabel(content));

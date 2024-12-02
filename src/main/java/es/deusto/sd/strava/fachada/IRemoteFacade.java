@@ -12,6 +12,7 @@ import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 public interface IRemoteFacade extends Remote {
@@ -31,7 +32,7 @@ public interface IRemoteFacade extends Remote {
     //reto
     Reto crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
     void aceptarReto(Usuario usuario, Reto reto) throws RemoteException;
-    void visualizarReto(RetoDTO retoDTO, String estado) throws RemoteException;
+    HashMap<Integer,Reto> visualizarReto() throws RemoteException;
     void actualizarReto(Reto reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia, float tiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) throws RemoteException;
     void eliminarReto(Usuario usuario, Reto reto) throws RemoteException;
 	List<Usuario> obtenerClasificacion(Reto reto) throws RemoteException;

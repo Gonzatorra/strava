@@ -124,7 +124,7 @@ public class Reto implements Serializable{
 }
     
     
-    public void actualizarReto(Reto reto, String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
+    public Reto actualizarReto(Reto reto, String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
                                float objetivoTiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) {
         System.out.println("Se actualiza el reto");
 
@@ -136,6 +136,7 @@ public class Reto implements Serializable{
         reto.setUsuarioCreador(usuarioCreador);
         reto.setDeporte(deporte);
         reto.setParticipantes(participantes);
+        return reto;
     }
 
     public void eliminarReto(Usuario usuario, Reto reto) {
