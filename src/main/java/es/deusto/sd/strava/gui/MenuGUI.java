@@ -16,8 +16,10 @@ import java.rmi.RemoteException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
+import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
@@ -720,37 +722,116 @@ class MainAppGUI extends JFrame {
 
         // Lógica para añadir un reto
         addButton.addActionListener(e -> {
-            JPanel panel = new JPanel(new GridLayout(7, 2));
+            JPanel panel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5); // Margen entre elementos
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.anchor = GridBagConstraints.WEST;
+
+            // Campos del formulario
             JTextField titleField = new JTextField();
             JTextField sportField = new JTextField();
             JTextField creatorField = new JTextField(usuario.getNombre());
-            JTextField startDateField = new JTextField();
-            JTextField endDateField = new JTextField();
+            creatorField.setEditable(false); // Solo lectura para el creador
+            com.toedter.calendar.JDateChooser startDateField = new com.toedter.calendar.JDateChooser();
+            JSpinner startTimeSpinner = new JSpinner(new SpinnerDateModel());
+            JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "HH:mm:ss");
+            startTimeSpinner.setEditor(startTimeEditor);
+            com.toedter.calendar.JDateChooser finishDateField = new com.toedter.calendar.JDateChooser();
+            JSpinner endTimeSpinner = new JSpinner(new SpinnerDateModel());
+            JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "HH:mm:ss");
+            endTimeSpinner.setEditor(endTimeEditor);
             JTextField distanceField = new JTextField();
             JTextField timeField = new JTextField();
 
-            panel.add(new JLabel("Nombre:"));
-            panel.add(titleField);
-            panel.add(new JLabel("Deporte:"));
-            panel.add(sportField);
-            panel.add(new JLabel("Creador:"));
-            panel.add(creatorField);
-            panel.add(new JLabel("Fecha Inicio (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(startDateField);
-            panel.add(new JLabel("Fecha Fin (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(endDateField);
-            panel.add(new JLabel("Objetivo Distancia:"));
-            panel.add(distanceField);
-            panel.add(new JLabel("Objetivo Tiempo:"));
-            panel.add(timeField);
+            // Agregar elementos al panel
+            int row = 0;
 
-            int option = JOptionPane.showConfirmDialog(this, panel, "Añadir Reto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Nombre:"), gbc);
+            gbc.gridx = 1;
+            panel.add(titleField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Deporte:"), gbc);
+            gbc.gridx = 1;
+            panel.add(sportField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Creador:"), gbc);
+            gbc.gridx = 1;
+            panel.add(creatorField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Fecha Inicio:"), gbc);
+            gbc.gridx = 1;
+            panel.add(startDateField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Hora de Inicio:"), gbc);
+            gbc.gridx = 1;
+            panel.add(startTimeSpinner, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Fecha Fin:"), gbc);
+            gbc.gridx = 1;
+            panel.add(finishDateField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Hora de Fin:"), gbc);
+            gbc.gridx = 1;
+            panel.add(endTimeSpinner, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Objetivo Distancia (km):"), gbc);
+            gbc.gridx = 1;
+            panel.add(distanceField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Objetivo Tiempo (horas):"), gbc);
+            gbc.gridx = 1;
+            panel.add(timeField, gbc);
+
+            // Mostrar el formulario en un JOptionPane
+            int option = JOptionPane.showConfirmDialog(
+                null, 
+                panel, 
+                "Añadir Reto", 
+                JOptionPane.OK_CANCEL_OPTION, 
+                JOptionPane.PLAIN_MESSAGE
+            );
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime fecIni = LocalDateTime.parse(startDateField.getText(), formatter);
-                    LocalDateTime fecFin = LocalDateTime.parse(endDateField.getText(), formatter);
+                    // Fechas
+                    Date startDate = startDateField.getDate();
+                    Date endDate = finishDateField.getDate();
+
+                    // Horas
+                    Date startTime = (Date) startTimeSpinner.getValue();
+                    Date endTime = (Date) endTimeSpinner.getValue();
+
+                    // Combinar fecha y hora en LocalDateTime
+                    LocalDateTime fecIni = LocalDateTime.ofInstant(
+                        startDate.toInstant(), ZoneId.systemDefault()
+                    ).with(LocalTime.of(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds()));
+
+                    LocalDateTime fecFin = LocalDateTime.ofInstant(
+                        endDate.toInstant(), ZoneId.systemDefault()
+                    ).with(LocalTime.of(endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()));
+
+                    // Validar que la fecha de inicio sea anterior a la fecha de fin
+                    if (fecIni.isAfter(fecFin)) {
+                        throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
+                    }
 
                     Reto reto = new Reto(
                         0, // ID se generará
@@ -764,6 +845,7 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
+                    // Llamar al método del facade para guardar el reto
                     facade.crearReto(
                         titleField.getText(),
                         fecIni,
@@ -775,6 +857,8 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
+                    // Añadir el reto al modelo de la tabla
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     acceptedModel.addRow(new Object[]{
                         reto.getId(),
                         reto.getNombre(),
@@ -786,9 +870,13 @@ class MainAppGUI extends JFrame {
                         reto.getObjetivoTiempo()
                     });
 
-                    JOptionPane.showMessageDialog(this, "Reto añadido con éxito.");
+                    JOptionPane.showMessageDialog(null, "Reto añadido con éxito.");
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(null, "Distancia y tiempo deben ser valores numéricos.", "Error", JOptionPane.ERROR_MESSAGE);
+                } catch (IllegalArgumentException ex) {
+                    JOptionPane.showMessageDialog(null, ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al añadir el reto: " + ex.getMessage());
+                    JOptionPane.showMessageDialog(null, "Error inesperado: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                     ex.printStackTrace();
                 }
             }
@@ -802,66 +890,162 @@ class MainAppGUI extends JFrame {
                 return;
             }
 
-            JPanel panel = new JPanel(new GridLayout(7, 2));
-            JTextField titleField = new JTextField((String) acceptedModel.getValueAt(selectedRow, 1));
-            JTextField sportField = new JTextField((String) acceptedModel.getValueAt(selectedRow, 2));
-            JTextField creatorField = new JTextField(usuario.getNombre());
-            JTextField startDateField = new JTextField(acceptedModel.getValueAt(selectedRow, 4).toString());
-            JTextField endDateField = new JTextField(acceptedModel.getValueAt(selectedRow, 5).toString());
-            JTextField distanceField = new JTextField(acceptedModel.getValueAt(selectedRow, 6).toString());
-            JTextField timeField = new JTextField(acceptedModel.getValueAt(selectedRow, 7).toString());
+            JPanel panel = new JPanel(new GridBagLayout());
+            GridBagConstraints gbc = new GridBagConstraints();
+            gbc.insets = new Insets(5, 5, 5, 5); // Margen entre elementos
+            gbc.fill = GridBagConstraints.HORIZONTAL;
+            gbc.anchor = GridBagConstraints.WEST;
 
-            panel.add(new JLabel("Nombre:"));
-            panel.add(titleField);
-            panel.add(new JLabel("Deporte:"));
-            panel.add(sportField);
-            panel.add(new JLabel("Creador:"));
-            panel.add(creatorField);
-            panel.add(new JLabel("Fecha Inicio (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(startDateField);
-            panel.add(new JLabel("Fecha Fin (yyyy-MM-dd HH:mm:ss):"));
-            panel.add(endDateField);
-            panel.add(new JLabel("Objetivo Distancia:"));
-            panel.add(distanceField);
-            panel.add(new JLabel("Objetivo Tiempo:"));
-            panel.add(timeField);
+            // Extraer datos actuales
+            String currentTitle = (String) acceptedModel.getValueAt(selectedRow, 1);
+            String currentSport = (String) acceptedModel.getValueAt(selectedRow, 2);
+            String currentStartDateTime = (String) acceptedModel.getValueAt(selectedRow, 4);
+            String currentEndDateTime = (String) acceptedModel.getValueAt(selectedRow, 5);
+            float currentDistance = (float) acceptedModel.getValueAt(selectedRow, 6);
+            float currentTime = (float) acceptedModel.getValueAt(selectedRow, 7);
+
+            // Campos del formulario
+            JTextField titleField = new JTextField(currentTitle);
+            JTextField sportField = new JTextField(currentSport);
+            JTextField creatorField = new JTextField(usuario.getNombre());
+            creatorField.setEditable(false); // Solo lectura para el creador
+
+            com.toedter.calendar.JDateChooser startDateField = new com.toedter.calendar.JDateChooser();
+            com.toedter.calendar.JDateChooser finishDateField = new com.toedter.calendar.JDateChooser();
+
+            // Parsear las fechas actuales
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+            LocalDateTime currentStart = LocalDateTime.parse(currentStartDateTime, formatter);
+            LocalDateTime currentEnd = LocalDateTime.parse(currentEndDateTime, formatter);
+
+            startDateField.setDate(java.sql.Date.valueOf(currentStart.toLocalDate()));
+            finishDateField.setDate(java.sql.Date.valueOf(currentEnd.toLocalDate()));
+
+            // Hora de inicio
+            JSpinner startTimeSpinner = new JSpinner(new SpinnerDateModel());
+            JSpinner.DateEditor startTimeEditor = new JSpinner.DateEditor(startTimeSpinner, "HH:mm:ss");
+            startTimeSpinner.setEditor(startTimeEditor);
+            startTimeSpinner.setValue(java.sql.Time.valueOf(currentStart.toLocalTime()));
+
+            // Hora de fin
+            JSpinner endTimeSpinner = new JSpinner(new SpinnerDateModel());
+            JSpinner.DateEditor endTimeEditor = new JSpinner.DateEditor(endTimeSpinner, "HH:mm:ss");
+            endTimeSpinner.setEditor(endTimeEditor);
+            endTimeSpinner.setValue(java.sql.Time.valueOf(currentEnd.toLocalTime()));
+
+            JTextField distanceField = new JTextField(String.valueOf(currentDistance));
+            JTextField timeField = new JTextField(String.valueOf(currentTime));
+
+            // Agregar elementos al panel
+            int row = 0;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Nombre:"), gbc);
+            gbc.gridx = 1;
+            panel.add(titleField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Deporte:"), gbc);
+            gbc.gridx = 1;
+            panel.add(sportField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Creador:"), gbc);
+            gbc.gridx = 1;
+            panel.add(creatorField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Fecha Inicio:"), gbc);
+            gbc.gridx = 1;
+            panel.add(startDateField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Hora de Inicio:"), gbc);
+            gbc.gridx = 1;
+            panel.add(startTimeSpinner, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Fecha Fin:"), gbc);
+            gbc.gridx = 1;
+            panel.add(finishDateField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Hora de Fin:"), gbc);
+            gbc.gridx = 1;
+            panel.add(endTimeSpinner, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Objetivo Distancia:"), gbc);
+            gbc.gridx = 1;
+            panel.add(distanceField, gbc);
+
+            row++;
+            gbc.gridx = 0; gbc.gridy = row;
+            panel.add(new JLabel("Objetivo Tiempo:"), gbc);
+            gbc.gridx = 1;
+            panel.add(timeField, gbc);
 
             int option = JOptionPane.showConfirmDialog(this, panel, "Modificar Reto", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime fecIni = LocalDateTime.parse(startDateField.getText(), formatter);
-                    LocalDateTime fecFin = LocalDateTime.parse(endDateField.getText(), formatter);
+                    // Fechas
+                    Date startDate = startDateField.getDate();
+                    Date endDate = finishDateField.getDate();
+
+                    // Horas
+                    Date startTime = (Date) startTimeSpinner.getValue();
+                    Date endTime = (Date) endTimeSpinner.getValue();
+
+                    // Combinar fecha y hora en LocalDateTime
+                    LocalDateTime fecIni = LocalDateTime.ofInstant(
+                        startDate.toInstant(), ZoneId.systemDefault()
+                    ).with(LocalTime.of(startTime.getHours(), startTime.getMinutes(), startTime.getSeconds()));
+
+                    LocalDateTime fecFin = LocalDateTime.ofInstant(
+                        endDate.toInstant(), ZoneId.systemDefault()
+                    ).with(LocalTime.of(endTime.getHours(), endTime.getMinutes(), endTime.getSeconds()));
+
+                    // Validar que la fecha de inicio sea anterior a la fecha de fin
+                    if (fecIni.isAfter(fecFin)) {
+                        throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
+                    }
 
                     Reto reto = new Reto(
-                        selectedRow,
-                        sportField.getText(),
-                        UsuarioAssembler.toDomain(usuario),
-                        titleField.getText(),
-                        fecIni,
-                        fecFin,
-                        Float.parseFloat(distanceField.getText()),
-                        Float.parseFloat(timeField.getText()),
-                        new ArrayList<>()
-                    );
+                    	    selectedRow, // Asumimos que este es el ID del reto
+                    	    sportField.getText(),
+                    	    UsuarioAssembler.toDomain(usuario),
+                    	    titleField.getText(),
+                    	    fecIni,
+                    	    fecFin,
+                    	    Float.parseFloat(distanceField.getText()),
+                    	    Float.parseFloat(timeField.getText()),
+                    	    new ArrayList<>()
+                    	);
 
-                    facade.actualizarReto(
-                        reto,
-                        titleField.getText(),
-                        fecIni,
-                        fecFin,
-                        Float.parseFloat(distanceField.getText()),
-                        Float.parseFloat(timeField.getText()),
-                        UsuarioAssembler.toDomain(usuario),
-                        sportField.getText(),
-                        new ArrayList<>()
-                    );
+                    	// Llamar al método usando el objeto Reto
+                    	facade.actualizarReto(
+                    	    reto,
+                    	    titleField.getText(),
+                    	    fecIni,
+                    	    fecFin,
+                    	    Float.parseFloat(distanceField.getText()),
+                    	    Float.parseFloat(timeField.getText()),
+                    	    UsuarioAssembler.toDomain(usuario),
+                    	    sportField.getText(),
+                    	    new ArrayList<>()
+                    	);
 
                     acceptedModel.setValueAt(titleField.getText(), selectedRow, 1);
                     acceptedModel.setValueAt(sportField.getText(), selectedRow, 2);
-                    acceptedModel.setValueAt(startDateField.getText(), selectedRow, 4);
-                    acceptedModel.setValueAt(endDateField.getText(), selectedRow, 5);
+                    acceptedModel.setValueAt(formatter.format(fecIni), selectedRow, 4);
+                    acceptedModel.setValueAt(formatter.format(fecFin), selectedRow, 5);
                     acceptedModel.setValueAt(distanceField.getText(), selectedRow, 6);
                     acceptedModel.setValueAt(timeField.getText(), selectedRow, 7);
 
@@ -872,6 +1056,7 @@ class MainAppGUI extends JFrame {
                 }
             }
         });
+
 
         // Lógica para eliminar un reto
         delButton.addActionListener(e -> {
