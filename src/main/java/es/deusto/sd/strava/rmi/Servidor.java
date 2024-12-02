@@ -73,11 +73,13 @@ public class Servidor {
             usuario.getEntrenamientos().add(entreno);
             usuario.getRetos().put(reto, "prueba");
             
+            System.out.println(usuario.getEntrenamientos().get(0).getDeporte());
+            System.out.println(usuario.getRetos());
+            
             System.out.println("Servidor RMI listo y esperando conexiones...");
         } catch (Exception e) {
             e.printStackTrace();
         }
-        
         
         
     }

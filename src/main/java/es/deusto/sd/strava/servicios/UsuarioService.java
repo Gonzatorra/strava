@@ -38,6 +38,9 @@ public class UsuarioService {
 	            if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
 	                //usuario.setToken(generateToken());
 	                System.out.println("Login exitoso");
+	                System.out.println(usuario.getEntrenamientos().get(0).getDeporte());
+                    System.out.println(usuario.getRetos());
+                    
 	
 	                return UsuarioAssembler.toDTO(usuario);
 	            }

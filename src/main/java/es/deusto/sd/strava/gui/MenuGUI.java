@@ -87,6 +87,7 @@ public class MenuGUI extends JFrame {
                 UsuarioDTO usuario = facade.login(usernameField.getText(), new String(passwordField.getPassword()));
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(this, "¡Bienvenido a STRAVA, " + usuario.getUsername() + "!");
+                    
                     this.dispose();
                     MainAppGUI main = new MainAppGUI(usuario);
                     main.setVisible(true);
