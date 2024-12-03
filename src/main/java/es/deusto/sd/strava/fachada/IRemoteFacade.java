@@ -6,6 +6,7 @@ import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
+import es.deusto.sd.strava.servicios.UsuarioService;
 
 import java.rmi.Remote;
 import java.rmi.RemoteException;
@@ -22,6 +23,9 @@ public interface IRemoteFacade extends Remote {
     void logout(String token) throws RemoteException;
     void eliminarUsuario(int userId) throws RemoteException;
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
+    ArrayList<Usuario> getAmigos(Usuario usuario) throws RemoteException;
+    UsuarioService getUsuarioService() throws RemoteException;
+    HashMap<Integer, Usuario> getUsuarios() throws RemoteException;
     
     //entrenamiento
     Entrenamiento crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;

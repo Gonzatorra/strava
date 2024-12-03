@@ -22,10 +22,14 @@ public class UsuarioAssembler {
         dto.setfNacimiento(usuario.getfNacimiento());
         dto.setFecCMax(usuario.getFecCMax());
         dto.setFecCReposo(usuario.getFecCReposo());
+        dto.setAmigos(usuario.getAmigos());
         dto.setToken(usuario.getToken());
 
         if (usuario.getEntrenamientos() != null) {
             dto.setEntrenamientos(new ArrayList<>(usuario.getEntrenamientos()));
+        }
+        if (usuario.getAmigos() != null) {
+            dto.setAmigos(new ArrayList<>(usuario.getAmigos()));
         }
 
         if (usuario.getRetos() != null) {
@@ -52,9 +56,14 @@ public class UsuarioAssembler {
 	    usuario.setFecCMax(usuarioDTO.getFecCMax());
 	    usuario.setFecCReposo(usuarioDTO.getFecCReposo());
 	    usuario.setToken(usuarioDTO.getToken());
+	    usuario.setAmigos(usuarioDTO.getAmigos());
 
 	    if (usuarioDTO.getEntrenamientos() != null) {
 	        usuario.setEntrenamientos(new ArrayList<>(usuarioDTO.getEntrenamientos()));
+	    }
+	    
+	    if (usuarioDTO.getAmigos() != null) {
+	        usuario.setAmigos(new ArrayList<>(usuarioDTO.getAmigos()));
 	    }
 
 	    if (usuarioDTO.getRetos() != null) {

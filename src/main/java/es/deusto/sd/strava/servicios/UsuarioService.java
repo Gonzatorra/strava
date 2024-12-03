@@ -22,7 +22,7 @@ public class UsuarioService {
         
         int nuevoId = idCounter++;
         
-        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>());
+        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
            
         usuarios.put(usuario.getId(), usuario);
         System.out.println("Usuario registrado");
@@ -100,9 +100,22 @@ public class UsuarioService {
         return null;
     }
 
-    public List<Reto> getRetosUsuario(Usuario usuario, String estado) {
+    public ArrayList<Reto> getRetosUsuario(Usuario usuario, String estado) {
         System.out.println("Devuelve retos del usuario");
         
         return null;
+    }
+    
+    
+    public static HashMap<Integer, Usuario> getUsuarios() {
+		return usuarios;
+	}
+
+	public static void setUsuarios(HashMap<Integer, Usuario> usuarios) {
+		UsuarioService.usuarios = usuarios;
+	}
+
+	public List<Usuario> getAmigos(Usuario usuario){
+    	return usuario.getAmigos();
     }
 }

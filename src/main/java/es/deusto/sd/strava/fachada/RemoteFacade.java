@@ -31,8 +31,46 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         this.entrenamientoService = new EntrenamientoService();
         this.retoService = new RetoService();
     }
+    
+    
+    
 
     @Override
+	public ArrayList<Usuario> getAmigos(Usuario usuario) throws RemoteException {
+		// TODO Auto-generated method stub
+		return (ArrayList<Usuario>) usuarioService.getAmigos(usuario);
+	}
+
+    
+
+
+
+	@Override
+	public UsuarioService getUsuarioService() throws RemoteException {
+		// TODO Auto-generated method stub
+		return this.usuarioService;
+	}
+
+
+
+
+	@Override
+	public HashMap<Integer, Usuario> getUsuarios() throws RemoteException {
+		// TODO Auto-generated method stub
+		return this.usuarioService.getUsuarios();
+	}
+
+
+
+
+	public void setUsuarioService(UsuarioService usuarioService) {
+		this.usuarioService = usuarioService;
+	}
+
+
+
+
+	@Override
     public UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {
         
         return usuarioService.registrar(username, contrasena, email, nombre);

@@ -27,12 +27,27 @@ public class UsuarioDTO implements Serializable{
     private String token;
     private ArrayList<Entrenamiento> entrenamientos;
     private HashMap<Reto, String> retos;
+    private ArrayList<Usuario> amigos;
 
     
     //constructores
 	public UsuarioDTO() {
 		super();
 		// TODO Auto-generated constructor stub
+	}
+
+
+
+
+	public ArrayList<Usuario> getAmigos() {
+		return amigos;
+	}
+
+
+
+
+	public void setAmigos(ArrayList<Usuario> amigos) {
+		this.amigos = amigos;
 	}
 
 
