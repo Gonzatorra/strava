@@ -869,6 +869,9 @@ class MainAppGUI extends JFrame {
                         reto.getObjetivoDistancia(),
                         reto.getObjetivoTiempo()
                     });
+                    
+                    usuario.getRetos().put(reto, "prueba");
+                    facade.actualizarUsuario(usuario);
 
                     JOptionPane.showMessageDialog(null, "Reto añadido con éxito.");
                 } catch (NumberFormatException ex) {
@@ -882,7 +885,7 @@ class MainAppGUI extends JFrame {
             }
         });
 
-        // Lógica para modificar un reto
+     // Lógica para modificar un reto
         modButton.addActionListener(e -> {
             int selectedRow = acceptedTable.getSelectedRow();
             if (selectedRow == -1) {
@@ -1017,31 +1020,48 @@ class MainAppGUI extends JFrame {
                         throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
                     }
 
-                    Reto reto = new Reto(
-                    	    selectedRow, // Asumimos que este es el ID del reto
-                    	    sportField.getText(),
-                    	    UsuarioAssembler.toDomain(usuario),
-                    	    titleField.getText(),
-                    	    fecIni,
-                    	    fecFin,
-                    	    Float.parseFloat(distanceField.getText()),
-                    	    Float.parseFloat(timeField.getText()),
-                    	    new ArrayList<>()
-                    	);
+                    // Obtener el reto actual por ID (clave)
+                    Reto retoActual = usuario.getRetos().keySet()
+                        .stream()
+                        .filter(r -> r.getId() == selectedRow) // Asumimos que el ID coincide con la fila seleccionada
+                        .findFirst()
+                        .orElse(null);
 
-                    	// Llamar al método usando el objeto Reto
-                    	facade.actualizarReto(
-                    	    reto,
-                    	    titleField.getText(),
-                    	    fecIni,
-                    	    fecFin,
-                    	    Float.parseFloat(distanceField.getText()),
-                    	    Float.parseFloat(timeField.getText()),
-                    	    UsuarioAssembler.toDomain(usuario),
-                    	    sportField.getText(),
-                    	    new ArrayList<>()
-                    	);
+                    if (retoActual != null) {
+                        // Eliminar el reto anterior del Map
+                        usuario.getRetos().remove(retoActual);
+                    }
 
+                    // Crear el reto actualizado
+                    Reto retoActualizado = new Reto(
+                        selectedRow, // ID del reto
+                        sportField.getText(),
+                        UsuarioAssembler.toDomain(usuario),
+                        titleField.getText(),
+                        fecIni,
+                        fecFin,
+                        Float.parseFloat(distanceField.getText()),
+                        Float.parseFloat(timeField.getText()),
+                        new ArrayList<>()
+                    );
+
+                    // Actualizar la información en el backend
+                    facade.actualizarReto(
+                        retoActualizado,
+                        titleField.getText(),
+                        fecIni,
+                        fecFin,
+                        Float.parseFloat(distanceField.getText()),
+                        Float.parseFloat(timeField.getText()),
+                        UsuarioAssembler.toDomain(usuario),
+                        sportField.getText(),
+                        new ArrayList<>()
+                    );
+
+                    // Agregar el nuevo reto al Map
+                    usuario.getRetos().put(retoActualizado, "prueba");
+
+                    // Actualizar la tabla
                     acceptedModel.setValueAt(titleField.getText(), selectedRow, 1);
                     acceptedModel.setValueAt(sportField.getText(), selectedRow, 2);
                     acceptedModel.setValueAt(formatter.format(fecIni), selectedRow, 4);
@@ -1049,12 +1069,15 @@ class MainAppGUI extends JFrame {
                     acceptedModel.setValueAt(distanceField.getText(), selectedRow, 6);
                     acceptedModel.setValueAt(timeField.getText(), selectedRow, 7);
 
-                    JOptionPane.showMessageDialog(this, "Reto modificado con éxito.");
+                    // Actualizar el usuario en el backend
+                    facade.actualizarUsuario(usuario);
+                    JOptionPane.showMessageDialog(this, "Reto actualizado con éxito.");
+
                 } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al modificar el reto: " + ex.getMessage());
-                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(this, "Error al modificar el reto: " + ex.getMessage(), "Error", JOptionPane.ERROR_MESSAGE);
                 }
             }
+
         });
 
 
