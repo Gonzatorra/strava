@@ -1115,6 +1115,8 @@ class MainAppGUI extends JFrame {
         });
 
         // **Pestaña de añadir reto**
+        
+        
         JPanel addPanel = new JPanel(new BorderLayout());
 
         // Definir las columnas para la tabla
@@ -1240,132 +1242,175 @@ class MainAppGUI extends JFrame {
         return mainPanel;
     }
 
+    private JPanel createTabPanel(String content) {
 
-   private JPanel createTabPanel(String content) {
-    JPanel addPanel = new JPanel(new BorderLayout());
+        // Crear el panel principal y los subpaneles
+        JTabbedPane tabbedPanel2 = new JTabbedPane();
+        JPanel mainPanel2 = new JPanel(new BorderLayout());
+        JPanel misAmigos = new JPanel(new BorderLayout());   
+        JPanel addAmigos = new JPanel(new BorderLayout());
 
-    // Definir las columnas para la tabla
-    String[] columnNames = {"ID", "Username", "Email"};
+        // **Mis Amigos Tab Implementation**
+        // Definir columnas para la tabla de amigos
+        String[] amigoColumnNames = {"ID", "Username", "Email"};
 
-    // Crear el modelo de la tabla para mostrar los usuarios disponibles para añadir como amigos
-    DefaultTableModel userModel = new DefaultTableModel(columnNames, 0) {
-        @Override
-        public boolean isCellEditable(int row, int column) {
-            return false; // Evitar que las celdas sean editables
-        }
-    };
-
-    // Crear la tabla para mostrar los usuarios disponibles
-    JTable userTable = new JTable(userModel);
-    JTableHeader userHeader = userTable.getTableHeader();
-    userHeader.setBackground(ORANGE_ACCENT);
-    userHeader.setForeground(Color.WHITE);
-    addPanel.add(new JScrollPane(userTable), BorderLayout.CENTER);
-
-    // Panel de búsqueda
-    JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
-    JLabel searchLabel = new JLabel("Buscar por:");
-    JComboBox<String> searchCriteria = new JComboBox<>(new String[]{"ID", "Username", "Email"});
-    JTextField searchField = new JTextField(15);
-    JButton searchButton = new JButton("Buscar");
-    searchPanel.add(searchLabel);
-    searchPanel.add(searchCriteria);
-    searchPanel.add(searchField);
-    searchPanel.add(searchButton);
-
-    addPanel.add(searchPanel, BorderLayout.NORTH);
-
-    // Cargar todos los usuarios que no son amigos al inicializar la tabla
-    try {
-        userModel.setRowCount(0); // Limpiar la tabla por si hay datos previos
-        HashMap<Integer, Usuario> usuarios = facade.getUsuarios();
-        ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
-
-        for (Usuario user : usuarios.values()) {
-            if (!amigos.contains(user)) {
-                userModel.addRow(new Object[]{user.getId(), user.getUsername(), user.getEmail()});
+        // Crear el modelo de la tabla para mostrar los amigos actuales
+        DefaultTableModel amigoModel = new DefaultTableModel(amigoColumnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Evitar que las celdas sean editables
             }
-        }
-    } catch (RemoteException ex) {
-        ex.printStackTrace();
-        JOptionPane.showMessageDialog(addPanel, "Error al cargar los usuarios iniciales.", "Error", JOptionPane.ERROR_MESSAGE);
-    }
+        };
 
-    // Funcionalidad de búsqueda en la tabla
-    searchButton.addActionListener(e -> {
-        String criteria = (String) searchCriteria.getSelectedItem();
-        String searchTerm = searchField.getText().trim().toLowerCase();
+        // Crear la tabla para mostrar los amigos actuales
+        JTable amigoTable = new JTable(amigoModel);
+        JTableHeader amigoHeader = amigoTable.getTableHeader();
+        amigoHeader.setBackground(ORANGE_ACCENT);
+        amigoHeader.setForeground(Color.WHITE);
 
-        if (searchTerm.isEmpty()) {
-            JOptionPane.showMessageDialog(addPanel, "Por favor, introduzca un término de búsqueda.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-            return;
-        }
+        misAmigos.add(new JScrollPane(amigoTable), BorderLayout.CENTER);
 
+        // Cargar amigos actuales al inicializar la tabla
         try {
-            userModel.setRowCount(0); // Limpiar la tabla antes de buscar
+            amigoModel.setRowCount(0); // Limpiar cualquier dato previo
+            ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
+
+            for (Usuario amigo : amigos) {
+                amigoModel.addRow(new Object[]{amigo.getId(), amigo.getUsername(), amigo.getEmail()});
+            }
+        } catch (RemoteException ex) {
+            ex.printStackTrace();
+            JOptionPane.showMessageDialog(misAmigos, "Error al cargar los amigos.", "Error", JOptionPane.ERROR_MESSAGE);
+        }
+
+        // **Añadir Amigos Tab Implementation**
+        // Definir las columnas para la tabla
+        String[] columnNames = {"ID", "Username", "Email"};
+
+        // Crear el modelo de la tabla para mostrar los usuarios disponibles para añadir como amigos
+        DefaultTableModel userModel = new DefaultTableModel(columnNames, 0) {
+            @Override
+            public boolean isCellEditable(int row, int column) {
+                return false; // Evitar que las celdas sean editables
+            }
+        };
+
+        // Crear la tabla para mostrar los usuarios disponibles
+        JTable userTable = new JTable(userModel);
+        JTableHeader userHeader = userTable.getTableHeader();
+        userHeader.setBackground(ORANGE_ACCENT);
+        userHeader.setForeground(Color.WHITE);
+        addAmigos.add(new JScrollPane(userTable), BorderLayout.CENTER);
+
+        // Panel de búsqueda
+        JPanel searchPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        JLabel searchLabel = new JLabel("Buscar por:");
+        JComboBox<String> searchCriteria = new JComboBox<>(new String[]{"ID", "Username", "Email"});
+        JTextField searchField = new JTextField(15);
+        JButton searchButton = new JButton("Buscar");
+        searchPanel.add(searchLabel);
+        searchPanel.add(searchCriteria);
+        searchPanel.add(searchField);
+        searchPanel.add(searchButton);
+
+        addAmigos.add(searchPanel, BorderLayout.NORTH);
+
+        // Cargar todos los usuarios que no son amigos al inicializar la tabla
+        try {
+            userModel.setRowCount(0); // Limpiar la tabla por si hay datos previos
             HashMap<Integer, Usuario> usuarios = facade.getUsuarios();
             ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
 
             for (Usuario user : usuarios.values()) {
-                if (amigos.contains(user)) continue; // Excluir amigos
-
-                boolean matches = switch (criteria) {
-                    case "ID" -> String.valueOf(user.getId()).contains(searchTerm);
-                    case "Username" -> user.getUsername().toLowerCase().contains(searchTerm);
-                    case "Email" -> user.getEmail().toLowerCase().contains(searchTerm);
-                    default -> false;
-                };
-
-                if (matches) {
+                if (!amigos.contains(user) && !user.getUsername().equals(usuario.getUsername())) {
                     userModel.addRow(new Object[]{user.getId(), user.getUsername(), user.getEmail()});
                 }
             }
         } catch (RemoteException ex) {
             ex.printStackTrace();
-            JOptionPane.showMessageDialog(addPanel, "Error al buscar usuarios.", "Error", JOptionPane.ERROR_MESSAGE);
+            JOptionPane.showMessageDialog(addAmigos, "Error al cargar los usuarios iniciales.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-    });
 
-    // Botón para añadir amigo seleccionado
-    JButton addFriendButton = new JButton("Añadir amigo");
-    addFriendButton.setBackground(ORANGE_ACCENT);
-    addFriendButton.setForeground(Color.WHITE);
-    addPanel.add(addFriendButton, BorderLayout.SOUTH);
+        // Funcionalidad de búsqueda en la tabla
+        searchButton.addActionListener(e -> {
+            String criteria = (String) searchCriteria.getSelectedItem();
+            String searchTerm = searchField.getText().trim().toLowerCase();
 
-    // Acción para añadir amigo seleccionado
-    addFriendButton.addActionListener(e -> {
-        int selectedRow = userTable.getSelectedRow();
-        if (selectedRow != -1) {
-            int userId = (int) userModel.getValueAt(selectedRow, 0);
+            if (searchTerm.isEmpty()) {
+                JOptionPane.showMessageDialog(addAmigos, "Por favor, introduzca un término de búsqueda.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+                return;
+            }
 
             try {
-                Usuario currentUser = UsuarioAssembler.toDomain(usuario);
-                Usuario selectedUser = facade.getUsuarios().get(userId);
+                userModel.setRowCount(0); // Limpiar la tabla antes de buscar
+                HashMap<Integer, Usuario> usuarios = facade.getUsuarios();
+                ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
 
-                // Verificar si el usuario ya es amigo
-                ArrayList<Usuario> amigos = facade.getAmigos(currentUser);
-                if (amigos.contains(selectedUser)) {
-                    JOptionPane.showMessageDialog(addPanel, "Este usuario ya es tu amigo.", "Aviso", JOptionPane.WARNING_MESSAGE);
-                    return;
+                for (Usuario user : usuarios.values()) {
+                    if (amigos.contains(user)) continue; // Excluir amigos
+
+                    boolean matches = switch (criteria) {
+                        case "ID" -> String.valueOf(user.getId()).contains(searchTerm);
+                        case "Username" -> user.getUsername().toLowerCase().contains(searchTerm);
+                        case "Email" -> user.getEmail().toLowerCase().contains(searchTerm);
+                        default -> false;
+                    };
+
+                    if (matches) {
+                        userModel.addRow(new Object[]{user.getId(), user.getUsername(), user.getEmail()});
+                    }
                 }
-
-                // Añadir el amigo
-                currentUser.getAmigos().add(selectedUser);
-                facade.actualizarUsuario(UsuarioAssembler.toDTO(currentUser));
-
-                JOptionPane.showMessageDialog(addPanel, "Amigo añadido con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
-                // Eliminar el usuario añadido de la tabla
-                userModel.removeRow(selectedRow);
             } catch (RemoteException ex) {
                 ex.printStackTrace();
-                JOptionPane.showMessageDialog(addPanel, "Error al intentar añadir al amigo. Por favor, intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                JOptionPane.showMessageDialog(addAmigos, "Error al buscar usuarios.", "Error", JOptionPane.ERROR_MESSAGE);
             }
-        } else {
-            JOptionPane.showMessageDialog(addPanel, "Seleccione un usuario para añadir como amigo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
-        }
-    });
+        });
 
-    return addPanel;
-}
+        // Botón para añadir amigo seleccionado
+        JButton addFriendButton = new JButton("Añadir amigo");
+        addFriendButton.setBackground(ORANGE_ACCENT);
+        addFriendButton.setForeground(Color.WHITE);
+        addAmigos.add(addFriendButton, BorderLayout.SOUTH);
+
+        // Acción para añadir amigo seleccionado
+        addFriendButton.addActionListener(e -> {
+            int selectedRow = userTable.getSelectedRow();
+            if (selectedRow != -1) {
+                int userId = (int) userModel.getValueAt(selectedRow, 0);
+
+                try {
+                    Usuario currentUser = UsuarioAssembler.toDomain(usuario);
+                    Usuario selectedUser = facade.getUsuarios().get(userId);
+
+                    // Verificar si el usuario ya es amigo
+                    ArrayList<Usuario> amigos = facade.getAmigos(currentUser);
+                    if (amigos.contains(selectedUser)) {
+                        JOptionPane.showMessageDialog(addAmigos, "Este usuario ya es tu amigo.", "Aviso", JOptionPane.WARNING_MESSAGE);
+                        return;
+                    }
+
+                    // Añadir el amigo
+                    currentUser.getAmigos().add(selectedUser);
+                    facade.actualizarUsuario(UsuarioAssembler.toDTO(currentUser));
+
+                    JOptionPane.showMessageDialog(addAmigos, "Amigo añadido con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
+
+                    // Eliminar el usuario añadido de la tabla
+                    userModel.removeRow(selectedRow);
+                } catch (RemoteException ex) {
+                    ex.printStackTrace();
+                    JOptionPane.showMessageDialog(addAmigos, "Error al intentar añadir al amigo. Por favor, intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
+                }
+            } else {
+                JOptionPane.showMessageDialog(addAmigos, "Seleccione un usuario para añadir como amigo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
+            }
+        });
+
+        // Agregar las pestañas al panel
+        tabbedPanel2.addTab("Mis Amigos", misAmigos);
+        tabbedPanel2.addTab("Añadir Amigo", addAmigos);
+
+        mainPanel2.add(tabbedPanel2, BorderLayout.CENTER);
+        return mainPanel2;
+    }
 }
