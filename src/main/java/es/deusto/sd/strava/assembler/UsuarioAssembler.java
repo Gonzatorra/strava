@@ -24,6 +24,7 @@ public class UsuarioAssembler {
         dto.setFecCReposo(usuario.getFecCReposo());
         dto.setAmigos(usuario.getAmigos());
         dto.setToken(usuario.getToken());
+        dto.setProveedor(usuario.getProveedor());
 
         if (usuario.getEntrenamientos() != null) {
             dto.setEntrenamientos(new ArrayList<>(usuario.getEntrenamientos()));
@@ -57,6 +58,7 @@ public class UsuarioAssembler {
 	    usuario.setFecCReposo(usuarioDTO.getFecCReposo());
 	    usuario.setToken(usuarioDTO.getToken());
 	    usuario.setAmigos(usuarioDTO.getAmigos());
+	    usuario.setProveedor(usuarioDTO.getProveedor());
 
 	    if (usuarioDTO.getEntrenamientos() != null) {
 	        usuario.setEntrenamientos(new ArrayList<>(usuarioDTO.getEntrenamientos()));

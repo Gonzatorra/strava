@@ -3,9 +3,8 @@ package es.deusto.sd.strava.fachada;
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
-import es.deusto.sd.strava.servicios.EntrenamientoService;
-import es.deusto.sd.strava.servicios.RetoService;
-import es.deusto.sd.strava.servicios.UsuarioService;
+import es.deusto.sd.strava.assembler.UsuarioAssembler;
+import es.deusto.sd.strava.servicios.*;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
@@ -23,6 +22,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private UsuarioService usuarioService;
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
+    private ServicioAutentificacion servicioAutentificacion;
 
 
     public RemoteFacade() throws RemoteException {
@@ -81,6 +81,31 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         
         return usuarioService.login(username, contrasena);
        
+    }
+    
+    @Override
+    public UsuarioDTO loginConProveedor(String token, String proveedor) throws RemoteException {
+        boolean autenticado = servicioAutentificacion.autenticar(token, proveedor);
+
+        if (autenticado) {
+            Usuario usuario = usuarioService.obtenerUsuarioAutenticado();
+
+            // Si no hay usuario autenticado, crea uno nuevo
+            if (usuario == null) {
+                usuario = new Usuario();
+                usuario.setProveedor(proveedor);
+                usuario.setToken(token);
+                usuarioService.autenticarUsuario(usuario, token);
+            } else if (!usuario.getToken().equals(token)) {
+                throw new RemoteException("Token inválido para el usuario actual.");
+            }
+
+            // Convertir Usuario a UsuarioDTO usando UsuarioAssembler
+            UsuarioDTO usuarioDTO = UsuarioAssembler.toDTO(usuario);
+            return usuarioDTO;
+        } else {
+            throw new RemoteException("Autenticación fallida con el proveedor: " + proveedor);
+        }
     }
 
     @Override

@@ -17,6 +17,8 @@ public class UsuarioService {
 
     private static HashMap<Integer, Usuario> usuarios = new HashMap<>(); 
     private static int idCounter = 1;  //para signar IDs unicos
+    private static UsuarioService instancia;
+    private Usuario usuarioAutenticado; // Usuario actualmente autenticado
 
     public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
         
@@ -117,5 +119,25 @@ public class UsuarioService {
 
 	public List<Usuario> getAmigos(Usuario usuario){
     	return usuario.getAmigos();
+    }
+	
+	public static UsuarioService getInstancia() {
+        if (instancia == null) {
+            instancia = new UsuarioService();
+        }
+        return instancia;
+    }
+
+    public Usuario obtenerUsuarioAutenticado() {
+        return usuarioAutenticado;
+    }
+
+    public void autenticarUsuario(Usuario usuario, String token) {
+        usuario.setToken(token); // Actualiza el token del usuario
+        this.usuarioAutenticado = usuario;
+    }
+
+    public boolean esTokenValido(String token) {
+        return usuarioAutenticado != null && usuarioAutenticado.getToken().equals(token);
     }
 }

@@ -28,6 +28,7 @@ public class UsuarioDTO implements Serializable{
     private ArrayList<Entrenamiento> entrenamientos;
     private HashMap<Reto, String> retos;
     private ArrayList<Usuario> amigos;
+    private String proveedor; // Nuevo atributo
 
     
     //constructores
@@ -157,6 +158,14 @@ public class UsuarioDTO implements Serializable{
 	public void setRetos(HashMap<Reto, String> retos) {
 		this.retos = retos;
 	}
+	
+	public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
+    }
 /*	
 	public Usuario toDomain() {
 	    Usuario usuario = new Usuario();

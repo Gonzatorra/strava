@@ -25,6 +25,7 @@ public class Usuario implements Serializable{
     private ArrayList<Entrenamiento> entrenamientos;
     private HashMap<Reto, String> retos;
     private ArrayList<Usuario> amigos;
+    private String proveedor; //Inicio sesion proveedor
     
 	
 	
@@ -186,6 +187,14 @@ public class Usuario implements Serializable{
 	public void setContrasena(String contrasena) {
 		this.contrasena = contrasena;
 	}
+	
+	public String getProveedor() {
+        return proveedor;
+    }
+
+    public void setProveedor(String proveedor) {
+        this.proveedor = proveedor;
+    }
 
 	
 	//metodos
