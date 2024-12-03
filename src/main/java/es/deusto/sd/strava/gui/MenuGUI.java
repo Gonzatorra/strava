@@ -904,8 +904,17 @@ class MainAppGUI extends JFrame {
             String currentSport = (String) acceptedModel.getValueAt(selectedRow, 2);
             String currentStartDateTime = (String) acceptedModel.getValueAt(selectedRow, 4);
             String currentEndDateTime = (String) acceptedModel.getValueAt(selectedRow, 5);
-            float currentDistance = (float) acceptedModel.getValueAt(selectedRow, 6);
-            float currentTime = (float) acceptedModel.getValueAt(selectedRow, 7);
+            float currentDistance = 0;
+            float currentTime = 0;
+
+            try {
+                // Convertir el valor a String y luego a float
+                currentDistance = Float.parseFloat(acceptedModel.getValueAt(selectedRow, 6).toString());
+                currentTime = Float.parseFloat(acceptedModel.getValueAt(selectedRow, 7).toString());
+            } catch (NumberFormatException a) {
+                // Manejar el caso cuando la conversión falla
+                System.out.println("Error al convertir el valor a float: " + a.getMessage());
+            }
 
             // Campos del formulario
             JTextField titleField = new JTextField(currentTitle);
