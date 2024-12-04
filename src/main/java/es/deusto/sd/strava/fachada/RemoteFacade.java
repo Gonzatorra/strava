@@ -71,10 +71,19 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
 
 	@Override
-    public UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException {
-        
-        return usuarioService.registrar(username, contrasena, email, nombre);
-    }
+	public UsuarioDTO registrarUsuario(String username, String password, String email, String nombre) throws RemoteException {
+	    Usuario usuario = usuarioService.getUsuarios().values().stream()
+	            .filter(u -> u.getUsername().equals(username))
+	            .findFirst()
+	            .orElse(null);
+
+	    if (usuario != null) {
+	        System.out.println("Usuario ya existe: " + username);
+	        return UsuarioAssembler.toDTO(usuario);
+	    }
+
+	    return usuarioService.registrar(username, password, email, nombre);
+	}
 
     @Override
     public UsuarioDTO login(String username, String contrasena) throws RemoteException {
@@ -86,26 +95,22 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     @Override
     public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
         try {
-            boolean autenticado = servicioAutentificacion.autenticar(username, password, proveedor);
+            Usuario usuario = usuarioService.getUsuarios().values().stream()
+                    .filter(u -> u.getUsername().equals(username))
+                    .findFirst()
+                    .orElse(null);
 
-            if (autenticado) {
-                Usuario usuario = usuarioService.obtenerUsuarioAutenticado();
-
-                if (usuario == null) {
-                    usuario = new Usuario();
-                    usuario.setProveedor(proveedor);
-                    usuario.setUsername(username);
-                    usuario.setContrasena(password);
-                    usuarioService.autenticarUsuario(usuario, proveedor);
-                }
-
-                UsuarioDTO usuarioDTO = UsuarioAssembler.toDTO(usuario);
-                return usuarioDTO;
-            } else {
-                throw new RemoteException("Autenticación fallida con el proveedor: " + proveedor);
+            if (usuario == null) {
+                UsuarioDTO newUser = usuarioService.registrar(username, password, username + "@" + proveedor.toLowerCase() + ".com", proveedor);
+                System.out.println("User registered with provider: " + proveedor);
+                return newUser;
+            } else if (!password.equals(usuario.getContrasena())) {
+                throw new RemoteException("Incorrect password for user: " + username);
             }
+
+            return UsuarioAssembler.toDTO(usuario);
         } catch (Exception e) {
-            throw new RemoteException("Error en la autenticación con el proveedor: " + e.getMessage(), e);
+            throw new RemoteException("Error during login with provider: " + proveedor, e);
         }
     }
 
@@ -124,7 +129,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     }
 
     @Override
-    public void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException{
+    public void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException {
         usuarioService.actualizarUsuario(usuarioDTO);
     }
 

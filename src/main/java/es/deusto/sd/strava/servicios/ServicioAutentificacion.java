@@ -18,16 +18,12 @@ public class ServicioAutentificacion {
     public boolean autenticar(String username, String password, String proveedor) {
         try {
             IAuthServiceGateway gateway = AuthServiceFactory.getAuthService(proveedor);
-            
+
             String token = gateway.generarToken();
-            
-            boolean autenticado = gateway.autenticar(username, password, token);
-            
-            GestionEstadoSingleton.getInstancia().setUsuarioAutenticado(autenticado);
-            
-            return autenticado;
-        } catch (IllegalArgumentException e) {
-            System.out.println(e.getMessage());
+
+            return gateway.autenticar(username, password, token);
+        } catch (Exception e) {
+            System.out.println("Authentication failed: " + e.getMessage());
             return false;
         }
     }

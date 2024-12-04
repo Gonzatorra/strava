@@ -19,38 +19,30 @@ public class UsuarioService {
     private static int idCounter = 1;  //para signar IDs unicos
     private static UsuarioService instancia;
     private Usuario usuarioAutenticado; // Usuario actualmente autenticado
+    
+    public UsuarioService() {
+        usuarios = new HashMap<>();
+        idCounter = 1;
+        System.out.println("UsuarioService inicializado.");
+    }
 
     public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
-        
         int nuevoId = idCounter++;
-        
         Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
-           
         usuarios.put(usuario.getId(), usuario);
-        System.out.println("Usuario registrado");
-
+        System.out.println("Usuario registrado: " + username);
         return UsuarioAssembler.toDTO(usuario);
     }
 
     public UsuarioDTO login(String username, String contrasena) {
-    	try {
-	    	
-	        for (Usuario usuario : usuarios.values()) {
-	      
-	            if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
-	                //usuario.setToken(generateToken());
-	                System.out.println("Login exitoso");
-	
-	                return UsuarioAssembler.toDTO(usuario);
-	            }
-	        }
-    	}
-    	catch (Exception ex) {
-	        System.out.println("Login fallido");
-	        ex.printStackTrace();
-	        return null;
+        for (Usuario usuario : usuarios.values()) {
+            if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
+                System.out.println("Login exitoso para: " + username);
+                return UsuarioAssembler.toDTO(usuario);
+            }
         }
-    	return null;
+        System.out.println("Login fallido para: " + username);
+        return null;
     }
 
     public void logout(String token) {
@@ -96,6 +88,26 @@ public class UsuarioService {
         
         
     }
+    
+    public Usuario obtenerUsuarioPorNombre(String username) {
+        return usuarios.values().stream()
+                .filter(user -> user.getUsername().equals(username))
+                .findFirst()
+                .orElse(null);
+    }
+
+
+    public void registrarUsuario(Usuario usuario) {
+        if (usuarios.values().stream().anyMatch(u -> u.getUsername().equals(usuario.getUsername()))) {
+            throw new IllegalArgumentException("Usuario ya existe: " + usuario.getUsername());
+        }
+
+        int newId = usuarios.size() + 1;
+        usuario.setId(newId);
+        usuarios.put(newId, usuario);
+    }
+
+    
 
     public List<Entrenamiento> getEntrenosUsuario(Usuario usuario, double fechaIni, double fechaFin) {
         System.out.println("Devuelve entrenamientos del usuario");
@@ -140,4 +152,5 @@ public class UsuarioService {
     public boolean esTokenValido(String token) {
         return usuarioAutenticado != null && usuarioAutenticado.getToken().equals(token);
     }
+    
 }

@@ -58,24 +58,28 @@ public class MenuGUI extends JFrame {
 
             if ("Strava".equals(provider)) {
                 usuarioWrapper[0] = facade.login(username, password);
-            } else {
-                usuarioWrapper[0] = facade.loginConProveedor(username, password, provider);
+            } else if ("Google".equals(provider)) {
+                usuarioWrapper[0] = facade.loginConProveedor(username, password, "Google");
+            } else if ("Meta".equals(provider)) {
+                usuarioWrapper[0] = facade.loginConProveedor(username, password, "Meta");
             }
 
             if (usuarioWrapper[0] != null) {
                 JOptionPane.showMessageDialog(this, "¡Inicio de sesión exitoso con " + provider + "!");
-
                 SwingUtilities.invokeLater(() -> new MainAppGUI(usuarioWrapper[0]).setVisible(true));
-
                 dispose();
             } else {
                 JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.");
             }
+        } catch (RemoteException ex) {
+            JOptionPane.showMessageDialog(this, "Error de conexión con el servidor. Por favor, intente nuevamente.");
+            ex.printStackTrace();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error en la autenticación: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
             ex.printStackTrace();
         }
     }
+
     
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel(new GridBagLayout());
