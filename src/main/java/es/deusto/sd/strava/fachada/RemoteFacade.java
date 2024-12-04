@@ -84,27 +84,28 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     }
     
     @Override
-    public UsuarioDTO loginConProveedor(String token, String proveedor) throws RemoteException {
-        boolean autenticado = servicioAutentificacion.autenticar(token, proveedor);
+    public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
+        try {
+            boolean autenticado = servicioAutentificacion.autenticar(username, password, proveedor);
 
-        if (autenticado) {
-            Usuario usuario = usuarioService.obtenerUsuarioAutenticado();
+            if (autenticado) {
+                Usuario usuario = usuarioService.obtenerUsuarioAutenticado();
 
-            // Si no hay usuario autenticado, crea uno nuevo
-            if (usuario == null) {
-                usuario = new Usuario();
-                usuario.setProveedor(proveedor);
-                usuario.setToken(token);
-                usuarioService.autenticarUsuario(usuario, token);
-            } else if (!usuario.getToken().equals(token)) {
-                throw new RemoteException("Token inválido para el usuario actual.");
+                if (usuario == null) {
+                    usuario = new Usuario();
+                    usuario.setProveedor(proveedor);
+                    usuario.setUsername(username);
+                    usuario.setContrasena(password);
+                    usuarioService.autenticarUsuario(usuario, proveedor);
+                }
+
+                UsuarioDTO usuarioDTO = UsuarioAssembler.toDTO(usuario);
+                return usuarioDTO;
+            } else {
+                throw new RemoteException("Autenticación fallida con el proveedor: " + proveedor);
             }
-
-            // Convertir Usuario a UsuarioDTO usando UsuarioAssembler
-            UsuarioDTO usuarioDTO = UsuarioAssembler.toDTO(usuario);
-            return usuarioDTO;
-        } else {
-            throw new RemoteException("Autenticación fallida con el proveedor: " + proveedor);
+        } catch (Exception e) {
+            throw new RemoteException("Error en la autenticación con el proveedor: " + e.getMessage(), e);
         }
     }
 

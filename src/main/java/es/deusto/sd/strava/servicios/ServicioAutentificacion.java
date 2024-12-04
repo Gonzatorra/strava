@@ -15,11 +15,16 @@ public class ServicioAutentificacion {
         return instancia;
     }
 
-    public boolean autenticar(String token, String proveedor) {
+    public boolean autenticar(String username, String password, String proveedor) {
         try {
             IAuthServiceGateway gateway = AuthServiceFactory.getAuthService(proveedor);
-            boolean autenticado = gateway.autenticar(token);
+            
+            String token = gateway.generarToken();
+            
+            boolean autenticado = gateway.autenticar(username, password, token);
+            
             GestionEstadoSingleton.getInstancia().setUsuarioAutenticado(autenticado);
+            
             return autenticado;
         } catch (IllegalArgumentException e) {
             System.out.println(e.getMessage());

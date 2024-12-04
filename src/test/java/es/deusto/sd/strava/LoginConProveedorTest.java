@@ -1,4 +1,5 @@
 package es.deusto.sd.strava;
+
 import es.deusto.sd.strava.fachada.IRemoteFacade;
 import es.deusto.sd.strava.servicios.ServicioAutentificacion;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
@@ -18,69 +19,70 @@ public class LoginConProveedorTest {
 
     @Test
     public void testLoginGoogleProveedor() throws Exception {
-        // Configurar un usuario con token y proveedor Google
-        String tokenGoogle = "tokenGoogleTest";
+        // Mock input for Google login
+        String username = "usuarioGoogle";
+        String password = "passwordGoogle";
         String proveedorGoogle = "Google";
 
+        // Expected user
         Usuario usuarioEsperado = new Usuario();
         usuarioEsperado.setId(1);
-        usuarioEsperado.setUsername("usuarioGoogle");
+        usuarioEsperado.setUsername(username);
         usuarioEsperado.setEmail("usuario@google.com");
-        usuarioEsperado.setToken(tokenGoogle);
         usuarioEsperado.setProveedor(proveedorGoogle);
 
-        // Crear el DTO esperado
+        // Expected DTO
         UsuarioDTO usuarioDTOEsperado = UsuarioAssembler.toDTO(usuarioEsperado);
 
-        // Simular el comportamiento de ServicioAutentificacion (mock)
-        Mockito.when(servicioAutentificacion.autenticar(tokenGoogle, proveedorGoogle)).thenReturn(true);
+        // Mock behavior for ServicioAutentificacion
+        Mockito.when(servicioAutentificacion.autenticar(username, password, proveedorGoogle)).thenReturn(true);
 
-        // Simular el login en la fachada
-        Mockito.when(remoteFacade.loginConProveedor(tokenGoogle, proveedorGoogle)).thenReturn(usuarioDTOEsperado);
+        // Mock behavior for RemoteFacade
+        Mockito.when(remoteFacade.loginConProveedor(username, password, proveedorGoogle)).thenReturn(usuarioDTOEsperado);
 
-        // Ejecutar la autenticación
-        UsuarioDTO usuarioDTO = remoteFacade.loginConProveedor(tokenGoogle, proveedorGoogle);
+        // Execute login
+        UsuarioDTO usuarioDTO = remoteFacade.loginConProveedor(username, password, proveedorGoogle);
 
-        // Comprobar que el login fue exitoso y los datos coinciden
+        // Validate the results
         assertNotNull(usuarioDTO);
         assertEquals(usuarioDTOEsperado.getId(), usuarioDTO.getId());
         assertEquals(usuarioDTOEsperado.getUsername(), usuarioDTO.getUsername());
         assertEquals(usuarioDTOEsperado.getEmail(), usuarioDTO.getEmail());
-        assertEquals(usuarioDTOEsperado.getToken(), usuarioDTO.getToken());
         assertEquals(usuarioDTOEsperado.getProveedor(), usuarioDTO.getProveedor());
     }
 
     @Test
     public void testLoginMetaProveedor() throws Exception {
-        // Configurar un usuario con token y proveedor Meta
-        String tokenMeta = "tokenMetaTest";
+        // Mock input for Meta login
+        String username = "usuarioMeta";
+        String password = "passwordMeta";
         String proveedorMeta = "Meta";
 
+        // Expected user
         Usuario usuarioEsperado = new Usuario();
         usuarioEsperado.setId(2);
-        usuarioEsperado.setUsername("usuarioMeta");
+        usuarioEsperado.setUsername(username);
         usuarioEsperado.setEmail("usuario@meta.com");
-        usuarioEsperado.setToken(tokenMeta);
         usuarioEsperado.setProveedor(proveedorMeta);
 
-        // Crear el DTO esperado
+        // Expected DTO
         UsuarioDTO usuarioDTOEsperado = UsuarioAssembler.toDTO(usuarioEsperado);
 
-        // Simular el comportamiento de ServicioAutentificacion (mock)
-        Mockito.when(servicioAutentificacion.autenticar(tokenMeta, proveedorMeta)).thenReturn(true);
+        // Mock behavior for ServicioAutentificacion
+        Mockito.when(servicioAutentificacion.autenticar(username, password, proveedorMeta)).thenReturn(true);
 
-        // Simular el login en la fachada
-        Mockito.when(remoteFacade.loginConProveedor(tokenMeta, proveedorMeta)).thenReturn(usuarioDTOEsperado);
+        // Mock behavior for RemoteFacade
+        Mockito.when(remoteFacade.loginConProveedor(username, password, proveedorMeta)).thenReturn(usuarioDTOEsperado);
 
-        // Ejecutar la autenticación
-        UsuarioDTO usuarioDTO = remoteFacade.loginConProveedor(tokenMeta, proveedorMeta);
+        // Execute login
+        UsuarioDTO usuarioDTO = remoteFacade.loginConProveedor(username, password, proveedorMeta);
 
-        // Comprobar que el login fue exitoso y los datos coinciden
+        // Validate the results
         assertNotNull(usuarioDTO);
         assertEquals(usuarioDTOEsperado.getId(), usuarioDTO.getId());
         assertEquals(usuarioDTOEsperado.getUsername(), usuarioDTO.getUsername());
         assertEquals(usuarioDTOEsperado.getEmail(), usuarioDTO.getEmail());
-        assertEquals(usuarioDTOEsperado.getToken(), usuarioDTO.getToken());
         assertEquals(usuarioDTOEsperado.getProveedor(), usuarioDTO.getProveedor());
     }
 }
+
