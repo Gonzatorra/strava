@@ -1,14 +1,19 @@
 package es.deusto.sd.strava.auth;
 
 public class GoogleAuthServiceGateway implements IAuthServiceGateway {
+
     @Override
-    public boolean autenticar(String token) {
-        // Simulación: verifica que el token contenga "google_"
-        return token != null && token.startsWith("google_");
+    public boolean autenticar(String username, String password, String token) {
+        return token != null && token.startsWith("google_") && username != null && password != null;
     }
 
     @Override
     public String getProveedor() {
         return "Google";
+    }
+
+    @Override
+    public String generarToken() {
+        return "google_" + System.currentTimeMillis();
     }
 }
