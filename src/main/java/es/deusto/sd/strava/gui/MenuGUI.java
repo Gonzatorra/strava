@@ -4,6 +4,8 @@ import javax.swing.*;
 import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.*;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
+import es.deusto.sd.strava.auth.AuthServiceFactory;
+import es.deusto.sd.strava.auth.IAuthServiceGateway;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
@@ -49,7 +51,32 @@ public class MenuGUI extends JFrame {
 
         add(tabbedPane);
     }
+    
+    private void handleLogin(String provider, String username, String password) {
+        try {
+            UsuarioDTO[] usuarioWrapper = new UsuarioDTO[1];
 
+            if ("Strava".equals(provider)) {
+                usuarioWrapper[0] = facade.login(username, password);
+            } else {
+                usuarioWrapper[0] = facade.loginConProveedor(username, password, provider);
+            }
+
+            if (usuarioWrapper[0] != null) {
+                JOptionPane.showMessageDialog(this, "¡Inicio de sesión exitoso con " + provider + "!");
+
+                SwingUtilities.invokeLater(() -> new MainAppGUI(usuarioWrapper[0]).setVisible(true));
+
+                dispose();
+            } else {
+                JOptionPane.showMessageDialog(this, "Usuario o contraseña incorrectos.");
+            }
+        } catch (Exception ex) {
+            JOptionPane.showMessageDialog(this, "Error en la autenticación: " + ex.getMessage());
+            ex.printStackTrace();
+        }
+    }
+    
     private JPanel createLoginPanel() {
         JPanel loginPanel = new JPanel(new GridBagLayout());
         loginPanel.setBackground(Color.WHITE); 
@@ -57,14 +84,16 @@ public class MenuGUI extends JFrame {
         gbc.insets = new Insets(10, 10, 10, 10);
         gbc.fill = GridBagConstraints.HORIZONTAL;
 
-        JLabel usernameLabel = createStyledLabel("Correo: ");
+        JLabel usernameLabel = createStyledLabel("Username:");
         JTextField usernameField = new JTextField(15);
         usernameField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1));  
         JLabel passwordLabel = createStyledLabel("Password:");
         JPasswordField passwordField = new JPasswordField(15);
         passwordField.setBorder(BorderFactory.createLineBorder(ORANGE_ACCENT, 1)); 
 
-        JButton loginButton = createStyledButton("Login");
+        JButton appLoginButton = createStyledButton("Login with App");
+        JButton googleLoginButton = createStyledButton("Login with Google");
+        JButton metaLoginButton = createStyledButton("Login with Meta");
 
         gbc.gridx = 0;
         gbc.gridy = 0;
@@ -84,31 +113,20 @@ public class MenuGUI extends JFrame {
         gbc.gridy = 2;
         gbc.gridwidth = 2;
         gbc.anchor = GridBagConstraints.CENTER;
-        loginPanel.add(loginButton, gbc);
 
-        loginButton.addActionListener(e -> {
-            try {
-                UsuarioDTO usuario = facade.login(usernameField.getText(), new String(passwordField.getPassword()));
-                if (usuario != null) {
-                    JOptionPane.showMessageDialog(this, "¡Bienvenido a STRAVA, " + usuario.getUsername() + "!");
-                    
-                    this.dispose();
-                    MainAppGUI main = new MainAppGUI(usuario);
-                    main.setVisible(true);
-                } else {
-                    JOptionPane.showMessageDialog(this, "Parece ser que algo no es correcto, inténtalo otra vez.");
-                    usernameField.setText("");
-                    passwordField.setText("");
-                }
+        JPanel buttonPanel = new JPanel(new GridLayout(1, 3, 10, 0));
+        buttonPanel.add(appLoginButton);
+        buttonPanel.add(googleLoginButton);
+        buttonPanel.add(metaLoginButton);
+        loginPanel.add(buttonPanel, gbc);
 
-            } catch (Exception ex) {
-                JOptionPane.showMessageDialog(this, "Error en el login: " + ex.getMessage());
-                ex.printStackTrace();
-            }
-        });
+        appLoginButton.addActionListener(e -> handleLogin("Strava", usernameField.getText(), new String(passwordField.getPassword())));
+        googleLoginButton.addActionListener(e -> handleLogin("Google", usernameField.getText(), new String(passwordField.getPassword())));
+        metaLoginButton.addActionListener(e -> handleLogin("Meta", usernameField.getText(), new String(passwordField.getPassword())));
 
         return loginPanel;
     }
+    
 
     private JPanel createRegisterPanel() {
         JPanel registerPanel = new JPanel(new GridBagLayout());
