@@ -3,6 +3,8 @@ package es.deusto.sd.strava.gui;
 import javax.swing.*;
 import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.*;
+import es.deusto.sd.strava.assembler.EntrenamientoAssembler;
+import es.deusto.sd.strava.assembler.RetoAssembler;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.auth.AuthServiceFactory;
 import es.deusto.sd.strava.auth.IAuthServiceGateway;
@@ -443,7 +445,7 @@ class MainAppGUI extends JFrame {
 
     private JPanel createTrainPanel() {
         JPanel trainPanel = new JPanel(new BorderLayout());
-        String[] columnNames = {"Fecha", "Título", "Duración", "Distancia", "Deporte"};
+        String[] columnNames = {"Fecha", "ID", "Título", "Duración", "Distancia", "Deporte"};
 
         DefaultTableModel tableModel = new DefaultTableModel(columnNames, 0) {
             @Override
@@ -463,6 +465,7 @@ class MainAppGUI extends JFrame {
             LocalTime hora = LocalTime.of(horas, minutos);
         	tableModel.addRow(new Object[]{
                     e.getFecIni().toString() + hora.toString(),
+                    e.getId(),
                     e.getTitulo(),
                     e.getDuracion(),
                     e.getDistancia(),
@@ -543,7 +546,7 @@ class MainAppGUI extends JFrame {
 
                     
                     facade.actualizarEntreno(
-                        entrenamiento,
+                        EntrenamientoAssembler.toDTO(entrenamiento),
                         Float.parseFloat(distanceField.getText()),
                         fecha,
                         hora,
@@ -588,23 +591,20 @@ class MainAppGUI extends JFrame {
                     int minutos = horaLT.getMinute();
                     float hora = horas + minutos / 60.0f;
                     
-                    String titulo = (String) tableModel.getValueAt(selectedRow, 1);
-                    int duracion = ((Number) tableModel.getValueAt(selectedRow, 2)).intValue();
-                    float distancia = ((Number) tableModel.getValueAt(selectedRow, 3)).floatValue();
-                    String deporte = (String) tableModel.getValueAt(selectedRow, 4);
+                    int id= (Integer) tableModel.getValueAt(selectedRow, 1);
+                    String titulo = (String) tableModel.getValueAt(selectedRow, 2);
+                    int duracion = ((Number) tableModel.getValueAt(selectedRow, 3)).intValue();
+                    float distancia = ((Number) tableModel.getValueAt(selectedRow, 4)).floatValue();
+                    String deporte = (String) tableModel.getValueAt(selectedRow, 5);
 
-                    Entrenamiento entrenamiento = new Entrenamiento(
-                        selectedRow,
-                        UsuarioAssembler.toDomain(usuario),
-                        titulo,
-                        deporte,
-                        distancia,
-                        fecha,
-                        hora,
-                        duracion
-                    );
-
-                    facade.eliminarEntreno(entrenamiento);
+                   
+                    ArrayList<Entrenamiento> entrenos1 = UsuarioAssembler.toDomain(usuario).getEntrenamientos();
+                    for (Entrenamiento ent: entrenos1) {
+                    	if(ent.getId()==id){
+                    		 facade.eliminarEntreno(EntrenamientoAssembler.toDTO(ent));
+                    	}
+                    }
+                   
 
                     tableModel.removeRow(selectedRow);
 
@@ -657,7 +657,7 @@ class MainAppGUI extends JFrame {
                     float hora = horas + minutos / 60.0f;
 
                     facade.crearEntreno(
-                    	UsuarioAssembler.toDomain(usuario),
+                    	usuario,
                         title,
                         sport,
                         distance,
@@ -875,7 +875,7 @@ class MainAppGUI extends JFrame {
                         Float.parseFloat(distanceField.getText()),
                         Float.parseFloat(timeField.getText()),
                         sportField.getText(),
-                        UsuarioAssembler.toDomain(usuario),
+                        usuario,
                         new ArrayList<>()
                     );
 
@@ -1078,13 +1078,13 @@ class MainAppGUI extends JFrame {
 
                     // Actualizar la información en el backend
                     facade.actualizarReto(
-                        retoActualizado,
+                        RetoAssembler.toDTO(retoActualizado),
                         titleField.getText(),
                         fecIni,
                         fecFin,
                         Float.parseFloat(distanceField.getText()),
                         Float.parseFloat(timeField.getText()),
-                        UsuarioAssembler.toDomain(usuario),
+                        usuario,
                         sportField.getText(),
                         new ArrayList<>()
                     );
@@ -1132,9 +1132,9 @@ class MainAppGUI extends JFrame {
                     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
                     int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
-                    HashMap<Integer,Reto> retosD= facade.visualizarReto();
+                    HashMap<Integer,RetoDTO> retosD= facade.visualizarReto();
                     
-                    facade.eliminarReto(UsuarioAssembler.toDomain(usuario), retosD.get(retoId));
+                    facade.eliminarReto(usuario, retosD.get(retoId));
 
                     acceptedModel.removeRow(selectedRow);
                     JOptionPane.showMessageDialog(this, "Reto eliminado con éxito.");
@@ -1187,7 +1187,7 @@ class MainAppGUI extends JFrame {
             String searchTerm = searchField.getText().toLowerCase();
             acceptModel.setRowCount(0); // Limpiar la tabla antes de buscar
 
-            HashMap<Integer, Reto> retosDisponibles = null;
+            HashMap<Integer, RetoDTO> retosDisponibles= null;
             try {
                 retosDisponibles = facade.visualizarReto();
             } catch (RemoteException ex) {
@@ -1195,7 +1195,7 @@ class MainAppGUI extends JFrame {
             }
 
             if (retosDisponibles != null) {
-                for (Reto r : retosDisponibles.values()) {
+                for (RetoDTO r : retosDisponibles.values()) {
                     if ((criteria.equals("Nombre") && r.getNombre().toLowerCase().contains(searchTerm)) ||
                         (criteria.equals("Deporte") && r.getDeporte().toLowerCase().contains(searchTerm))) {
                         acceptModel.addRow(new Object[]{
@@ -1224,7 +1224,7 @@ class MainAppGUI extends JFrame {
             int selectedRow = acceptTable.getSelectedRow();
             if (selectedRow != -1) {
                 int idReto = (int) acceptModel.getValueAt(selectedRow, 0);
-                HashMap<Integer, Reto> retosDisponibles = null;
+                HashMap<Integer, RetoDTO> retosDisponibles = null;
                 try {
                     retosDisponibles = facade.visualizarReto();
                 } catch (RemoteException ex) {
@@ -1232,7 +1232,7 @@ class MainAppGUI extends JFrame {
                 }
 
                 if (retosDisponibles != null && retosDisponibles.containsKey(idReto)) {
-                    Reto retoSeleccionado = retosDisponibles.get(idReto);
+                    RetoDTO retoSeleccionado = retosDisponibles.get(idReto);
 
                     // Verificar si el usuario ya ha aceptado el reto
                     if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
@@ -1304,9 +1304,9 @@ class MainAppGUI extends JFrame {
         // Cargar amigos actuales al inicializar la tabla
         try {
             amigoModel.setRowCount(0); // Limpiar cualquier dato previo
-            ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
+            ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
 
-            for (Usuario amigo : amigos) {
+            for (UsuarioDTO amigo : amigos) {
                 amigoModel.addRow(new Object[]{amigo.getId(), amigo.getUsername(), amigo.getEmail()});
             }
         } catch (RemoteException ex) {
@@ -1349,10 +1349,10 @@ class MainAppGUI extends JFrame {
         // Cargar todos los usuarios que no son amigos al inicializar la tabla
         try {
             userModel.setRowCount(0); // Limpiar la tabla por si hay datos previos
-            HashMap<Integer, Usuario> usuarios = facade.getUsuarios();
-            ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
+            HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+            ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
 
-            for (Usuario user : usuarios.values()) {
+            for (UsuarioDTO user : usuarios.values()) {
                 if (!amigos.contains(user) && !user.getUsername().equals(usuario.getUsername())) {
                     userModel.addRow(new Object[]{user.getId(), user.getUsername(), user.getEmail()});
                 }
@@ -1374,10 +1374,10 @@ class MainAppGUI extends JFrame {
 
             try {
                 userModel.setRowCount(0); // Limpiar la tabla antes de buscar
-                HashMap<Integer, Usuario> usuarios = facade.getUsuarios();
-                ArrayList<Usuario> amigos = facade.getAmigos(UsuarioAssembler.toDomain(usuario));
+                HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+                ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
 
-                for (Usuario user : usuarios.values()) {
+                for (UsuarioDTO user : usuarios.values()) {
                     if (amigos.contains(user)) continue; // Excluir amigos
 
                     boolean matches = switch (criteria) {
@@ -1410,19 +1410,19 @@ class MainAppGUI extends JFrame {
                 int userId = (int) userModel.getValueAt(selectedRow, 0);
 
                 try {
-                    Usuario currentUser = UsuarioAssembler.toDomain(usuario);
-                    Usuario selectedUser = facade.getUsuarios().get(userId);
+                    UsuarioDTO currentUser = usuario;
+                    UsuarioDTO selectedUser = facade.getUsuarios().get(userId);
 
                     // Verificar si el usuario ya es amigo
-                    ArrayList<Usuario> amigos = facade.getAmigos(currentUser);
+                    ArrayList<UsuarioDTO> amigos = facade.getAmigos(currentUser);
                     if (amigos.contains(selectedUser)) {
                         JOptionPane.showMessageDialog(addAmigos, "Este usuario ya es tu amigo.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     // Añadir el amigo
-                    currentUser.getAmigos().add(selectedUser);
-                    facade.actualizarUsuario(UsuarioAssembler.toDTO(currentUser));
+                    currentUser.getAmigos().add(UsuarioAssembler.toDomain(selectedUser));
+                    facade.actualizarUsuario(currentUser);
 
                     JOptionPane.showMessageDialog(addAmigos, "Amigo añadido con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
 

@@ -22,7 +22,7 @@ public class RetoAssembler {
 		 	return dto;
 	    }
 	 
-	 public Reto toDomain(RetoDTO retoDTO) {
+	 public static Reto toDomain(RetoDTO retoDTO) {
 	    	Reto reto = new Reto();
 	    	reto.setId(retoDTO.getId());
 	    	reto.setDeporte(retoDTO.getDeporte());

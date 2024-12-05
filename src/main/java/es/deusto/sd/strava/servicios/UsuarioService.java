@@ -15,10 +15,10 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class UsuarioService {
 
-    private static HashMap<Integer, Usuario> usuarios = new HashMap<>(); 
+    private static HashMap<Integer, UsuarioDTO> usuarios = new HashMap<>(); 
     private static int idCounter = 1;  //para signar IDs unicos
     private static UsuarioService instancia;
-    private Usuario usuarioAutenticado; // Usuario actualmente autenticado
+    private UsuarioDTO usuarioAutenticado; // Usuario actualmente autenticado
     
     public UsuarioService() {
         usuarios = new HashMap<>();
@@ -29,13 +29,14 @@ public class UsuarioService {
     public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
         int nuevoId = idCounter++;
         Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
-        usuarios.put(usuario.getId(), usuario);
+        usuarios.put(UsuarioAssembler.toDTO(usuario).getId(), UsuarioAssembler.toDTO(usuario));
         System.out.println("Usuario registrado: " + username);
         return UsuarioAssembler.toDTO(usuario);
     }
 
     public UsuarioDTO login(String username, String contrasena) {
-        for (Usuario usuario : usuarios.values()) {
+        for (UsuarioDTO usu : usuarios.values()) {
+        	Usuario usuario= UsuarioAssembler.toDomain(usu);
             if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
                 System.out.println("Login exitoso para: " + username);
                 return UsuarioAssembler.toDTO(usuario);
@@ -46,7 +47,8 @@ public class UsuarioService {
     }
 
     public void logout(String token) {
-        for (Usuario usuario : usuarios.values()) {
+        for (UsuarioDTO usu : usuarios.values()) {
+        	Usuario usuario= UsuarioAssembler.toDomain(usu);
             if (usuario.getToken().equals(token)) {
                 usuario.setToken(null);
                 System.out.println("Usuario desconectado");
@@ -60,7 +62,7 @@ public class UsuarioService {
         return "token-" + System.currentTimeMillis(); 
     }
 
-    public void eliminarUsuario(Usuario usuario) {
+    public void eliminarUsuario(UsuarioDTO usuario) {
         if (usuario != null) {
             usuarios.remove(usuario.getId());
             System.out.println("Usuario eliminado");
@@ -68,7 +70,7 @@ public class UsuarioService {
     }
 
     public void actualizarUsuario(UsuarioDTO usuarioDTO) {
-    	Usuario usuario = usuarios.get(usuarioDTO.getId());
+    	UsuarioDTO usuario = usuarios.get(usuarioDTO.getId());
         if (usuario != null) {
         	usuario.setUsername(usuarioDTO.getUsername());
         	usuario.setEmail(usuarioDTO.getEmail());
@@ -89,7 +91,7 @@ public class UsuarioService {
         
     }
     
-    public Usuario obtenerUsuarioPorNombre(String username) {
+    public UsuarioDTO obtenerUsuarioPorNombre(String username) {
         return usuarios.values().stream()
                 .filter(user -> user.getUsername().equals(username))
                 .findFirst()
@@ -97,7 +99,7 @@ public class UsuarioService {
     }
 
 
-    public void registrarUsuario(Usuario usuario) {
+    public void registrarUsuario(UsuarioDTO usuario) {
         if (usuarios.values().stream().anyMatch(u -> u.getUsername().equals(usuario.getUsername()))) {
             throw new IllegalArgumentException("Usuario ya existe: " + usuario.getUsername());
         }
@@ -109,28 +111,33 @@ public class UsuarioService {
 
     
 
-    public List<Entrenamiento> getEntrenosUsuario(Usuario usuario, double fechaIni, double fechaFin) {
+    public List<EntrenamientoDTO> getEntrenosUsuario(UsuarioDTO usuario, double fechaIni, double fechaFin) {
         System.out.println("Devuelve entrenamientos del usuario");
         return null;
     }
 
-    public ArrayList<Reto> getRetosUsuario(Usuario usuario, String estado) {
+    public ArrayList<RetoDTO> getRetosUsuario(UsuarioDTO usuario, String estado) {
         System.out.println("Devuelve retos del usuario");
         
         return null;
     }
     
     
-    public static HashMap<Integer, Usuario> getUsuarios() {
+    public static HashMap<Integer, UsuarioDTO> getUsuarios() {
 		return usuarios;
 	}
 
-	public static void setUsuarios(HashMap<Integer, Usuario> usuarios) {
+	public static void setUsuarios(HashMap<Integer, UsuarioDTO> usuarios) {
 		UsuarioService.usuarios = usuarios;
 	}
 
-	public List<Usuario> getAmigos(Usuario usuario){
-    	return usuario.getAmigos();
+	public List<UsuarioDTO> getAmigos(UsuarioDTO usuario){
+		ArrayList<UsuarioDTO> amigos= new ArrayList<UsuarioDTO>();
+		for (Usuario usu: usuario.getAmigos()) {
+			amigos.add(UsuarioAssembler.toDTO(usu));
+		}
+		
+    	return amigos;
     }
 	
 	public static UsuarioService getInstancia() {
@@ -140,11 +147,11 @@ public class UsuarioService {
         return instancia;
     }
 
-    public Usuario obtenerUsuarioAutenticado() {
+    public UsuarioDTO obtenerUsuarioAutenticado() {
         return usuarioAutenticado;
     }
 
-    public void autenticarUsuario(Usuario usuario, String token) {
+    public void autenticarUsuario(UsuarioDTO usuario, String token) {
         usuario.setToken(token); // Actualiza el token del usuario
         this.usuarioAutenticado = usuario;
     }

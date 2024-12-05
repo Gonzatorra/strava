@@ -19,7 +19,7 @@ public class EntrenamientoAssembler {
 
     }
 	
-	public Entrenamiento toDomain(EntrenamientoDTO entrenamientoDTO) {
+	public static Entrenamiento toDomain(EntrenamientoDTO entrenamientoDTO) {
         return new Entrenamiento(entrenamientoDTO.getId(),
         		entrenamientoDTO.getUsuario(),
         		entrenamientoDTO.getTitulo(),

@@ -124,46 +124,46 @@ public class Reto implements Serializable{
 }
     
     
-    public Reto actualizarReto(Reto reto, String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
+    public Reto actualizarReto( String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
                                float objetivoTiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) {
         System.out.println("Se actualiza el reto");
 
-        reto.setNombre(nombre);
-        reto.setFecIni(fecIni);
-        reto.setFecFin(fecFin);
-        reto.setObjetivoDistancia(objetivoDistancia);
-        reto.setObjetivoTiempo(objetivoTiempo);
-        reto.setUsuarioCreador(usuarioCreador);
-        reto.setDeporte(deporte);
-        reto.setParticipantes(participantes);
-        return reto;
+        this.setNombre(nombre);
+        this.setFecIni(fecIni);
+        this.setFecFin(fecFin);
+        this.setObjetivoDistancia(objetivoDistancia);
+        this.setObjetivoTiempo(objetivoTiempo);
+        this.setUsuarioCreador(usuarioCreador);
+        this.setDeporte(deporte);
+        this.setParticipantes(participantes);
+        return this;
     }
 
-    public void eliminarReto(Usuario usuario, Reto reto) {
+    public void eliminarReto(Usuario usuario) {
         System.out.println("El usuario elimina el reto y se saca de la lista en caso de que sea"
                 + "participante. Si es creador, se elimina todo el reto");
         
-        if (usuario.equals(reto.getUsuarioCreador())) {
+        if (usuario.equals(this.getUsuarioCreador())) {
             //eliminar reto completo
             System.out.println("El creador elimina el reto.");
         } else {
             //eliminar al participante de la lista
-            reto.getParticipantes().remove(usuario);
+            this.getParticipantes().remove(usuario);
             System.out.println("El usuario se elimina del reto.");
         }
     }
 
-    public void aceptarReto(Usuario usuario, Reto reto) {
+    public void aceptarReto(Usuario usuario) {
         System.out.println("El usuario acepta el reto y se añade a la lista");
-        reto.getParticipantes().add(usuario);
+        this.getParticipantes().add(usuario);
     }
 
     public void calcularProgreso(Usuario usuario) {
         System.out.println("Se calcula el progreso del usuario");
     }
 
-    public List<Usuario> obtenerClasificacion(Reto reto) {
+    public List<Usuario> obtenerClasificacion() {
         System.out.println("Se devuelve la clasificación de todos los usuarios del reto");
-        return reto.getParticipantes();
+        return this.getParticipantes();
     }
 }

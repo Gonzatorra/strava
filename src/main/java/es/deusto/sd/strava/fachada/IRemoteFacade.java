@@ -24,24 +24,24 @@ public interface IRemoteFacade extends Remote {
     void logout(String token) throws RemoteException;
     void eliminarUsuario(int userId) throws RemoteException;
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
-    ArrayList<Usuario> getAmigos(Usuario usuario) throws RemoteException;
+    ArrayList<UsuarioDTO> getAmigos(UsuarioDTO usuario) throws RemoteException;
     UsuarioService getUsuarioService() throws RemoteException;
-    HashMap<Integer, Usuario> getUsuarios() throws RemoteException;
+    HashMap<Integer, UsuarioDTO> getUsuarios() throws RemoteException;
     
     //entrenamiento
-    Entrenamiento crearEntreno(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
-    void actualizarEntreno(Entrenamiento entrenamiento, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
-    void eliminarEntreno(Entrenamiento entrenamiento) throws java.rmi.RemoteException;
+    EntrenamientoDTO crearEntreno(UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void actualizarEntreno(EntrenamientoDTO entrenamiento, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void eliminarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     
     //reto
-    Reto crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, Usuario usuarioCreador, List<Usuario> participantes) throws RemoteException;
-    void aceptarReto(Usuario usuario, Reto reto) throws RemoteException;
-    HashMap<Integer,Reto> visualizarReto() throws RemoteException;
-    void actualizarReto(Reto reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia, float tiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) throws RemoteException;
-    void eliminarReto(Usuario usuario, Reto reto) throws RemoteException;
-	List<Usuario> obtenerClasificacion(Reto reto) throws RemoteException;
-	void calcularProgreso(Usuario usuario) throws RemoteException;    
+    RetoDTO crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo, String deporte, UsuarioDTO usuarioCreador, List<UsuarioDTO> participantes) throws RemoteException;
+    void aceptarReto(UsuarioDTO usuario, RetoDTO reto) throws RemoteException;
+    HashMap<Integer,RetoDTO> visualizarReto() throws RemoteException;
+    void actualizarReto(RetoDTO reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia, float tiempo, UsuarioDTO usuarioCreador, String deporte, List<UsuarioDTO> participantes) throws RemoteException;
+    void eliminarReto(UsuarioDTO usuario, RetoDTO reto) throws RemoteException;
+	List<UsuarioDTO> obtenerClasificacion(RetoDTO reto) throws RemoteException;
+	void calcularProgreso(UsuarioDTO usuario) throws RemoteException;    
 
 }
 

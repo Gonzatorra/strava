@@ -1,6 +1,10 @@
 package es.deusto.sd.strava.rmi;
 
+import es.deusto.sd.strava.DTO.EntrenamientoDTO;
+import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.assembler.EntrenamientoAssembler;
+import es.deusto.sd.strava.assembler.RetoAssembler;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
@@ -63,36 +67,36 @@ public class Servidor {
             LocalDate fecha = LocalDate.of(2024, 8, 23);
             LocalDateTime fecha1 = LocalDateTime.now();
             LocalDateTime fecha2 = LocalDateTime.of(2024, 8, 23, 0, 0);
-            List<Usuario> challengers = new ArrayList<Usuario>();
+            List<UsuarioDTO> challengers = new ArrayList<UsuarioDTO>();
             
             //Usuario 1
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
-            Entrenamiento entreno= servidor.facade.crearEntreno(UsuarioAssembler.toDomain(usuario), "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
-            challengers.add(UsuarioAssembler.toDomain(usuario));
-            Reto reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", UsuarioAssembler.toDomain(usuario), challengers);
-            usuario.getEntrenamientos().add(entreno);
-            usuario.getRetos().put(reto, "prueba");
+            EntrenamientoDTO entreno= servidor.facade.crearEntreno(usuario, "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            challengers.add(usuario);
+            RetoDTO reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", usuario, challengers);
+            usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
+            usuario.getRetos().put(RetoAssembler.toDomain(reto), "prueba");
             facade.actualizarUsuario(usuario);
             
             
             // Usuario 2
             UsuarioDTO usuario2 = facade.registrarUsuario("juan456", "pass123", "juan456@gmail.com", "Juan");
-            Entrenamiento entreno2 = facade.crearEntreno(UsuarioAssembler.toDomain(usuario2), "EntrenoAvanzado", "cycling", 20.0, fecha, 18.0f, 5.0);
-            List<Usuario> challengers2 = new ArrayList<>();
-            challengers2.add(UsuarioAssembler.toDomain(usuario2));
-            Reto reto2 = facade.crearReto("RetoCiclismo", fecha1, fecha2, 20, 50, "cycling", UsuarioAssembler.toDomain(usuario2), challengers2);
-            usuario2.getEntrenamientos().add(entreno2);
-            usuario2.getRetos().put(reto2, "superado");
+            EntrenamientoDTO entreno2 = facade.crearEntreno(usuario2, "EntrenoAvanzado", "cycling", 20.0, fecha, 18.0f, 5.0);
+            List<UsuarioDTO> challengers2 = new ArrayList<UsuarioDTO>();
+            challengers2.add(usuario2);
+            RetoDTO reto2 = facade.crearReto("RetoCiclismo", fecha1, fecha2, 20, 50, "cycling", usuario2, challengers2);
+            usuario2.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno2));
+            usuario2.getRetos().put(RetoAssembler.toDomain(reto2), "superado");
             facade.actualizarUsuario(usuario2);
 
             // Usuario 3
             UsuarioDTO usuario3 = facade.registrarUsuario("lucia789", "luciaPass", "lucia789@gmail.com", "Lucía");
-            Entrenamiento entreno3 = facade.crearEntreno(UsuarioAssembler.toDomain(usuario3), "EntrenoMatutino", "swimming", 5.0, fecha, 12.0f, 1.0);
-            List<Usuario> challengers3 = new ArrayList<>();
-            challengers3.add(UsuarioAssembler.toDomain(usuario3));
-            Reto reto3 = facade.crearReto("RetoNatacion", fecha1, fecha2, 5, 15, "swimming", UsuarioAssembler.toDomain(usuario3), challengers3);
-            usuario3.getEntrenamientos().add(entreno3);
-            usuario3.getRetos().put(reto3, "pendiente");
+            EntrenamientoDTO entreno3 = facade.crearEntreno(usuario3, "EntrenoMatutino", "swimming", 5.0, fecha, 12.0f, 1.0);
+            List<UsuarioDTO> challengers3 = new ArrayList<UsuarioDTO>();
+            challengers3.add(usuario3);
+            RetoDTO reto3 = facade.crearReto("RetoNatacion", fecha1, fecha2, 5, 15, "swimming", usuario3, challengers3);
+            usuario3.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno3));
+            usuario3.getRetos().put(RetoAssembler.toDomain(reto3), "pendiente");
             facade.actualizarUsuario(usuario3);
 
             // Usuarios 4 al 10
