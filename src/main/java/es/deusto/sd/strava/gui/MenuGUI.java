@@ -454,6 +454,10 @@ class MainAppGUI extends JFrame {
             }
         };
         
+        
+        
+        
+        
         //cargar entrenamientos
         ArrayList<Entrenamiento> entrenos= usuario.getEntrenamientos();
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -523,8 +527,7 @@ class MainAppGUI extends JFrame {
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
-                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter2);
+                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
                     
                     LocalDate fecha = dateTime.toLocalDate();
                     LocalTime horaLT = dateTime.toLocalTime();
@@ -582,8 +585,7 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter2);
+                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
                     
                     LocalDate fecha = dateTime.toLocalDate();
                     LocalTime horaLT = dateTime.toLocalTime();
@@ -649,7 +651,6 @@ class MainAppGUI extends JFrame {
                     int duration = Integer.parseInt(durationField.getText());
                     float distance = Float.parseFloat(distanceField.getText());
                     LocalDateTime now = LocalDateTime.now();
-                    DateTimeFormatter formatter2 = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     LocalDate fecha = now.toLocalDate();
                     LocalTime horaLT = now.toLocalTime();
                     int horas = horaLT.getHour();
@@ -690,6 +691,8 @@ class MainAppGUI extends JFrame {
     private JPanel createRetoPanel() {
         JTabbedPane tabbedPane = new JTabbedPane();
         JPanel mainPanel = new JPanel(new BorderLayout());
+        
+        
 
         // Nombres de las columnas con la nueva columna "ID"
         String[] columnNames = {"ID", "Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
@@ -702,29 +705,61 @@ class MainAppGUI extends JFrame {
                 return false;
             }
         };
+        
+     // Crear JComboBox con las opciones de filtrado
+        JComboBox<String> searchCriteria2 = new JComboBox<>(new String[]{"Todos", "Superado", "En Progreso", "No Superado"});
 
-        // Llenar el modelo con retos aceptados por el usuario
-        HashMap<Reto, String> retosAceptados = usuario.getRetos();
-        for (Reto r : retosAceptados.keySet()) {
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-            acceptedModel.addRow(new Object[]{
-                r.getId(), // Asumiendo que Reto tiene un método getId()
-                r.getNombre(),
-                r.getDeporte(),
-                r.getUsuarioCreador().getUsername(),
-                r.getFecIni().format(formatter),
-                r.getFecFin().format(formatter),
-                r.getObjetivoDistancia(),
-                r.getObjetivoTiempo()
-            });
-        }
+        // Agregar el JComboBox al panel superior
+        JPanel filterPanel = new JPanel(new FlowLayout(FlowLayout.LEFT));
+        filterPanel.add(searchCriteria2);
+        acceptedPanel.add(filterPanel, BorderLayout.NORTH);
 
+        // Llenar el modelo inicial basado en el criterio seleccionado
+        HashMap<Reto, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        // Método para llenar la tabla basado en el criterio seleccionado
+        Runnable updateTable = () -> {
+            // Obtener el criterio seleccionado
+            String criteria = (String) searchCriteria2.getSelectedItem();
+
+            // Limpiar las filas del modelo
+            acceptedModel.setRowCount(0);
+
+            // Filtrar los retos basados en el criterio seleccionado
+            for (Reto r : retosAceptados.keySet()) {
+                String estado = retosAceptados.get(r); // Supone que el estado es "Superado", "En Progreso" o "No Superado"
+
+                // Comprobar si el reto coincide con el filtro
+                if ("Todos".equals(criteria) || criteria.equals(estado)) {
+                    acceptedModel.addRow(new Object[]{
+                        r.getId(),
+                        r.getNombre(),
+                        r.getDeporte(),
+                        r.getUsuarioCreador().getUsername(),
+                        r.getFecIni().format(formatter),
+                        r.getFecFin().format(formatter),
+                        r.getObjetivoDistancia(),
+                        r.getObjetivoTiempo()
+                    });
+                }
+            }
+        };
+
+        // Agregar listener al JComboBox para actualizar la tabla al cambiar el filtro
+        searchCriteria2.addActionListener(e -> updateTable.run());
+
+        // Llenar la tabla inicialmente con el criterio por defecto ("Todos")
+        updateTable.run();
+
+        // Agregar tabla al panel principal
         JTable acceptedTable = new JTable(acceptedModel);
         acceptedTable.setFocusable(false);
         JTableHeader acceptedHeader = acceptedTable.getTableHeader();
         acceptedHeader.setBackground(ORANGE_ACCENT);
         acceptedHeader.setForeground(Color.WHITE);
         acceptedPanel.add(new JScrollPane(acceptedTable), BorderLayout.CENTER);
+
 
         // Botones de acción para modificar y eliminar retos
         JPanel buttonPanel = new JPanel();
@@ -880,7 +915,6 @@ class MainAppGUI extends JFrame {
                     );
 
                     // Añadir el reto al modelo de la tabla
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
                     acceptedModel.addRow(new Object[]{
                         reto.getId(),
                         reto.getNombre(),
@@ -948,7 +982,6 @@ class MainAppGUI extends JFrame {
             com.toedter.calendar.JDateChooser finishDateField = new com.toedter.calendar.JDateChooser();
 
             // Parsear las fechas actuales
-            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
             LocalDateTime currentStart = LocalDateTime.parse(currentStartDateTime, formatter);
             LocalDateTime currentEnd = LocalDateTime.parse(currentEndDateTime, formatter);
 
@@ -1129,8 +1162,6 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
                     int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
                     HashMap<Integer,RetoDTO> retosD= facade.visualizarReto();
                     
