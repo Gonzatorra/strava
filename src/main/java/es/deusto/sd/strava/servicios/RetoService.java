@@ -53,6 +53,9 @@ public class RetoService {
 
     public void eliminarReto(UsuarioDTO usuario, RetoDTO reto) {
     	RetoAssembler.toDomain(reto).eliminarReto(UsuarioAssembler.toDomain(usuario));
+    	if(usuario.getId()==reto.getUsuarioCreador().getId()) {
+    		retos.remove(reto.getId());
+    	}
     }
 
     public List<UsuarioDTO> obtenerClasificacion(RetoDTO reto) {

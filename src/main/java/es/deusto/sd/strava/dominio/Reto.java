@@ -146,6 +146,10 @@ public class Reto implements Serializable{
         if (usuario.equals(this.getUsuarioCreador())) {
             //eliminar reto completo
             System.out.println("El creador elimina el reto.");
+            for(Usuario participante: this.getParticipantes()) {
+            	participante.getRetos().remove(this.id);
+            }
+           
         } else {
             //eliminar al participante de la lista
             this.getParticipantes().remove(usuario);
