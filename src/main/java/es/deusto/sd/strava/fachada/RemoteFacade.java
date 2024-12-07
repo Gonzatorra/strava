@@ -95,24 +95,27 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     
     @Override
     public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
-        try {
-            UsuarioDTO usuario = usuarioService.getUsuarios().values().stream()
-                    .filter(u -> u.getUsername().equals(username))
-                    .findFirst()
-                    .orElse(null);
-
-            if (usuario == null) {
-                UsuarioDTO newUser = usuarioService.registrar(username, password, username + "@" + proveedor.toLowerCase() + ".com", proveedor);
-                System.out.println("User registered with provider: " + proveedor);
-                return newUser;
-            } else if (!password.equals(usuario.getContrasena())) {
-                throw new RemoteException("Incorrect password for user: " + username);
-            }
-
+    	try {
+    		if(!username.equals("")) {
+	            UsuarioDTO usuario = usuarioService.getUsuarios().values().stream()
+	                    .filter(u -> u.getUsername().equals(username))
+	                    .findFirst()
+	                    .orElse(null);
+	
+	            if (usuario == null) {
+	                UsuarioDTO newUser = usuarioService.registrar(username, password, username + "@" + proveedor.toLowerCase() + ".com", proveedor);
+	                System.out.println("User registered with provider: " + proveedor);
+	                return newUser;
+	            } else if (!password.equals(usuario.getContrasena())) {
+	                throw new RemoteException("Incorrect password for user: " + username);
+	            }
+    	
             return usuario;
+    		}
         } catch (Exception e) {
             throw new RemoteException("Error during login with provider: " + proveedor, e);
         }
+		return null;
     }
 
     @Override
