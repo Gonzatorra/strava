@@ -27,11 +27,13 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.JTableHeader;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import javax.swing.table.TableCellRenderer;
 
 public class MenuGUI extends JFrame {
 
@@ -696,7 +698,7 @@ class MainAppGUI extends JFrame {
         
 
         // Nombres de las columnas con la nueva columna "ID"
-        String[] columnNames = {"ID", "Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo"};
+        String[] columnNames = {"ID", "Nombre", "Deporte", "Creador", "Fecha Inicio", "Fecha Fin", "Objetivo Distancia", "Objetivo Tiempo", "Progreso"};
 
         // **Pestaña de retos aceptados**
         JPanel acceptedPanel = new JPanel(new BorderLayout());
@@ -704,6 +706,11 @@ class MainAppGUI extends JFrame {
             @Override
             public boolean isCellEditable(int row, int column) {
                 return false;
+            }
+            
+            @Override
+            public Class<?> getColumnClass(int columnIndex) {
+                return columnIndex == 8 ? Integer.class : String.class;
             }
         };
         
@@ -732,9 +739,18 @@ class MainAppGUI extends JFrame {
             // Filtrar retos basados en el criterio seleccionado
             for (Reto r : retosAceptados.keySet()) {
                 String estado = retosAceptados.get(r);
-
-                // Comprobar si el reto coincide con el filtro
                 if ("Todos".equals(criteria) || criteria.equals(estado)) {
+
+                    List<Entrenamiento> entrenamientos = usuario.getEntrenamientos().stream()
+                        .filter(e -> e.getDeporte().equalsIgnoreCase(r.getDeporte())) 
+                        .collect(Collectors.toList());
+
+                    double totalDistance = entrenamientos.stream()
+                        .mapToDouble(Entrenamiento::getDistancia)
+                        .sum();
+
+                    int progress = (int) Math.min((totalDistance / r.getObjetivoDistancia()) * 100, 100); 
+
                     acceptedModel.addRow(new Object[]{
                         r.getId(),
                         r.getNombre(),
@@ -743,7 +759,8 @@ class MainAppGUI extends JFrame {
                         r.getFecIni().format(formatter),
                         r.getFecFin().format(formatter),
                         r.getObjetivoDistancia(),
-                        r.getObjetivoTiempo()
+                        r.getObjetivoTiempo(),
+                        progress
                     });
                 }
             }
@@ -762,7 +779,23 @@ class MainAppGUI extends JFrame {
         JTableHeader acceptedHeader = acceptedTable.getTableHeader();
         acceptedHeader.setBackground(ORANGE_ACCENT);
         acceptedHeader.setForeground(Color.WHITE);
+        
+        acceptedTable.getColumnModel().getColumn(8).setCellRenderer(new TableCellRenderer() {
+            @Override
+            public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
+                JProgressBar progressBar = new JProgressBar(0, 100);
+                if (value != null && value instanceof Integer) {
+                    progressBar.setValue((int) value);
+                    progressBar.setString(value + "%");
+                    progressBar.setStringPainted(true);
+                }
+                return progressBar;
+            }
+        });
+
+
         acceptedPanel.add(new JScrollPane(acceptedTable), BorderLayout.CENTER);
+        
 
 
         // Botones de acción para modificar y eliminar retos
