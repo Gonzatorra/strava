@@ -43,12 +43,17 @@ public class RetoService {
 
     public void actualizarReto(RetoDTO reto, String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
             UsuarioDTO usuarioCreador, String deporte, List<UsuarioDTO> participantes) {
-    	List<Usuario> particips= new ArrayList<Usuario>();
-    	for (UsuarioDTO usu: participantes) {
-    		particips.add(UsuarioAssembler.toDomain(usu));
-    	}
-    	Reto retoNuevo= RetoAssembler.toDomain(reto).actualizarReto(nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo, UsuarioAssembler.toDomain(usuarioCreador), deporte, particips);
-    	retos.put((Integer)reto.getId(),RetoAssembler.toDTO(retoNuevo));
+    	// Obtener el reto existente del mapa
+        Reto retoExistente = RetoAssembler.toDomain(retos.get(reto.getId()));
+        if (retoExistente != null) {
+            // Actualizar los datos del reto existente
+            retoExistente.actualizarReto(nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo,
+                    UsuarioAssembler.toDomain(usuarioCreador), deporte,
+                    participantes.stream().map(UsuarioAssembler::toDomain).toList());
+
+            // Actualizar el mapa (no es necesario si retoExistente ya está referenciado)
+            retos.put(reto.getId(), RetoAssembler.toDTO(retoExistente));
+        }
     }
 
     public void eliminarReto(UsuarioDTO usuario, RetoDTO reto) {

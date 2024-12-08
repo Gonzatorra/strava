@@ -684,6 +684,7 @@ class MainAppGUI extends JFrame {
                 }
             }
         });
+        
 
         return trainPanel;
     }
@@ -706,6 +707,8 @@ class MainAppGUI extends JFrame {
             }
         };
         
+        
+        
      // Crear JComboBox con las opciones de filtrado
         JComboBox<String> searchCriteria2 = new JComboBox<>(new String[]{"Todos", "Superado", "En Progreso", "No Superado"});
 
@@ -720,15 +723,15 @@ class MainAppGUI extends JFrame {
 
         // Método para llenar la tabla basado en el criterio seleccionado
         Runnable updateTable = () -> {
-            // Obtener el criterio seleccionado
-            String criteria = (String) searchCriteria2.getSelectedItem();
+        	
+        	String criteria = (String) searchCriteria2.getSelectedItem();
 
-            // Limpiar las filas del modelo
+            // Limpiar todas las filas del modelo
             acceptedModel.setRowCount(0);
 
-            // Filtrar los retos basados en el criterio seleccionado
+            // Filtrar retos basados en el criterio seleccionado
             for (Reto r : retosAceptados.keySet()) {
-                String estado = retosAceptados.get(r); // Supone que el estado es "Superado", "En Progreso" o "No Superado"
+                String estado = retosAceptados.get(r);
 
                 // Comprobar si el reto coincide con el filtro
                 if ("Todos".equals(criteria) || criteria.equals(estado)) {
@@ -745,6 +748,7 @@ class MainAppGUI extends JFrame {
                 }
             }
         };
+        
 
         // Agregar listener al JComboBox para actualizar la tabla al cambiar el filtro
         searchCriteria2.addActionListener(e -> updateTable.run());
@@ -776,7 +780,7 @@ class MainAppGUI extends JFrame {
         delButton.setForeground(Color.WHITE);
         buttonPanel.add(delButton);
         acceptedPanel.add(buttonPanel, BorderLayout.SOUTH);
-
+     
         // Lógica para añadir un reto
         addButton.addActionListener(e -> {
             JPanel panel = new JPanel(new GridBagLayout());
@@ -784,6 +788,8 @@ class MainAppGUI extends JFrame {
             gbc.insets = new Insets(5, 5, 5, 5); // Margen entre elementos
             gbc.fill = GridBagConstraints.HORIZONTAL;
             gbc.anchor = GridBagConstraints.WEST;
+            
+            
 
             // Campos del formulario
             JTextField titleField = new JTextField();
@@ -1256,8 +1262,9 @@ class MainAppGUI extends JFrame {
             if (selectedRow != -1) {
                 int idReto = (int) acceptModel.getValueAt(selectedRow, 0);
                 HashMap<Integer, RetoDTO> retosDisponibles = null;
+
                 try {
-                    retosDisponibles = facade.visualizarReto();
+                    retosDisponibles = facade.visualizarReto();  // Recuperar retos desde el servidor
                 } catch (RemoteException ex) {
                     ex.printStackTrace();
                 }
@@ -1265,44 +1272,69 @@ class MainAppGUI extends JFrame {
                 if (retosDisponibles != null && retosDisponibles.containsKey(idReto)) {
                     RetoDTO retoSeleccionado = retosDisponibles.get(idReto);
 
-                    // Verificar si el usuario ya ha aceptado el reto
-                    if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
-                    	
-                    	
-                  
+                    if (!retoSeleccionado.getParticipantes().stream()
+                            .anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
+
                         retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
-                        // Agregar el reto a la lista de retos aceptados
-                        acceptedModel.addRow(new Object[]{
-                            retoSeleccionado.getId(),
-                            retoSeleccionado.getNombre(),
-                            retoSeleccionado.getDeporte(),
-                            retoSeleccionado.getUsuarioCreador().getUsername(),
-                            retoSeleccionado.getFecIni().toString(),
-                            retoSeleccionado.getFecFin().toString(),
-                            retoSeleccionado.getObjetivoDistancia(),
-                            retoSeleccionado.getObjetivoTiempo()
-                        });
-                        JOptionPane.showMessageDialog(addPanel, "Reto aceptado con éxito.");
-                    }
-                    	
-                    	
-                    	
-                    	else {
-                        JOptionPane.showMessageDialog(addPanel, "Ya has aceptado este reto.");
+
+                        try {
+                            List<UsuarioDTO> participantesDTO = retoSeleccionado.getParticipantes().stream()
+                                    .map(UsuarioAssembler::toDTO)
+                                    .toList();
+
+                            facade.actualizarReto(retoSeleccionado,
+                                    retoSeleccionado.getNombre(),
+                                    retoSeleccionado.getFecIni(),
+                                    retoSeleccionado.getFecFin(),
+                                    retoSeleccionado.getObjetivoDistancia(),
+                                    retoSeleccionado.getObjetivoTiempo(),
+                                    UsuarioAssembler.toDTO(retoSeleccionado.getUsuarioCreador()),
+                                    retoSeleccionado.getDeporte(),
+                                    participantesDTO
+                            );
+
+                            // Actualizar la tabla de retos aceptados **inmediatamente**
+                            acceptedModel.setRowCount(0);
+
+                            retosDisponibles.values().stream()
+                                    .filter(reto -> reto.getParticipantes().stream()
+                                            .anyMatch(participante -> participante.getUsername().equals(usuario.getUsername())))
+                                    .forEach(retoAceptado -> {
+                                        acceptedModel.addRow(new Object[]{
+                                                retoAceptado.getId(),
+                                                retoAceptado.getNombre(),
+                                                retoAceptado.getDeporte(),
+                                                retoAceptado.getUsuarioCreador().getUsername(),
+                                                retoAceptado.getFecIni().toString(),
+                                                retoAceptado.getFecFin().toString(),
+                                                retoAceptado.getObjetivoDistancia(),
+                                                retoAceptado.getObjetivoTiempo()
+                                        });
+                                    });
+
+                            JOptionPane.showMessageDialog(addPanel, "¡Reto aceptado correctamente!");
+
+                        } catch (RemoteException ex) {
+                            JOptionPane.showMessageDialog(addPanel, "Fallo al sincronizar el servidor.");
+                            ex.printStackTrace();
+                        }
+                    } else {
+                        JOptionPane.showMessageDialog(addPanel, "¡Ya has aceptado este reto!");
                     }
                 }
             } else {
-                JOptionPane.showMessageDialog(addPanel, "Seleccione un reto para aceptar.");
+                JOptionPane.showMessageDialog(addPanel, "Selecciona un reto válido.");
             }
         });
-
-
         tabbedPane.addTab("Mis Retos", acceptedPanel);
         tabbedPane.addTab("Añadir Reto", addPanel);
-
+        
+        
+        
         mainPanel.add(tabbedPane, BorderLayout.CENTER);
         return mainPanel;
     }
+    
     
     
     
