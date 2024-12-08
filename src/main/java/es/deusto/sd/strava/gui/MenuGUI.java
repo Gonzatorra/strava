@@ -1171,46 +1171,7 @@ class MainAppGUI extends JFrame {
                     int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
                     HashMap<Integer,RetoDTO> retosD= facade.visualizarReto();
                     
-                    if (usuario.equals(retosD.get(retoId).getUsuarioCreador())) {
-                        //eliminar reto completo
-                        System.out.println("El creador elimina el reto.");
-                        for(Usuario participante: retosD.get(retoId).getParticipantes()) {
-                        	participante.getRetos().remove(retosD.get(retoId).getId());
-                        	facade.actualizarUsuario(UsuarioAssembler.toDTO(participante));
-                     
-                        }
-                        facade.eliminarReto(usuario, retosD.get(retoId));
-                        
-                    } else {
-                        //eliminar al participante de la lista
-                    	
-                    	
-                    	ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
-                        for (Usuario u: retosD.get(retoId).getParticipantes()) {
-                        	if(u.getId()==usuario.getId()) {
-                            	usuario.getRetos().remove(retosD.get(retoId));
-                        	}
-                        	else {
-                        		participantesDTO.add(UsuarioAssembler.toDTO(u));
-                        	}
-                        }
-                        
-                    	facade.actualizarReto(retosD.get(retoId),retosD.get(retoId).getNombre(),
-                    			retosD.get(retoId).getFecIni(), 
-                    			retosD.get(retoId).getFecFin(), retosD.get(retoId).getObjetivoDistancia(), 
-                    			retosD.get(retoId).getObjetivoTiempo(), 
-                    			UsuarioAssembler.toDTO(retosD.get(retoId).getUsuarioCreador()),
-                    			retosD.get(retoId).getDeporte(), participantesDTO);
-                    	
-                    	facade.actualizarUsuario(usuario);
-                    	
-                    	facade.eliminarReto(usuario, retosD.get(retoId));
-                    	
-                        System.out.println("El usuario se elimina del reto.");
-                    }
-                    
-                    
-                    
+                    facade.eliminarReto(usuario, retosD.get(retoId));
 
                     acceptedModel.removeRow(selectedRow);
                     JOptionPane.showMessageDialog(this, "Reto eliminado con éxito.");
@@ -1314,8 +1275,10 @@ class MainAppGUI extends JFrame {
 <<<<<<< HEAD
                     // Verificar si el usuario ya ha aceptado el reto
                     if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
-                    
-                    	retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
+                    	
+                    	
+                  
+                        retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
                         
                         ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
                         for (Usuario u: retoSeleccionado.getParticipantes()) {
