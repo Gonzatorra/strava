@@ -1171,7 +1171,44 @@ class MainAppGUI extends JFrame {
                     int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
                     HashMap<Integer,RetoDTO> retosD= facade.visualizarReto();
                     
-                    facade.eliminarReto(usuario, retosD.get(retoId));
+                    if (usuario.equals(retosD.get(retoId).getUsuarioCreador())) {
+                        //eliminar reto completo
+                        System.out.println("El creador elimina el reto.");
+                        for(Usuario participante: retosD.get(retoId).getParticipantes()) {
+                        	participante.getRetos().remove(retosD.get(retoId).getId());
+                        	facade.actualizarUsuario(UsuarioAssembler.toDTO(participante));
+                     
+                        }
+                        facade.eliminarReto(usuario, retosD.get(retoId));
+                        
+                    } else {
+                        //eliminar al participante de la lista
+                    	
+                    	
+                    	ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
+                        for (Usuario u: retosD.get(retoId).getParticipantes()) {
+                        	if(u.getId()==usuario.getId()) {
+                            	usuario.getRetos().remove(retosD.get(retoId));
+                        	}
+                        	else {
+                        		participantesDTO.add(UsuarioAssembler.toDTO(u));
+                        	}
+                        }
+                        
+                    	facade.actualizarReto(retosD.get(retoId),retosD.get(retoId).getNombre(),
+                    			retosD.get(retoId).getFecIni(), 
+                    			retosD.get(retoId).getFecFin(), retosD.get(retoId).getObjetivoDistancia(), 
+                    			retosD.get(retoId).getObjetivoTiempo(), 
+                    			UsuarioAssembler.toDTO(retosD.get(retoId).getUsuarioCreador()),
+                    			retosD.get(retoId).getDeporte(), participantesDTO);
+                    	
+                    	facade.actualizarUsuario(usuario);
+                    	
+                    	facade.eliminarReto(usuario, retosD.get(retoId));
+                    	
+                        System.out.println("El usuario se elimina del reto.");
+                    }
+                    
 
                     acceptedModel.removeRow(selectedRow);
                     JOptionPane.showMessageDialog(this, "Reto eliminado con éxito.");
@@ -1272,13 +1309,13 @@ class MainAppGUI extends JFrame {
                 if (retosDisponibles != null && retosDisponibles.containsKey(idReto)) {
                     RetoDTO retoSeleccionado = retosDisponibles.get(idReto);
 
-<<<<<<< HEAD
                     // Verificar si el usuario ya ha aceptado el reto
                     if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
                     	
                     	
                   
                         retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
+                    	
                         
                         ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
                         for (Usuario u: retoSeleccionado.getParticipantes()) {
@@ -1314,56 +1351,7 @@ class MainAppGUI extends JFrame {
                     	
                     	else {
                         JOptionPane.showMessageDialog(addPanel, "Ya has aceptado este reto.");
-=======
-                    if (!retoSeleccionado.getParticipantes().stream()
-                            .anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
-
-                        retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
-
-                        try {
-                            List<UsuarioDTO> participantesDTO = retoSeleccionado.getParticipantes().stream()
-                                    .map(UsuarioAssembler::toDTO)
-                                    .toList();
-
-                            facade.actualizarReto(retoSeleccionado,
-                                    retoSeleccionado.getNombre(),
-                                    retoSeleccionado.getFecIni(),
-                                    retoSeleccionado.getFecFin(),
-                                    retoSeleccionado.getObjetivoDistancia(),
-                                    retoSeleccionado.getObjetivoTiempo(),
-                                    UsuarioAssembler.toDTO(retoSeleccionado.getUsuarioCreador()),
-                                    retoSeleccionado.getDeporte(),
-                                    participantesDTO
-                            );
-
-                            // Actualizar la tabla de retos aceptados **inmediatamente**
-                            acceptedModel.setRowCount(0);
-
-                            retosDisponibles.values().stream()
-                                    .filter(reto -> reto.getParticipantes().stream()
-                                            .anyMatch(participante -> participante.getUsername().equals(usuario.getUsername())))
-                                    .forEach(retoAceptado -> {
-                                        acceptedModel.addRow(new Object[]{
-                                                retoAceptado.getId(),
-                                                retoAceptado.getNombre(),
-                                                retoAceptado.getDeporte(),
-                                                retoAceptado.getUsuarioCreador().getUsername(),
-                                                retoAceptado.getFecIni().toString(),
-                                                retoAceptado.getFecFin().toString(),
-                                                retoAceptado.getObjetivoDistancia(),
-                                                retoAceptado.getObjetivoTiempo()
-                                        });
-                                    });
-
-                            JOptionPane.showMessageDialog(addPanel, "¡Reto aceptado correctamente!");
-
-                        } catch (RemoteException ex) {
-                            JOptionPane.showMessageDialog(addPanel, "Fallo al sincronizar el servidor.");
-                            ex.printStackTrace();
-                        }
-                    } else {
-                        JOptionPane.showMessageDialog(addPanel, "¡Ya has aceptado este reto!");
->>>>>>> branch 'master' of https://github.com/Gonzatorra/strava.git
+                    
                     }
                 }
             } else {

@@ -61,8 +61,12 @@ public class RetoService {
     	if(usuario.getId()==reto.getUsuarioCreador().getId()) {
     		retos.remove(reto.getId());
     	}
+    	else {
+    		//retos.put(reto.getId(), reto);
+    		RetoDTO r= retos.get(reto.getId());
+    		retos.put(r.getId(), r);
+    	}
     }
-
     public List<UsuarioDTO> obtenerClasificacion(RetoDTO reto) {
     	List<UsuarioDTO> particips= new ArrayList<UsuarioDTO>();
         for (Usuario usu: RetoAssembler.toDomain(reto).obtenerClasificacion()) {

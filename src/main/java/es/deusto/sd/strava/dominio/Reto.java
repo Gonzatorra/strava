@@ -143,7 +143,7 @@ public class Reto implements Serializable{
         System.out.println("El usuario elimina el reto y se saca de la lista en caso de que sea"
                 + "participante. Si es creador, se elimina todo el reto");
         
-        if (usuario.equals(this.getUsuarioCreador())) {
+        /*if (usuario.equals(this.getUsuarioCreador())) {
             //eliminar reto completo
             System.out.println("El creador elimina el reto.");
             for(Usuario participante: this.getParticipantes()) {
@@ -154,7 +154,7 @@ public class Reto implements Serializable{
             //eliminar al participante de la lista
             this.getParticipantes().remove(usuario);
             System.out.println("El usuario se elimina del reto.");
-        }
+        }*/
     }
 
     public void aceptarReto(Usuario usuario) {
