@@ -1271,6 +1271,23 @@ class MainAppGUI extends JFrame {
                     	
                   
                         retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
+                        
+                        ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
+                        for (Usuario u: retoSeleccionado.getParticipantes()) {
+                        	participantesDTO.add(UsuarioAssembler.toDTO(u));
+                        }
+                        
+                        
+                        try {
+							facade.actualizarReto(retoSeleccionado,retoSeleccionado.getNombre(),
+									retoSeleccionado.getFecIni(), retoSeleccionado.getFecFin(), retoSeleccionado.getObjetivoDistancia(),
+									retoSeleccionado.getObjetivoTiempo(), UsuarioAssembler.toDTO(retoSeleccionado.getUsuarioCreador()), 
+									retoSeleccionado.getDeporte(),participantesDTO);
+						} catch (RemoteException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                        usuario.getRetos().put(RetoAssembler.toDomain(retoSeleccionado), "En Progreso");
                         // Agregar el reto a la lista de retos aceptados
                         acceptedModel.addRow(new Object[]{
                             retoSeleccionado.getId(),
