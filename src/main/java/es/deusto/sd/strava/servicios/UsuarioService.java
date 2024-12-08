@@ -85,9 +85,7 @@ public class UsuarioService {
         	usuario.setRetos(usuarioDTO.getRetos());
         	usuarios.put(usuarioDTO.getId(), usuario);
         	System.out.println(usuario.getUsername()+usuario.getContrasena()+usuario.getEntrenamientos());
-        }
-        
-        
+        } 
         
     }
     
