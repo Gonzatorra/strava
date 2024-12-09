@@ -36,11 +36,10 @@ public class UsuarioService {
     }
 
     public UsuarioDTO login(String username, String contrasena) {
-        for (UsuarioDTO usu : usuarios.values()) {
-        	Usuario usuario= UsuarioAssembler.toDomain(usu);
+        for (UsuarioDTO usuario : usuarios.values()) {
             if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
                 System.out.println("Login exitoso para: " + username);
-                return UsuarioAssembler.toDTO(usuario);
+                return usuario;
             }
         }
         System.out.println("Login fallido para: " + username);
