@@ -505,13 +505,13 @@ class MainAppGUI extends JFrame {
         trainPanel.add(buttonPanel, BorderLayout.SOUTH);
 
         
-        modButton.addActionListener(e -> {
+        modButton.addActionListener(event -> { // Renamed parameter to 'event' to avoid conflicts
             int selectedRow = trainTable.getSelectedRow();
             if (selectedRow == -1) {
                 JOptionPane.showMessageDialog(this, "Seleccione un entrenamiento para modificar.");
                 return;
             }
-            
+
             // Obtiene la fecha original desde la tabla
             LocalDate fechaOriginal = (LocalDate) tableModel.getValueAt(selectedRow, 0);
 
@@ -538,41 +538,50 @@ class MainAppGUI extends JFrame {
                 try {
                     String title = titleField.getText();
                     String sport = sportField.getText();
-                    float distance = Float.parseFloat(distanceField.getText());
-                    double duration = Double.parseDouble(durationField.getText());
+                    double distance = Double.parseDouble(distanceField.getText()); // Parse distance as double
+                    double duration = Double.parseDouble(durationField.getText()); // Parse duration as double
 
-                    
-                    float hora = LocalTime.now().getMinute() + LocalTime.now().getHour() / 60.0f;
+                    // Get the entrenamiento ID from the table
+                    int entrenamientoId = (int) tableModel.getValueAt(selectedRow, 1);
 
-                    System.out.println("KJHGC NJGFC");
-                    System.out.println(title);
-                    System.out.println(sport);
-                    System.out.println(distance);
-                    System.out.println(duration);
-                    //facade.eliminarEntreno(selectedRow, entrena)
-                    //facade.crearEntreno(UUID.randomUUID().toString(), usuario, title, sport, distance, fechaOriginal, hora, duration);
-                    /*for(int i = 0; i<usuario.getEntrenamientos().size();i++) {
-                    	System.out.println(usuario.getEntrenamientos().get(i).getId());
-                    	System.out.println(usuario.getEntrenamientos().get(i).getTitulo());
-                    }*/
-                    
+                    // Find the entrenamiento object from the user's entrenamiento list
+                    EntrenamientoDTO entrenamientoToUpdate = usuario.getEntrenamientos().stream()
+                        .filter(e -> e.getId() == entrenamientoId)
+                        .findFirst()
+                        .orElseThrow(() -> new IllegalArgumentException("Entrenamiento no encontrado"));
+
+                    // Update the entrenamiento via facade
+                    facade.actualizarEntreno(entrenamientoToUpdate, title, sport, duration, distance);
+
+                    // Update the entrenamiento in the user's list
+                    entrenamientoToUpdate.setTitulo(title);
+                    entrenamientoToUpdate.setDeporte(sport);
+                    entrenamientoToUpdate.setDistancia((float) distance); // Cast to float if required
+                    entrenamientoToUpdate.setDuracion((float) duration);
+
+                    // Update the user to persist the updated entrenamiento
                     facade.actualizarUsuario(usuario);
-                     
-                    
-                    //Actualiza la tabla
+
+                    // Update the table
                     tableModel.setValueAt(fechaOriginal, selectedRow, 0);
-                    tableModel.setValueAt(titleField.getText(), selectedRow, 2);
-                    tableModel.setValueAt(Integer.parseInt(durationField.getText()), selectedRow, 3);
-                    tableModel.setValueAt(Float.parseFloat(distanceField.getText()), selectedRow, 4);
-                    tableModel.setValueAt(sportField.getText(), selectedRow, 5);
-                    trainPanel.revalidate();  // Asegura que se actualice el panel
+                    tableModel.setValueAt(title, selectedRow, 2);
+                    tableModel.setValueAt(duration, selectedRow, 3);
+                    tableModel.setValueAt(distance, selectedRow, 4);
+                    tableModel.setValueAt(sport, selectedRow, 5);
+
+                    trainPanel.revalidate();  // Ensure panel is updated
                     trainPanel.repaint();
-                    
+
                     JOptionPane.showMessageDialog(this, "Entrenamiento actualizado con éxito");
-                    
+
+                } catch (NumberFormatException ex) {
+                    JOptionPane.showMessageDialog(
+                            this, "Por favor, ingrese valores numéricos válidos para la distancia y duración."
+                    );
+                    ex.printStackTrace();
                 } catch (Exception error) {
                     JOptionPane.showMessageDialog(
-                            this, "Hubo error al modificar el entrenamiento!" + error
+                            this, "Hubo error al modificar el entrenamiento: " + error
                     );
                     error.printStackTrace();
                 }
