@@ -8,7 +8,6 @@ public class EntrenamientoDTO implements Serializable {
     private static final long serialVersionUID = 1L;
 
     // Atributos
-    private static int idCounter = 1;  // Contador estático para incrementar el ID automáticamente
     private int id;
     private Usuario usuario;
     private String titulo;
@@ -25,9 +24,9 @@ public class EntrenamientoDTO implements Serializable {
 	}
 
 	// Constructor
-    public EntrenamientoDTO(Usuario usuario, String titulo, String deporte, double distancia, LocalDate fecIni,
+    public EntrenamientoDTO(int id, Usuario usuario, String titulo, String deporte, double distancia, LocalDate fecIni,
                             float horaIni, double duracion) {
-        this.id = idCounter++;  // Asigna y aumenta el ID automáticamente
+        this.id = id;  // Asigna y aumenta el ID automáticamente
         this.usuario = usuario;
         this.titulo = titulo;
         this.deporte = deporte;

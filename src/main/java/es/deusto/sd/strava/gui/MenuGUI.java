@@ -682,17 +682,11 @@ class MainAppGUI extends JFrame {
                     );
                     usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
                     facade.actualizarUsuario(usuario);
-                    for(int i = 0; i<usuario.getEntrenamientos().size(); i++) {
-                    	System.out.println(usuario.getEntrenamientos().get(i).getId());
-                    	System.out.println("ZZZ");
-                    }
-                    System.out.println("JJ");
-                    
 
                     // Añade el progreso y otros valores a la tabla
                     tableModel.addRow(new Object[]{
                     		fecha,
-                            usuario.getId(),          // Número de fila
+                            entreno.getId(),  
                             title,         // Título
                             duration,      // Duración (minutos)
                             distance,       // Distancia (km)

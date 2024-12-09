@@ -13,11 +13,22 @@ import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Usuario;
 
 public class EntrenamientoService {
+    private static HashMap<Integer,Integer> entrenoIdxUsuario;
+    
+    public EntrenamientoService() {
+    	entrenoIdxUsuario = new HashMap<Integer, Integer>(); //IDusuario, IDultimoentreno
+        System.out.println("UsuarioService inicializado.");
+    }
 
 	public EntrenamientoDTO crearEntreno(UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
             float horaInicio, double duracion) {
 		// Crear el nuevo entrenamiento
-		EntrenamientoDTO entreno = new EntrenamientoDTO(UsuarioAssembler.toDomain(usuario), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
+		Integer idUEntreno=entrenoIdxUsuario.getOrDefault(usuario.getId(), 0); //si no tiene entrenamientos
+		if(idUEntreno==null) {
+			entrenoIdxUsuario.put(usuario.getId(), 0);
+		}
+		entrenoIdxUsuario.put(usuario.getId(), idUEntreno+1);
+		EntrenamientoDTO entreno = new EntrenamientoDTO(idUEntreno+1, UsuarioAssembler.toDomain(usuario), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
 		return entreno;
 	}
 
