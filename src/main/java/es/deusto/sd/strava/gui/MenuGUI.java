@@ -586,7 +586,6 @@ class MainAppGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Seleccione un entrenamiento para eliminar.");
                 return;
             }
-            
 
             int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -597,30 +596,31 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
-                    
-                    LocalDate fecha = dateTime.toLocalDate();
-                    LocalTime horaLT = dateTime.toLocalTime();
+                    // Use LocalDate directly instead of parsing
+                    LocalDate fecha = (LocalDate) tableModel.getValueAt(selectedRow, 0);
+                    LocalTime horaLT = LocalTime.of(0, 0); // Assuming no specific time is stored
                     int horas = horaLT.getHour();
                     int minutos = horaLT.getMinute();
                     float hora = horas + minutos / 60.0f;
-                    
-                    int id= (Integer) tableModel.getValueAt(selectedRow, 1);
+
+                    int id = (Integer) tableModel.getValueAt(selectedRow, 1);
                     String titulo = (String) tableModel.getValueAt(selectedRow, 2);
                     int duracion = ((Number) tableModel.getValueAt(selectedRow, 3)).intValue();
                     float distancia = ((Number) tableModel.getValueAt(selectedRow, 4)).floatValue();
                     String deporte = (String) tableModel.getValueAt(selectedRow, 5);
 
-                   
-                    /*ArrayList<Entrenamiento> entrenos1 = UsuarioAssembler.toDomain(usuario).getEntrenamientos();
-                    for (Entrenamiento ent: entrenos1) {
-                    	if(ent.getId()==id){
-                    		 facade.eliminarEntreno(EntrenamientoAssembler.toDTO(ent));
-                    	}
+                    // Simulate deletion logic (uncomment and adapt if needed)
+                    /*
+                    ArrayList<Entrenamiento> entrenos1 = UsuarioAssembler.toDomain(usuario).getEntrenamientos();
+                    for (Entrenamiento ent : entrenos1) {
+                        if (ent.getId() == id) {
+                            facade.eliminarEntreno(EntrenamientoAssembler.toDTO(ent));
+                        }
                     }
-                    facade.actualizarUsuario(usuario);*/
-                   
+                    facade.actualizarUsuario(usuario);
+                    */
 
+                    // Remove row from table
                     tableModel.removeRow(selectedRow);
 
                     JOptionPane.showMessageDialog(this, "Entrenamiento eliminado con éxito.");
