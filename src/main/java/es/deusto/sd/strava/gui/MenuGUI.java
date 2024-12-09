@@ -596,31 +596,37 @@ class MainAppGUI extends JFrame {
 
             if (confirm == JOptionPane.YES_OPTION) {
                 try {
-                    // Use LocalDate directly instead of parsing
-                    LocalDate fecha = (LocalDate) tableModel.getValueAt(selectedRow, 0);
-                    LocalTime horaLT = LocalTime.of(0, 0); // Assuming no specific time is stored
-                    int horas = horaLT.getHour();
-                    int minutos = horaLT.getMinute();
-                    float hora = horas + minutos / 60.0f;
-
+                    // Retrieve the entrenamiento ID from the table
                     int id = (Integer) tableModel.getValueAt(selectedRow, 1);
-                    String titulo = (String) tableModel.getValueAt(selectedRow, 2);
-                    int duracion = ((Number) tableModel.getValueAt(selectedRow, 3)).intValue();
-                    float distancia = ((Number) tableModel.getValueAt(selectedRow, 4)).floatValue();
-                    String deporte = (String) tableModel.getValueAt(selectedRow, 5);
 
-                    // Simulate deletion logic (uncomment and adapt if needed)
-                    /*
-                    ArrayList<Entrenamiento> entrenos1 = UsuarioAssembler.toDomain(usuario).getEntrenamientos();
-                    for (Entrenamiento ent : entrenos1) {
-                        if (ent.getId() == id) {
-                            facade.eliminarEntreno(EntrenamientoAssembler.toDTO(ent));
+                    // Find the corresponding EntrenamientoDTO in the user's list
+                    int entrenamientoIndex = -1;
+                    EntrenamientoDTO entrenamientoToRemove = null;
+
+                    for (int i = 0; i < usuario.getEntrenamientos().size(); i++) {
+                        EntrenamientoDTO entrenamiento = usuario.getEntrenamientos().get(i);
+                        if (entrenamiento.getId() == id) {
+                            entrenamientoToRemove = entrenamiento;
+                            entrenamientoIndex = i;
+                            break;
                         }
                     }
-                    facade.actualizarUsuario(usuario);
-                    */
 
-                    // Remove row from table
+                    if (entrenamientoToRemove == null || entrenamientoIndex == -1) {
+                        JOptionPane.showMessageDialog(this, "No se pudo encontrar el entrenamiento para eliminar.");
+                        return;
+                    }
+
+                    // Call facade to delete the entrenamiento, passing the index and the EntrenamientoDTO
+                    facade.eliminarEntreno(entrenamientoIndex, entrenamientoToRemove);
+
+                    // Remove the entrenamiento from the user's list
+                    usuario.getEntrenamientos().remove(entrenamientoIndex);
+
+                    // Update the user in the backend
+                    facade.actualizarUsuario(usuario);
+
+                    // Remove the row from the table
                     tableModel.removeRow(selectedRow);
 
                     JOptionPane.showMessageDialog(this, "Entrenamiento eliminado con éxito.");
