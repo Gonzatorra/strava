@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
@@ -45,7 +47,7 @@ public class RetoService {
             UsuarioDTO usuarioCreador, String deporte, List<UsuarioDTO> participantes) {
     	// Obtener el reto existente del mapa
         Reto retoExistente = RetoAssembler.toDomain(retos.get(reto.getId()));
-        if (retoExistente != null) {
+        if (retoExistente != null && retoExistente.getUsuarioCreador().getId()==usuarioCreador.getId()) {
             // Actualizar los datos del reto existente
             retoExistente.actualizarReto(nombre, fecIni, fecFin, objetivoDistancia, objetivoTiempo,
                     UsuarioAssembler.toDomain(usuarioCreador), deporte,
@@ -53,6 +55,9 @@ public class RetoService {
 
             // Actualizar el mapa (no es necesario si retoExistente ya está referenciado)
             retos.put(reto.getId(), RetoAssembler.toDTO(retoExistente));
+        }
+        else {
+        	JOptionPane.showMessageDialog(null, "No se ha podido actualizar el reto");
         }
     }
 
