@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -455,29 +456,27 @@ class MainAppGUI extends JFrame {
                 return false;
             }
         };
-        
-        
+     // Limpia todo el contenido anterior
+        tableModel.setRowCount(0);
         
         
         
         //cargar entrenamientos
-        ArrayList<Entrenamiento> entrenos= usuario.getEntrenamientos();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-        for (Entrenamiento e: entrenos) {
-        	int horas = (int) e.getHoraIni(); // Parte entera (horas)
-            int minutos = (int) ((e.getHoraIni() - horas) * 60); // Fracción convertida a minutos
-
-            // Crear un LocalTime
-            LocalTime hora = LocalTime.of(horas, minutos);
-        	tableModel.addRow(new Object[]{
-                    e.getFecIni().toString() + hora.toString(),
-                    e.getId(),
-                    e.getTitulo(),
-                    e.getDuracion(),
-                    e.getDistancia(),
-                    e.getDeporte()
-                });
+        ArrayList<Entrenamiento> entrenos = usuario.getEntrenamientos();
+        tableModel.setRowCount(0);  // Borra todo en el tableModel
+        for (Entrenamiento e : entrenos) {
+            tableModel.addRow(new Object[]{
+                e.getFecIni(),
+                e.getId(),
+                e.getTitulo(),
+                e.getDuracion(),
+                e.getDistancia(),
+                e.getDeporte()
+            });
         }
+        
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        
        
         JTable trainTable = new JTable(tableModel);
         trainTable.setFocusable(false); 
@@ -485,6 +484,8 @@ class MainAppGUI extends JFrame {
         header.setBackground(ORANGE_ACCENT);
         header.setForeground(Color.WHITE);
         trainPanel.add(new JScrollPane(trainTable), BorderLayout.CENTER);
+        trainPanel.revalidate();  // Asegura que se actualice el panel
+        trainPanel.repaint();
 
        
         JPanel buttonPanel = new JPanel();
@@ -509,13 +510,15 @@ class MainAppGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Seleccione un entrenamiento para modificar.");
                 return;
             }
+            
+            // Obtiene la fecha original desde la tabla
+            LocalDate fechaOriginal = (LocalDate) tableModel.getValueAt(selectedRow, 0);
 
             JPanel panel = new JPanel(new GridLayout(5, 2));
-            JTextField titleField = new JTextField((String) tableModel.getValueAt(selectedRow, 1));
-            JTextField sportField = new JTextField((String) tableModel.getValueAt(selectedRow, 4));
-            JTextField durationField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 2)));
-            JTextField distanceField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 3)));
-
+            JTextField titleField = new JTextField(tableModel.getValueAt(selectedRow, 2).toString());
+            JTextField durationField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 3)));
+            JTextField distanceField = new JTextField(String.valueOf(tableModel.getValueAt(selectedRow, 4)));
+            JTextField sportField = new JTextField(tableModel.getValueAt(selectedRow, 5).toString());
             panel.add(new JLabel("Título:"));
             panel.add(titleField);
             panel.add(new JLabel("Deporte:"));
@@ -525,51 +528,64 @@ class MainAppGUI extends JFrame {
             panel.add(new JLabel("Distancia (km):"));
             panel.add(distanceField);
 
-            int option = JOptionPane.showConfirmDialog(this, panel, "Modificar Entrenamiento", JOptionPane.OK_CANCEL_OPTION, JOptionPane.PLAIN_MESSAGE);
+            int option = JOptionPane.showConfirmDialog(
+                    this, panel,
+                    "Modificar Entrenamiento", JOptionPane.OK_CANCEL_OPTION,
+                    JOptionPane.PLAIN_MESSAGE);
 
             if (option == JOptionPane.OK_OPTION) {
                 try {
-                    LocalDateTime dateTime = LocalDateTime.parse((String) tableModel.getValueAt(selectedRow, 0), formatter);
+                    String title = titleField.getText();
+                    String sport = sportField.getText();
+                    float distance = Float.parseFloat(distanceField.getText());
+                    int duration = Integer.parseInt(durationField.getText());
+
+                    // Actualizo la fecha y hora actual
+                    LocalDate fecha = LocalDate.now();
+                    float hora = LocalTime.now().getMinute() + LocalTime.now().getHour() / 60.0f;
+
+                    EntrenamientoDTO modificado = new EntrenamientoDTO(
+                            selectedRow,
+                            UsuarioAssembler.toDomain(usuario),
+                            title,
+                            sport,
+                            distance,
+                            fecha,
+                            hora,
+                            duration);
+
+                    try {
+                        facade.actualizarEntreno(usuario, modificado, title, sport, distance, duration);
+                        
+                       
+                    } catch (RemoteException a) {
+                        JOptionPane.showMessageDialog(this, "Error al actualizar el entrenamiento.");
+                        a.printStackTrace();
+                    }
+
                     
-                    LocalDate fecha = dateTime.toLocalDate();
-                    LocalTime horaLT = dateTime.toLocalTime();
-                    int horas = horaLT.getHour();
-                    int minutos = horaLT.getMinute();
-                    float hora = horas + minutos / 60.0f;
+                    //Actualiza la tabla
+                    tableModel.setValueAt(fechaOriginal, selectedRow, 0);
+                    tableModel.setValueAt(titleField.getText(), selectedRow, 2);
+                    tableModel.setValueAt(Integer.parseInt(durationField.getText()), selectedRow, 3);
+                    tableModel.setValueAt(Float.parseFloat(distanceField.getText()), selectedRow, 4);
+                    tableModel.setValueAt(sportField.getText(), selectedRow, 5);
+                    trainPanel.revalidate();  // Asegura que se actualice el panel
+                    trainPanel.repaint();
                     
+                    facade.actualizarUsuario(usuario);
+
+                    JOptionPane.showMessageDialog(this, "Entrenamiento actualizado con éxito");
                     
-                    Entrenamiento entrenamiento = new Entrenamiento(
-                        selectedRow,
-                        UsuarioAssembler.toDomain(usuario),
-                        titleField.getText(),
-                        sportField.getText(),
-                        Float.parseFloat(distanceField.getText()),
-                        fecha,
-                        hora,
-                        Double.parseDouble(durationField.getText())
+                } catch (Exception error) {
+                    JOptionPane.showMessageDialog(
+                            this, "Hubo error al modificar el entrenamiento!" + error
                     );
-
-                    
-                    facade.actualizarEntreno(
-                        EntrenamientoAssembler.toDTO(entrenamiento),
-                        Float.parseFloat(distanceField.getText()),
-                        fecha,
-                        hora,
-                        Double.parseDouble(durationField.getText())
-                    );
-
-                    tableModel.setValueAt(titleField.getText(), selectedRow, 1);
-                    tableModel.setValueAt(sportField.getText(), selectedRow, 4);
-                    tableModel.setValueAt(Integer.parseInt(durationField.getText()), selectedRow, 2);
-                    tableModel.setValueAt(Double.parseDouble(distanceField.getText()), selectedRow, 3);
-
-                    JOptionPane.showMessageDialog(this, "Entrenamiento modificado con éxito.");
-                } catch (Exception ex) {
-                    JOptionPane.showMessageDialog(this, "Error al modificar entrenamiento: " + ex.getMessage());
-                    ex.printStackTrace();
+                    error.printStackTrace();
                 }
             }
-        }); 
+        });
+
         
         delButton.addActionListener(e -> {
             int selectedRow = trainTable.getSelectedRow();
@@ -577,6 +593,7 @@ class MainAppGUI extends JFrame {
                 JOptionPane.showMessageDialog(this, "Seleccione un entrenamiento para eliminar.");
                 return;
             }
+            
 
             int confirm = JOptionPane.showConfirmDialog(
                 this,
@@ -608,6 +625,7 @@ class MainAppGUI extends JFrame {
                     		 facade.eliminarEntreno(EntrenamientoAssembler.toDTO(ent));
                     	}
                     }
+                    facade.actualizarUsuario(usuario);
                    
 
                     tableModel.removeRow(selectedRow);
@@ -628,6 +646,8 @@ class MainAppGUI extends JFrame {
             JTextField sportField = new JTextField(10);
             JTextField durationField = new JTextField(10);
             JTextField distanceField = new JTextField(10);
+            trainPanel.revalidate();  // Asegura que se actualice el panel
+            trainPanel.repaint();
 
             panel.add(new JLabel("Título:"));
             panel.add(titleField);
@@ -658,25 +678,38 @@ class MainAppGUI extends JFrame {
                     int horas = horaLT.getHour();
                     int minutos = horaLT.getMinute();
                     float hora = horas + minutos / 60.0f;
-
-                    facade.crearEntreno(
-                    	usuario,
-                        title,
-                        sport,
-                        distance,
-                        fecha,
-                        hora,
-                        duration
+                    int index = tableModel.getRowCount() + 1;  // Calcula el número de fila
+                    EntrenamientoDTO entreno = facade.crearEntreno(
+                    		index,
+                            usuario,
+                            title,
+                            sport,
+                            distance,
+                            fecha,
+                            hora,
+                            duration
                     );
+                    usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
+                    facade.actualizarUsuario(usuario);
+                    for(int i = 0; i<usuario.getEntrenamientos().size(); i++) {
+                    	System.out.println(usuario.getEntrenamientos().get(i).getId());
+                    	System.out.println("ZZZ");
+                    }
+                    System.out.println("JJ");
+                    
 
+                    // Añade el progreso y otros valores a la tabla
                     tableModel.addRow(new Object[]{
-                        now.format(formatter),
-                        title,
-                        duration,
-                        distance,
-                        sport
+                    		fecha,
+                            index,          // Número de fila
+                            title,         // Título
+                            duration,      // Duración (minutos)
+                            distance,       // Distancia (km)
+                            sport         // Deporte
                     });
-
+                    trainPanel.revalidate();  // Asegura que se actualice el panel
+                    trainPanel.repaint();
+                    
                     JOptionPane.showMessageDialog(this, "Entrenamiento añadido con éxito.");
                 } catch (NumberFormatException ex) {
                     JOptionPane.showMessageDialog(this, "Por favor, ingresa valores válidos para la duración y distancia.");
@@ -686,7 +719,6 @@ class MainAppGUI extends JFrame {
                 }
             }
         });
-        
 
         return trainPanel;
     }
@@ -728,10 +760,8 @@ class MainAppGUI extends JFrame {
         HashMap<Reto, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-        // Método para llenar la tabla basado en el criterio seleccionado
         Runnable updateTable = () -> {
-        	
-        	String criteria = (String) searchCriteria2.getSelectedItem();
+            String criteria = (String) searchCriteria2.getSelectedItem();
 
             // Limpiar todas las filas del modelo
             acceptedModel.setRowCount(0);
@@ -739,39 +769,50 @@ class MainAppGUI extends JFrame {
             // Filtrar retos basados en el criterio seleccionado
             for (Reto r : retosAceptados.keySet()) {
                 String estado = retosAceptados.get(r);
+
                 if ("Todos".equals(criteria) || criteria.equals(estado)) {
 
+                    // Obtener entrenamientos del usuario filtrados por el deporte del reto
                     List<Entrenamiento> entrenamientos = usuario.getEntrenamientos().stream()
-                        .filter(e -> e.getDeporte().equalsIgnoreCase(r.getDeporte())) 
+                        .filter(e -> e.getDeporte().equalsIgnoreCase(r.getDeporte()))
                         .collect(Collectors.toList());
 
-                    double totalDistance = entrenamientos.stream()
+                    // Calcular la distancia total acumulada en esos entrenamientos
+                    double distanciaTotal = entrenamientos.stream()
                         .mapToDouble(Entrenamiento::getDistancia)
                         .sum();
 
-                    int progress = (int) Math.min((totalDistance / r.getObjetivoDistancia()) * 100, 100); 
+                    // Calcular el progreso como porcentaje
+                    float progresoPorcentaje = (float) ((distanciaTotal / r.getObjetivoDistancia()) * 100);
 
-                    acceptedModel.addRow(new Object[]{
-                        r.getId(),
-                        r.getNombre(),
-                        r.getDeporte(),
-                        r.getUsuarioCreador().getUsername(),
-                        r.getFecIni().format(formatter),
-                        r.getFecFin().format(formatter),
-                        r.getObjetivoDistancia(),
-                        r.getObjetivoTiempo(),
-                        progress
-                    });
+                    // Asegurarse de que el progreso no exceda el 100%
+                    progresoPorcentaje = Math.min(progresoPorcentaje, 100);
+
+                    try {
+                        acceptedModel.addRow(new Object[]{
+                            r.getId(),
+                            r.getNombre(),
+                            r.getDeporte(),
+                            r.getUsuarioCreador().getUsername(),
+                            r.getFecIni().format(formatter),
+                            r.getFecFin().format(formatter),
+                            r.getObjetivoDistancia(),
+                            r.getObjetivoTiempo(),
+                            progresoPorcentaje + "%"  // Muestra el progreso como porcentaje
+                        });
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         };
-        
 
-        // Agregar listener al JComboBox para actualizar la tabla al cambiar el filtro
+        // Listener para actualizar la tabla cuando se selecciona un nuevo filtro en el JComboBox
         searchCriteria2.addActionListener(e -> updateTable.run());
 
-        // Llenar la tabla inicialmente con el criterio por defecto ("Todos")
+        // Cargar inicialmente la tabla con el criterio por defecto
         updateTable.run();
+
 
         // Agregar tabla al panel principal
         JTable acceptedTable = new JTable(acceptedModel);
@@ -784,11 +825,14 @@ class MainAppGUI extends JFrame {
             @Override
             public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
                 JProgressBar progressBar = new JProgressBar(0, 100);
-                if (value != null && value instanceof Integer) {
-                    progressBar.setValue((int) value);
-                    progressBar.setString(value + "%");
+
+                if (value instanceof Float) {
+                    int progreso = Math.round((Float) value);
+                    progressBar.setValue(progreso);
+                    progressBar.setString(progreso + "%");
                     progressBar.setStringPainted(true);
                 }
+
                 return progressBar;
             }
         });

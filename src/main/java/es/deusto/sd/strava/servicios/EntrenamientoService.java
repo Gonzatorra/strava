@@ -14,22 +14,31 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class EntrenamientoService {
 
-    public EntrenamientoDTO crearEntreno(UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
-                             float horaInicio, double duracion) {
-        Entrenamiento entrenamiento = new Entrenamiento(0, UsuarioAssembler.toDomain(usuario), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
-        usuario.getEntrenamientos().add(entrenamiento);
-        System.out.println("Entrenamiento creado: " + entrenamiento.getTitulo());
-        return EntrenamientoAssembler.toDTO(entrenamiento);
-    }
+	public EntrenamientoDTO crearEntreno(int index, UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
+            float horaInicio, double duracion) {
+		// Crear el nuevo entrenamiento
+		EntrenamientoDTO entreno = new EntrenamientoDTO(index, UsuarioAssembler.toDomain(usuario), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
+		return entreno;
+	}
 
-    public void actualizarEntreno(EntrenamientoDTO entrenamiento, double distancia, LocalDate fechaIni,
-                                  float horaInicio, double duracion) {
-        entrenamiento.setDistancia((float) distancia);
-        entrenamiento.setFecIni(fechaIni);
-        entrenamiento.setHoraIni(horaInicio);
-        entrenamiento.setDuracion(duracion);
-        System.out.println("Entrenamiento actualizado: " + entrenamiento.getTitulo());
-    }
+
+	public void actualizarEntreno(UsuarioDTO usuario, EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) {
+	    // Buscar el entrenamiento correspondiente dentro de la lista de entrenamientos del usuario
+	    for (Entrenamiento e : usuario.getEntrenamientos()) {
+	        if (e.getId() == entrenamiento.getId()) {
+	            e.setTitulo(titulo);
+	            e.setDeporte(deporte);
+	            e.setDistancia((float) distancia);
+	            e.setDuracion(duracion);
+
+	            System.out.println("Entrenamiento actualizado: " + titulo);
+	            return;  // Salir del método después de actualizar el entrenamiento
+	        }
+	    }
+
+	    System.out.println("No se encontró el entrenamiento para actualizar.");
+	}
+
 
     public void eliminarEntreno(EntrenamientoDTO entrenamiento) {
         System.out.println("Entrenamiento eliminado: " + entrenamiento.getTitulo());

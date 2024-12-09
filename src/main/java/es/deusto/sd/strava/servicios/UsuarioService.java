@@ -1,5 +1,6 @@
 package es.deusto.sd.strava.servicios;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -159,5 +160,50 @@ public class UsuarioService {
     public boolean esTokenValido(String token) {
         return usuarioAutenticado != null && usuarioAutenticado.getToken().equals(token);
     }
+    
+    public Map<Integer, Float> calcularProgreso(UsuarioDTO usuarioDTO) throws RemoteException {
+        Map<Integer, Float> progresoPorReto = new HashMap<>();
+
+        // Obtener retos y entrenamientos del usuario
+        HashMap<Reto, String> retos = usuarioDTO.getRetos();  // Map<Reto, Estado>
+        List<Entrenamiento> entrenamientos = usuarioDTO.getEntrenamientos();
+
+        // Iterar sobre los retos
+        for (Reto reto : retos.keySet()) {
+            double totalDistancia = 0;
+            double totalDuracion = 0;
+
+            // Filtrar entrenamientos relevantes basados en las fechas y el deporte del reto
+            for (Entrenamiento entrenamiento : entrenamientos) {
+                if (entrenamiento.getDeporte().equalsIgnoreCase(reto.getDeporte())
+                        && !entrenamiento.getFecIni().isBefore(reto.getFecIni().toLocalDate())
+                        && !entrenamiento.getFecIni().isAfter(reto.getFecFin().toLocalDate())) {
+
+                    totalDistancia += entrenamiento.getDistancia();
+                    totalDuracion += entrenamiento.getDuracion();
+                }
+            }
+
+            // Calcular el progreso basado en el objetivo de distancia y tiempo
+            float progresoDistancia = (reto.getObjetivoDistancia() > 0)
+                    ? (float) (totalDistancia / reto.getObjetivoDistancia()) * 100
+                    : 0;
+
+            float progresoTiempo = (reto.getObjetivoTiempo() > 0)
+                    ? (float) (totalDuracion / reto.getObjetivoTiempo()) * 100
+                    : 0;
+
+            // Combina progreso de distancia y tiempo, eligiendo el valor más realista
+            float progreso = Math.min(100, Math.max(progresoDistancia, progresoTiempo));
+
+            // Almacenar progreso en el mapa
+            progresoPorReto.put(reto.getId(), progreso);
+        }
+
+        return progresoPorReto;
+    }
+
+
+
     
 }

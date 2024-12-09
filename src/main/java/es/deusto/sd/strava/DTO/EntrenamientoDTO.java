@@ -23,8 +23,25 @@ public class EntrenamientoDTO implements Serializable{
  		super();
  		// TODO Auto-generated constructor stub
  	}
+    
+    
 
-    //getters
+    public EntrenamientoDTO(int id, Usuario usuario, String titulo, String deporte, double distancia, LocalDate fecIni,
+			float horaIni, double duracion) {
+		super();
+		this.id = id;
+		this.usuario = usuario;
+		this.titulo = titulo;
+		this.deporte = deporte;
+		this.distancia = distancia;
+		this.fecIni = fecIni;
+		this.horaIni = horaIni;
+		this.duracion = duracion;
+	}
+
+
+
+	//getters
     public int getId() {
         return id;
     }

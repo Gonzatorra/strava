@@ -71,17 +71,17 @@ public class Servidor {
             
             //Usuario 1
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
-            EntrenamientoDTO entreno= servidor.facade.crearEntreno(usuario, "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            EntrenamientoDTO entreno = servidor.facade.crearEntreno(0, usuario, "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
             challengers.add(usuario);
-            RetoDTO reto= servidor.facade.crearReto("PrimerReto", fecha1, fecha2, 10, 30, "running", usuario, challengers);
-            usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
+            RetoDTO reto= servidor.facade.crearReto("PrimerReto", fecha2, fecha1, 10, 30, "running", usuario, challengers);
+            //usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
             usuario.getRetos().put(RetoAssembler.toDomain(reto), "prueba");
             facade.actualizarUsuario(usuario);
             
             
             // Usuario 2
             UsuarioDTO usuario2 = facade.registrarUsuario("juan456", "pass123", "juan456@gmail.com", "Juan");
-            EntrenamientoDTO entreno2 = facade.crearEntreno(usuario2, "EntrenoAvanzado", "cycling", 20.0, fecha, 18.0f, 5.0);
+            EntrenamientoDTO entreno2 = facade.crearEntreno(0, usuario2, "EntrenoAvanzado", "cycling", 20.0, fecha, 18.0f, 5.0);
             List<UsuarioDTO> challengers2 = new ArrayList<UsuarioDTO>();
             challengers2.add(usuario2);
             RetoDTO reto2 = facade.crearReto("RetoCiclismo", fecha1, fecha2, 20, 50, "cycling", usuario2, challengers2);
@@ -91,7 +91,7 @@ public class Servidor {
 
             // Usuario 3
             UsuarioDTO usuario3 = facade.registrarUsuario("lucia789", "luciaPass", "lucia789@gmail.com", "Lucía");
-            EntrenamientoDTO entreno3 = facade.crearEntreno(usuario3, "EntrenoMatutino", "swimming", 5.0, fecha, 12.0f, 1.0);
+            EntrenamientoDTO entreno3 = facade.crearEntreno(0, usuario3, "EntrenoMatutino", "swimming", 5.0, fecha, 12.0f, 1.0);
             List<UsuarioDTO> challengers3 = new ArrayList<UsuarioDTO>();
             challengers3.add(usuario3);
             RetoDTO reto3 = facade.crearReto("RetoNatacion", fecha1, fecha2, 5, 15, "swimming", usuario3, challengers3);
