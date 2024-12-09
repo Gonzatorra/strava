@@ -12,13 +12,13 @@ public class RetoDTO implements Serializable{
     //atributos
     private int id;
     private String deporte;
-    private Usuario usuarioCreador;
+    private UsuarioDTO usuarioCreador;
     private String nombre;
     private LocalDateTime fecIni;  
     private LocalDateTime fecFin; 
     private float objetivoDistancia;
     private float objetivoTiempo;
-    private List<Usuario> participantes;
+    private List<UsuarioDTO> participantes;
 
     //constructor
     public RetoDTO() {
@@ -35,7 +35,7 @@ public class RetoDTO implements Serializable{
         return deporte;
     }
 
-    public Usuario getUsuarioCreador() {
+    public UsuarioDTO getUsuarioCreador() {
         return usuarioCreador;
     }
 
@@ -59,7 +59,7 @@ public class RetoDTO implements Serializable{
         return objetivoTiempo;
     }
 
-    public List<Usuario> getParticipantes() {
+    public List<UsuarioDTO> getParticipantes() {
         return participantes;
     }
 
@@ -72,7 +72,7 @@ public class RetoDTO implements Serializable{
         this.deporte = deporte;
     }
 
-    public void setUsuarioCreador(Usuario usuarioCreador) {
+    public void setUsuarioCreador(UsuarioDTO usuarioCreador) {
         this.usuarioCreador = usuarioCreador;
     }
 
@@ -96,7 +96,7 @@ public class RetoDTO implements Serializable{
         this.objetivoTiempo = objetivoTiempo;
     }
 
-    public void setParticipantes(List<Usuario> participantes) {
+    public void setParticipantes(List<UsuarioDTO> participantes) {
         this.participantes = participantes;
     }
    

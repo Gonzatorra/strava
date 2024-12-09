@@ -8,7 +8,7 @@ public class EntrenamientoAssembler {
 	public static EntrenamientoDTO toDTO(Entrenamiento entrenamiento) {
         EntrenamientoDTO dto = new EntrenamientoDTO();
         dto.setId(entrenamiento.getId());
-        dto.setUsuario(entrenamiento.getUsuario());
+        dto.setUsuario(UsuarioAssembler.toDTO(entrenamiento.getUsuario()));
         dto.setTitulo(entrenamiento.getTitulo());
         dto.setDeporte(entrenamiento.getDeporte());
         dto.setDistancia(entrenamiento.getDistancia());
@@ -21,7 +21,7 @@ public class EntrenamientoAssembler {
 	
 	public static Entrenamiento toDomain(EntrenamientoDTO entrenamientoDTO) {
         return new Entrenamiento(entrenamientoDTO.getId(),
-        		entrenamientoDTO.getUsuario(),
+        		UsuarioAssembler.toDomain(entrenamientoDTO.getUsuario()),
         		entrenamientoDTO.getTitulo(),
         		entrenamientoDTO.getDeporte(),
         		entrenamientoDTO.getDistancia(),

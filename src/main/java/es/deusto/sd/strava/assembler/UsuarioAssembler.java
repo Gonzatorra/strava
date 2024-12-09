@@ -4,7 +4,10 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
+import es.deusto.sd.strava.DTO.EntrenamientoDTO;
+import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.dominio.Entrenamiento;
 import es.deusto.sd.strava.dominio.Reto;
 import es.deusto.sd.strava.dominio.Usuario;
 
@@ -22,24 +25,31 @@ public class UsuarioAssembler {
         dto.setfNacimiento(usuario.getfNacimiento());
         dto.setFecCMax(usuario.getFecCMax());
         dto.setFecCReposo(usuario.getFecCReposo());
-        dto.setAmigos(usuario.getAmigos());
+        
+        ArrayList<UsuarioDTO> amigosDT = new ArrayList<UsuarioDTO>();
+        for (Usuario u: usuario.getAmigos()) {
+        	amigosDT.add(UsuarioAssembler.toDTO(u));
+        }
+        dto.setAmigos(amigosDT);
+        
         dto.setToken(usuario.getToken());
         dto.setProveedor(usuario.getProveedor());
 
-        if (usuario.getEntrenamientos() != null) {
-            dto.setEntrenamientos(new ArrayList<>(usuario.getEntrenamientos()));
+        
+        ArrayList<EntrenamientoDTO> entrenosDT = new ArrayList<>();
+        for (Entrenamiento e: usuario.getEntrenamientos()) {
+        	entrenosDT.add(EntrenamientoAssembler.toDTO(e));
         }
-        if (usuario.getAmigos() != null) {
-            dto.setAmigos(new ArrayList<>(usuario.getAmigos()));
-        }
+        dto.setEntrenamientos(entrenosDT);
 
-        if (usuario.getRetos() != null) {
-            HashMap<Reto, String> retosMap = new HashMap<>();
-            for (Map.Entry<Reto, String> entry : usuario.getRetos().entrySet()) {
-                retosMap.put(entry.getKey(), entry.getValue());
-            }
-            dto.setRetos(retosMap);
+        HashMap<RetoDTO, String> retosMap = new HashMap<>();
+        for (Map.Entry<Reto, String> entry : usuario.getRetos().entrySet()) {
+                retosMap.put(RetoAssembler.toDTO(entry.getKey()), entry.getValue());
         }
+        dto.setRetos(retosMap);
+        
+        
+        
 
         return dto;
     }
@@ -57,24 +67,30 @@ public class UsuarioAssembler {
 	    usuario.setFecCMax(usuarioDTO.getFecCMax());
 	    usuario.setFecCReposo(usuarioDTO.getFecCReposo());
 	    usuario.setToken(usuarioDTO.getToken());
-	    usuario.setAmigos(usuarioDTO.getAmigos());
 	    usuario.setProveedor(usuarioDTO.getProveedor());
 
-	    if (usuarioDTO.getEntrenamientos() != null) {
-	        usuario.setEntrenamientos(new ArrayList<>(usuarioDTO.getEntrenamientos()));
-	    }
-	    
-	    if (usuarioDTO.getAmigos() != null) {
-	        usuario.setAmigos(new ArrayList<>(usuarioDTO.getAmigos()));
-	    }
+	    ArrayList<Usuario> amigosD = new ArrayList<Usuario>();
+        for (UsuarioDTO u: usuarioDTO.getAmigos()) {
+        	amigosD.add(UsuarioAssembler.toDomain(u));
+        }
+        usuario.setAmigos(amigosD);
+        
+        usuario.setToken(usuarioDTO.getToken());
+        usuario.setProveedor(usuarioDTO.getProveedor());
 
-	    if (usuarioDTO.getRetos() != null) {
-	        HashMap<Reto, String> retosMap = new HashMap<>();
-	        for (Map.Entry<Reto, String> entry : usuarioDTO.getRetos().entrySet()) {
-	            retosMap.put(entry.getKey(), entry.getValue());
-	        }
-	        usuario.setRetos(retosMap);
-	    }
+        
+        ArrayList<Entrenamiento> entrenosD = new ArrayList<>();
+        for (EntrenamientoDTO e: usuarioDTO.getEntrenamientos()) {
+        	entrenosD.add(EntrenamientoAssembler.toDomain(e));
+        }
+        usuario.setEntrenamientos(entrenosD);
+
+        HashMap<Reto, String> retosMap = new HashMap<>();
+        for (Map.Entry<RetoDTO, String> entry : usuarioDTO.getRetos().entrySet()) {
+                retosMap.put(RetoAssembler.toDomain(entry.getKey()), entry.getValue());
+        }
+        usuario.setRetos(retosMap);
+        
 
 	    return usuario;
 	}

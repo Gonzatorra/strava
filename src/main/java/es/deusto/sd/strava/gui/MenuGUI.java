@@ -463,9 +463,9 @@ class MainAppGUI extends JFrame {
         
         
         //cargar entrenamientos
-        ArrayList<Entrenamiento> entrenos = usuario.getEntrenamientos();
+        ArrayList<EntrenamientoDTO> entrenos = usuario.getEntrenamientos();
         tableModel.setRowCount(0);  // Borra todo en el tableModel
-        for (Entrenamiento e : entrenos) {
+        for (EntrenamientoDTO e : entrenos) {
             tableModel.addRow(new Object[]{
                 e.getFecIni(),
                 e.getId(),
@@ -680,7 +680,7 @@ class MainAppGUI extends JFrame {
                             hora,
                             duration
                     );
-                    usuario.getEntrenamientos().add(EntrenamientoAssembler.toDomain(entreno));
+                    usuario.getEntrenamientos().add(entreno);
                     facade.actualizarUsuario(usuario);
 
                     // Añade el progreso y otros valores a la tabla
@@ -742,7 +742,7 @@ class MainAppGUI extends JFrame {
         acceptedPanel.add(filterPanel, BorderLayout.NORTH);
 
         // Llenar el modelo inicial basado en el criterio seleccionado
-        HashMap<Reto, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
+        HashMap<RetoDTO, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         Runnable updateTable = () -> {
@@ -752,16 +752,16 @@ class MainAppGUI extends JFrame {
             acceptedModel.setRowCount(0);
 
             // Filtrar retos basados en el criterio seleccionado
-            for (Reto r : retosAceptados.keySet()) {
+            for (RetoDTO r : retosAceptados.keySet()) {
                 String estado = retosAceptados.get(r);
 
                 if ("Todos".equals(criteria) || criteria.equals(estado)) {
 
-                	List<Entrenamiento> entrenamientos = usuario.getEntrenamientos().stream()
+                	List<EntrenamientoDTO> entrenamientos = usuario.getEntrenamientos().stream()
                             .filter(e -> e.getDeporte().equalsIgnoreCase(r.getDeporte())) 
                             .collect(Collectors.toList());
                         double totalDistance = entrenamientos.stream()
-                            .mapToDouble(Entrenamiento::getDistancia)
+                            .mapToDouble(EntrenamientoDTO::getDistancia)
                             .sum();
                         int progress = (int) Math.min((totalDistance / r.getObjetivoDistancia()) * 100, 100); 
 
@@ -947,7 +947,7 @@ class MainAppGUI extends JFrame {
                         throw new IllegalArgumentException("La fecha de inicio debe ser anterior a la fecha de fin.");
                     }
 
-                    Reto reto = new Reto(
+                    /*Reto reto = new Reto(
                         0, // ID se generará
                         sportField.getText(),
                         UsuarioAssembler.toDomain(usuario),
@@ -957,10 +957,10 @@ class MainAppGUI extends JFrame {
                         Float.parseFloat(distanceField.getText()),
                         Float.parseFloat(timeField.getText()),
                         new ArrayList<>()
-                    );
+                    );*/
 
                     // Llamar al método del facade para guardar el reto
-                    facade.crearReto(
+                    RetoDTO reto= facade.crearReto(
                         titleField.getText(),
                         fecIni,
                         fecFin,
@@ -970,7 +970,6 @@ class MainAppGUI extends JFrame {
                         usuario,
                         new ArrayList<>()
                     );
-
                     // Añadir el reto al modelo de la tabla
                     acceptedModel.addRow(new Object[]{
                         reto.getId(),
@@ -1142,9 +1141,8 @@ class MainAppGUI extends JFrame {
                     }
 
                     // Obtener el reto actual por ID (clave)
-                    Reto retoActual = usuario.getRetos().keySet()
+                    RetoDTO retoActual = usuario.getRetos().keySet()
                         .stream()
-                        .filter(r -> r.getId() == selectedRow) // Asumimos que el ID coincide con la fila seleccionada
                         .findFirst()
                         .orElse(null);
 
@@ -1154,7 +1152,7 @@ class MainAppGUI extends JFrame {
                     }
 
                     // Crear el reto actualizado
-                    Reto retoActualizado = new Reto(
+                    /*Reto retoActualizado = new Reto(
                         selectedRow, // ID del reto
                         sportField.getText(),
                         UsuarioAssembler.toDomain(usuario),
@@ -1164,11 +1162,11 @@ class MainAppGUI extends JFrame {
                         Float.parseFloat(distanceField.getText()),
                         Float.parseFloat(timeField.getText()),
                         new ArrayList<>()
-                    );
+                    );*/
 
                     // Actualizar la información en el backend
                     facade.actualizarReto(
-                        RetoAssembler.toDTO(retoActualizado),
+                        retoActual,
                         titleField.getText(),
                         fecIni,
                         fecFin,
@@ -1180,7 +1178,7 @@ class MainAppGUI extends JFrame {
                     );
 
                     // Agregar el nuevo reto al Map
-                    usuario.getRetos().put(retoActualizado, "prueba");
+                    usuario.getRetos().put(retoActual, "prueba");
 
                     // Actualizar la tabla
                     acceptedModel.setValueAt(titleField.getText(), selectedRow, 1);
@@ -1225,9 +1223,9 @@ class MainAppGUI extends JFrame {
                     if (usuario.equals(retosD.get(retoId).getUsuarioCreador())) {
                         //eliminar reto completo
                         System.out.println("El creador elimina el reto.");
-                        for(Usuario participante: retosD.get(retoId).getParticipantes()) {
+                        for(UsuarioDTO participante: retosD.get(retoId).getParticipantes()) {
                         	participante.getRetos().remove(retosD.get(retoId).getId());
-                        	facade.actualizarUsuario(UsuarioAssembler.toDTO(participante));
+                        	facade.actualizarUsuario(participante);
                      
                         }
                         facade.eliminarReto(usuario, retosD.get(retoId));
@@ -1237,12 +1235,12 @@ class MainAppGUI extends JFrame {
                     	
                     	
                     	ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
-                        for (Usuario u: retosD.get(retoId).getParticipantes()) {
+                        for (UsuarioDTO u: retosD.get(retoId).getParticipantes()) {
                         	if(u.getId()==usuario.getId()) {
                             	usuario.getRetos().remove(retosD.get(retoId));
                         	}
                         	else {
-                        		participantesDTO.add(UsuarioAssembler.toDTO(u));
+                        		participantesDTO.add(u);
                         	}
                         }
                         
@@ -1250,7 +1248,7 @@ class MainAppGUI extends JFrame {
                     			retosD.get(retoId).getFecIni(), 
                     			retosD.get(retoId).getFecFin(), retosD.get(retoId).getObjetivoDistancia(), 
                     			retosD.get(retoId).getObjetivoTiempo(), 
-                    			UsuarioAssembler.toDTO(retosD.get(retoId).getUsuarioCreador()),
+                    			retosD.get(retoId).getUsuarioCreador(),
                     			retosD.get(retoId).getDeporte(), participantesDTO);
                     	
                     	facade.actualizarUsuario(usuario);
@@ -1365,25 +1363,25 @@ class MainAppGUI extends JFrame {
                     	
                     	
                   
-                        retoSeleccionado.getParticipantes().add(UsuarioAssembler.toDomain(usuario));
+                        retoSeleccionado.getParticipantes().add(usuario);
                     	
                         
                         ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
-                        for (Usuario u: retoSeleccionado.getParticipantes()) {
-                        	participantesDTO.add(UsuarioAssembler.toDTO(u));
+                        for (UsuarioDTO u: retoSeleccionado.getParticipantes()) {
+                        	participantesDTO.add(u);
                         }
                         
                         
                         try {
 							facade.actualizarReto(retoSeleccionado,retoSeleccionado.getNombre(),
 									retoSeleccionado.getFecIni(), retoSeleccionado.getFecFin(), retoSeleccionado.getObjetivoDistancia(),
-									retoSeleccionado.getObjetivoTiempo(), UsuarioAssembler.toDTO(retoSeleccionado.getUsuarioCreador()), 
+									retoSeleccionado.getObjetivoTiempo(), retoSeleccionado.getUsuarioCreador(), 
 									retoSeleccionado.getDeporte(),participantesDTO);
 						} catch (RemoteException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();
 						}
-                        usuario.getRetos().put(RetoAssembler.toDomain(retoSeleccionado), "En Progreso");
+                        usuario.getRetos().put(retoSeleccionado, "En Progreso");
                         // Agregar el reto a la lista de retos aceptados
                         acceptedModel.addRow(new Object[]{
                             retoSeleccionado.getId(),
@@ -1573,7 +1571,7 @@ class MainAppGUI extends JFrame {
                     }
 
                     // Añadir el amigo
-                    currentUser.getAmigos().add(UsuarioAssembler.toDomain(selectedUser));
+                    currentUser.getAmigos().add(selectedUser);
                     facade.actualizarUsuario(currentUser);
                     
                     

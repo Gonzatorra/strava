@@ -25,9 +25,9 @@ public class UsuarioDTO implements Serializable{
     private float fecCMax;
     private float fecCReposo;
     private String token;
-    private ArrayList<Entrenamiento> entrenamientos;
-    private HashMap<Reto, String> retos;
-    private ArrayList<Usuario> amigos;
+    private ArrayList<EntrenamientoDTO> entrenamientos;
+    private HashMap<RetoDTO, String> retos;
+    private ArrayList<UsuarioDTO> amigos;
     private String proveedor; // Nuevo atributo
 
     
@@ -40,14 +40,14 @@ public class UsuarioDTO implements Serializable{
 
 
 
-	public ArrayList<Usuario> getAmigos() {
+	public ArrayList<UsuarioDTO> getAmigos() {
 		return amigos;
 	}
 
 
 
 
-	public void setAmigos(ArrayList<Usuario> amigos) {
+	public void setAmigos(ArrayList<UsuarioDTO> amigos) {
 		this.amigos = amigos;
 	}
 
@@ -143,19 +143,19 @@ public class UsuarioDTO implements Serializable{
 		this.token = token;
 	}
 
-	public ArrayList<Entrenamiento> getEntrenamientos() {
+	public ArrayList<EntrenamientoDTO> getEntrenamientos() {
 		return entrenamientos;
 	}
 
-	public void setEntrenamientos(ArrayList<Entrenamiento> entrenamientos) {
+	public void setEntrenamientos(ArrayList<EntrenamientoDTO> entrenamientos) {
 		this.entrenamientos = entrenamientos;
 	}
 
-	public HashMap<Reto, String> getRetos() {
+	public HashMap<RetoDTO, String> getRetos() {
 		return retos;
 	}
 
-	public void setRetos(HashMap<Reto, String> retos) {
+	public void setRetos(HashMap<RetoDTO, String> retos) {
 		this.retos = retos;
 	}
 	

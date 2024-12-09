@@ -28,13 +28,13 @@ public class EntrenamientoService {
 			entrenoIdxUsuario.put(usuario.getId(), 0);
 		}
 		entrenoIdxUsuario.put(usuario.getId(), idUEntreno+1);
-		EntrenamientoDTO entreno = new EntrenamientoDTO(idUEntreno+1, UsuarioAssembler.toDomain(usuario), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
+		EntrenamientoDTO entreno = new EntrenamientoDTO(idUEntreno+1, usuario, titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
 		return entreno;
 	}
 
 
-	/*public void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) {
-	    for (Entrenamiento e : entrenamiento.getUsuario().getEntrenamientos()) {
+	public void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) {
+	    for (EntrenamientoDTO e : entrenamiento.getUsuario().getEntrenamientos()) {
 	        if (e.getId() == entrenamiento.getId()) {
 	            e.setTitulo(titulo);
 	            e.setDeporte(deporte);
@@ -48,7 +48,7 @@ public class EntrenamientoService {
 
 	    // Mensaje fuera del bucle, solo si no se encuentra el entrenamiento
 	    System.out.println("No se encontró el entrenamiento para actualizar.");
-	}*/
+	}
 
 
 

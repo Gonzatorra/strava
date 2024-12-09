@@ -134,8 +134,8 @@ public class UsuarioService {
 
 	public List<UsuarioDTO> getAmigos(UsuarioDTO usuario){
 		ArrayList<UsuarioDTO> amigos= new ArrayList<UsuarioDTO>();
-		for (Usuario usu: usuario.getAmigos()) {
-			amigos.add(UsuarioAssembler.toDTO(usu));
+		for (UsuarioDTO usu: usuario.getAmigos()) {
+			amigos.add(usu);
 		}
 		
     	return amigos;
@@ -165,16 +165,16 @@ public class UsuarioService {
         Map<Integer, Float> progresoPorReto = new HashMap<>();
 
         // Obtener retos y entrenamientos del usuario
-        HashMap<Reto, String> retos = usuarioDTO.getRetos();  // Map<Reto, Estado>
-        List<Entrenamiento> entrenamientos = usuarioDTO.getEntrenamientos();
+        HashMap<RetoDTO, String> retos = usuarioDTO.getRetos();  // Map<Reto, Estado>
+        List<EntrenamientoDTO> entrenamientos = usuarioDTO.getEntrenamientos();
 
         // Iterar sobre los retos
-        for (Reto reto : retos.keySet()) {
+        for (RetoDTO reto : retos.keySet()) {
             double totalDistancia = 0;
             double totalDuracion = 0;
 
             // Filtrar entrenamientos relevantes basados en las fechas y el deporte del reto
-            for (Entrenamiento entrenamiento : entrenamientos) {
+            for (EntrenamientoDTO entrenamiento : entrenamientos) {
                 if (entrenamiento.getDeporte().equalsIgnoreCase(reto.getDeporte())
                         && !entrenamiento.getFecIni().isBefore(reto.getFecIni().toLocalDate())
                         && !entrenamiento.getFecIni().isAfter(reto.getFecFin().toLocalDate())) {

@@ -9,7 +9,7 @@ public class EntrenamientoDTO implements Serializable {
 
     // Atributos
     private int id;
-    private Usuario usuario;
+    private UsuarioDTO usuario;
     private String titulo;
     private String deporte;
     private double distancia;
@@ -24,7 +24,7 @@ public class EntrenamientoDTO implements Serializable {
 	}
 
 	// Constructor
-    public EntrenamientoDTO(int id, Usuario usuario, String titulo, String deporte, double distancia, LocalDate fecIni,
+    public EntrenamientoDTO(int id, UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fecIni,
                             float horaIni, double duracion) {
         this.id = id;  // Asigna y aumenta el ID automáticamente
         this.usuario = usuario;
@@ -45,11 +45,11 @@ public class EntrenamientoDTO implements Serializable {
         this.id = id;
     }
 
-    public Usuario getUsuario() {
+    public UsuarioDTO getUsuario() {
         return usuario;
     }
 
-    public void setUsuario(Usuario usuario) {
+    public void setUsuario(UsuarioDTO usuario) {
         this.usuario = usuario;
     }
 
