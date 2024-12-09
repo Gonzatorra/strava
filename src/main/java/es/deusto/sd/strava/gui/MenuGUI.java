@@ -821,6 +821,7 @@ class MainAppGUI extends JFrame {
         JButton addButton = new JButton("Añadir Reto");
         JButton modButton = new JButton("Modificar Reto");
         JButton delButton = new JButton("Eliminar Reto");
+        JButton updateButton = new JButton("Actualizar Progreso");
         addButton.setBackground(ORANGE_ACCENT);
         addButton.setForeground(Color.WHITE);
         buttonPanel.add(addButton);
@@ -831,6 +832,9 @@ class MainAppGUI extends JFrame {
         delButton.setForeground(Color.WHITE);
         buttonPanel.add(delButton);
         acceptedPanel.add(buttonPanel, BorderLayout.SOUTH);
+        updateButton.setBackground(ORANGE_ACCENT);
+        updateButton.setForeground(Color.WHITE);
+        buttonPanel.add(updateButton);
      
         // Lógica para añadir un reto
         addButton.addActionListener(e -> {
@@ -1266,6 +1270,10 @@ class MainAppGUI extends JFrame {
                     ex.printStackTrace();
                 }
             }
+        });
+        
+        updateButton.addActionListener(e -> {
+            updateTable.run();
         });
 
         // **Pestaña de añadir reto**
