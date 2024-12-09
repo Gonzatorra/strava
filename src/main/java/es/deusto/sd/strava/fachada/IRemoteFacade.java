@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 public interface IRemoteFacade extends Remote {
 	//usuario
@@ -30,9 +31,9 @@ public interface IRemoteFacade extends Remote {
     HashMap<Integer, UsuarioDTO> getUsuarios() throws RemoteException;
     
     //entrenamiento
-    EntrenamientoDTO crearEntreno(int index, UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
-    void actualizarEntreno(UsuarioDTO usuario, EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) throws RemoteException;
-    void eliminarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
+    EntrenamientoDTO crearEntreno(UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni, float horaInicio, double duracion) throws java.rmi.RemoteException;
+    void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) throws RemoteException;
+    void eliminarEntreno(int index, EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     void visualizarEntreno(EntrenamientoDTO entrenamiento) throws java.rmi.RemoteException;
     
     //reto

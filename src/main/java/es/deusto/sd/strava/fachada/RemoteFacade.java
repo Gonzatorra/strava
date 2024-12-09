@@ -126,7 +126,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     @Override
     public void eliminarUsuario(int userId) throws RemoteException {
-        UsuarioDTO usu= usuarioService.getUsuarios().get(userId); 
+        UsuarioDTO usu = usuarioService.getUsuarios().get(userId); 
 
         usuarioService.eliminarUsuario(usu);
     }
@@ -182,21 +182,21 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public EntrenamientoDTO crearEntreno(int index, UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
+	public EntrenamientoDTO crearEntreno(UsuarioDTO usuario, String titulo, String deporte, double distancia, LocalDate fechaIni,
 			float horaInicio, double duracion) throws RemoteException {
-		return entrenamientoService.crearEntreno(index, usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
+		return entrenamientoService.crearEntreno(usuario, titulo, deporte, distancia, fechaIni, horaInicio, duracion);
 		
 	}
 
 	@Override
-	public void actualizarEntreno(UsuarioDTO usuario, EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) throws RemoteException {
-		entrenamientoService.actualizarEntreno(usuario, entrenamiento, titulo, deporte, distancia, duracion);
+	public void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) throws RemoteException {
+		//entrenamientoService.actualizarEntreno(entrenamiento, titulo, deporte, distancia, duracion);
 		
 	}
 
 	@Override
-	public void eliminarEntreno(EntrenamientoDTO entrenamiento) throws RemoteException {
-		entrenamientoService.eliminarEntreno(entrenamiento);
+	public void eliminarEntreno(int index, EntrenamientoDTO entrenamiento) throws RemoteException {
+		entrenamientoService.eliminarEntreno(index, entrenamiento);
 		
 	}
 
