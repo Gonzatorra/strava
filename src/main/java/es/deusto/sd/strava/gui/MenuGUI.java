@@ -1515,8 +1515,8 @@ class MainAppGUI extends JFrame {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(misAmigos, "Error al cargar los amigos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-		
-    	
+        
+        
 
         // **Añadir Amigos Tab Implementation**
         // Definir las columnas para la tabla
@@ -1619,7 +1619,18 @@ class MainAppGUI extends JFrame {
 
                     // Verificar si el usuario ya es amigo
                     ArrayList<UsuarioDTO> amigos = facade.getAmigos(currentUser);
-                    if (amigos.contains(selectedUser)) {
+                    boolean esAmigo = false;
+
+                    if (amigos != null) {
+                        for (UsuarioDTO amigo : amigos) {
+                            if (amigo.getId() == selectedUser.getId()) {
+                                esAmigo = true;
+                                break; // Salir del bucle si encontramos al amigo
+                            }
+                        }
+                    }
+
+                    if (esAmigo) {
                         JOptionPane.showMessageDialog(addAmigos, "Este usuario ya es tu amigo.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
@@ -1627,22 +1638,15 @@ class MainAppGUI extends JFrame {
                     // Añadir el amigo
                     currentUser.getAmigos().add(selectedUser);
                     facade.actualizarUsuario(currentUser);
-                    
-                    
+
                     JOptionPane.showMessageDialog(addAmigos, "Amigo añadido con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-                    
-                    // Eliminar el usuario añadido de la tabla
-                    userModel.removeRow(selectedRow);
+
                 } catch (RemoteException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(addAmigos, "Error al intentar añadir al amigo. Por favor, intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-                
-             // **Mis Amigos Tab Implementation**
-                
 
-               
-                // Cargar amigos actuales al inicializar la tabla
+                // **Mis Amigos Tab Implementation**
                 try {
                     amigoModel.setRowCount(0); // Limpiar cualquier dato previo
                     ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
@@ -1655,9 +1659,7 @@ class MainAppGUI extends JFrame {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(misAmigos, "Error al cargar los amigos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-        		
-            	
-                
+
             } else {
                 JOptionPane.showMessageDialog(addAmigos, "Seleccione un usuario para añadir como amigo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }

@@ -69,26 +69,34 @@ public class UsuarioService {
         }
     }
 
+  //Usuario Service
     public void actualizarUsuario(UsuarioDTO usuarioDTO) {
-    	UsuarioDTO usuario = usuarios.get(usuarioDTO.getId());
+        UsuarioDTO usuario = usuarios.get(usuarioDTO.getId());
         if (usuario != null) {
-        	usuario.setUsername(usuarioDTO.getUsername());
-        	usuario.setEmail(usuarioDTO.getEmail());
-        	usuario.setContrasena(usuarioDTO.getContrasena());
-        	usuario.setNombre(usuarioDTO.getNombre());
-        	usuario.setPeso(usuarioDTO.getPeso());
-        	usuario.setAltura(usuarioDTO.getAltura());
-        	usuario.setfNacimiento(usuarioDTO.getfNacimiento());
-        	
-        	
-        	usuario.setEntrenamientos(usuarioDTO.getEntrenamientos());
-        	usuario.setRetos(usuarioDTO.getRetos());
-        	usuarios.put(usuarioDTO.getId(), usuario);
-        	System.out.println(usuario.getUsername()+usuario.getContrasena()+usuario.getEntrenamientos());
+            usuario.setUsername(usuarioDTO.getUsername());
+            usuario.setEmail(usuarioDTO.getEmail());
+            usuario.setContrasena(usuarioDTO.getContrasena());
+            usuario.setNombre(usuarioDTO.getNombre());
+            usuario.setPeso(usuarioDTO.getPeso());
+            usuario.setAltura(usuarioDTO.getAltura());
+            usuario.setfNacimiento(usuarioDTO.getfNacimiento());
+
+            // Evitar duplicados en la lista de amigos
+            ArrayList<UsuarioDTO> amigosActualizados = new ArrayList<>();
+            for (UsuarioDTO amigo : usuarioDTO.getAmigos()) {
+                if (!amigosActualizados.contains(amigo)) {
+                    amigosActualizados.add(amigo);
+                }
+            }
+            usuario.setAmigos(amigosActualizados);
+            
+            usuario.setEntrenamientos(usuarioDTO.getEntrenamientos());
+            usuario.setRetos(usuarioDTO.getRetos());
+
+            usuarios.put(usuarioDTO.getId(), usuario);
+
+            System.out.println("Usuario actualizado: " + usuario.getUsername());
         }
-        
-        
-        
     }
     
     public UsuarioDTO obtenerUsuarioPorNombre(String username) {
