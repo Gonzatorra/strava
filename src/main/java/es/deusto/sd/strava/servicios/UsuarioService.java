@@ -82,8 +82,8 @@ public class UsuarioService {
             usuario.setfNacimiento(usuarioDTO.getfNacimiento());
 
             // Evitar duplicados en la lista de amigos
-            ArrayList<UsuarioDTO> amigosActualizados = new ArrayList<>();
-            for (UsuarioDTO amigo : usuarioDTO.getAmigos()) {
+            ArrayList<Integer> amigosActualizados = new ArrayList<>();
+            for (Integer amigo : usuarioDTO.getAmigos()) {
                 if (!amigosActualizados.contains(amigo)) {
                     amigosActualizados.add(amigo);
                 }
@@ -139,9 +139,9 @@ public class UsuarioService {
 		UsuarioService.usuarios = usuarios;
 	}
 
-	public List<UsuarioDTO> getAmigos(UsuarioDTO usuario){
-		ArrayList<UsuarioDTO> amigos= new ArrayList<UsuarioDTO>();
-		for (UsuarioDTO usu: usuario.getAmigos()) {
+	public List<Integer> getAmigos(UsuarioDTO usuario){
+		ArrayList<Integer> amigos= new ArrayList<>();
+		for (Integer usu: usuario.getAmigos()) {
 			amigos.add(usu);
 		}
 		

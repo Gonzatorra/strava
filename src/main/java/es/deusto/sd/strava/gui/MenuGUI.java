@@ -1470,11 +1470,6 @@ class MainAppGUI extends JFrame {
         return mainPanel;
     }
     
-    
-    
-    
-   
-
     private JPanel createTabPanel(String content) {
 
         // Crear el panel principal y los subpaneles
@@ -1506,17 +1501,18 @@ class MainAppGUI extends JFrame {
         // Cargar amigos actuales al inicializar la tabla
         try {
             amigoModel.setRowCount(0); // Limpiar cualquier dato previo
-            ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
-
-            for (UsuarioDTO amigo : amigos) {
+            ArrayList<Integer> amigos = facade.getAmigos(usuario);
+            HashMap<Integer, UsuarioDTO> usuarios= facade.getUsuarios();
+            for (Integer amigoID : amigos) {
+            	UsuarioDTO amigo= usuarios.get(amigoID);
                 amigoModel.addRow(new Object[]{amigo.getId(), amigo.getUsername(), amigo.getEmail()});
             }
         } catch (RemoteException ex) {
             ex.printStackTrace();
             JOptionPane.showMessageDialog(misAmigos, "Error al cargar los amigos.", "Error", JOptionPane.ERROR_MESSAGE);
         }
-        
-        
+		
+    	
 
         // **Añadir Amigos Tab Implementation**
         // Definir las columnas para la tabla
@@ -1554,8 +1550,11 @@ class MainAppGUI extends JFrame {
         try {
             userModel.setRowCount(0); // Limpiar la tabla por si hay datos previos
             HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
-            ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
-
+            ArrayList<Integer> amigosID = facade.getAmigos(usuario);
+            ArrayList<UsuarioDTO> amigos = new ArrayList<UsuarioDTO>();
+            for (Integer amigoID: amigosID){
+            	amigos.add(usuarios.get(amigoID));
+            }
             for (UsuarioDTO user : usuarios.values()) {
                 if (!amigos.contains(user) && !user.getUsername().equals(usuario.getUsername())) {
                     userModel.addRow(new Object[]{user.getId(), user.getUsername(), user.getEmail()});
@@ -1579,7 +1578,11 @@ class MainAppGUI extends JFrame {
             try {
                 userModel.setRowCount(0); // Limpiar la tabla antes de buscar
                 HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
-                ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
+                ArrayList<Integer> amigosID = facade.getAmigos(usuario);
+                ArrayList<UsuarioDTO> amigos = new ArrayList<UsuarioDTO>();
+                for (Integer amigoID: amigosID){
+                	amigos.add(usuarios.get(amigoID));
+                }
 
                 for (UsuarioDTO user : usuarios.values()) {
                     if (amigos.contains(user)) continue; // Excluir amigos
@@ -1618,38 +1621,44 @@ class MainAppGUI extends JFrame {
                     UsuarioDTO selectedUser = facade.getUsuarios().get(userId);
 
                     // Verificar si el usuario ya es amigo
-                    ArrayList<UsuarioDTO> amigos = facade.getAmigos(currentUser);
-                    boolean esAmigo = false;
-
-                    if (amigos != null) {
-                        for (UsuarioDTO amigo : amigos) {
-                            if (amigo.getId() == selectedUser.getId()) {
-                                esAmigo = true;
-                                break; // Salir del bucle si encontramos al amigo
-                            }
-                        }
+                    ArrayList<Integer> amigosID = facade.getAmigos(currentUser);
+                    ArrayList<UsuarioDTO> amigos = new ArrayList<UsuarioDTO>();
+                    HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+                    for (Integer amigoID: amigosID){
+                    	amigos.add(usuarios.get(amigoID));
                     }
-
-                    if (esAmigo) {
+                    if (amigos.contains(selectedUser)) {
                         JOptionPane.showMessageDialog(addAmigos, "Este usuario ya es tu amigo.", "Aviso", JOptionPane.WARNING_MESSAGE);
                         return;
                     }
 
                     // Añadir el amigo
-                    currentUser.getAmigos().add(selectedUser);
+                    currentUser.getAmigos().add(selectedUser.getId());
                     facade.actualizarUsuario(currentUser);
-
+                    
+                    
                     JOptionPane.showMessageDialog(addAmigos, "Amigo añadido con éxito.", "Éxito", JOptionPane.INFORMATION_MESSAGE);
-
+                    
+                    // Eliminar el usuario añadido de la tabla
+                    userModel.removeRow(selectedRow);
                 } catch (RemoteException ex) {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(addAmigos, "Error al intentar añadir al amigo. Por favor, intente de nuevo.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
+                
+             // **Mis Amigos Tab Implementation**
+                
 
-                // **Mis Amigos Tab Implementation**
+               
+                // Cargar amigos actuales al inicializar la tabla
                 try {
                     amigoModel.setRowCount(0); // Limpiar cualquier dato previo
-                    ArrayList<UsuarioDTO> amigos = facade.getAmigos(usuario);
+                    ArrayList<Integer> amigosID = facade.getAmigos(usuario);
+                    ArrayList<UsuarioDTO> amigos = new ArrayList<UsuarioDTO>();
+                    HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+                    for (Integer amigoID: amigosID){
+                    	amigos.add(usuarios.get(amigoID));
+                    }
 
                     for (UsuarioDTO amigo : amigos) {
                         amigoModel.addRow(new Object[]{amigo.getId(), amigo.getUsername(), amigo.getEmail()});
@@ -1659,7 +1668,9 @@ class MainAppGUI extends JFrame {
                     ex.printStackTrace();
                     JOptionPane.showMessageDialog(misAmigos, "Error al cargar los amigos.", "Error", JOptionPane.ERROR_MESSAGE);
                 }
-
+        		
+            	
+                
             } else {
                 JOptionPane.showMessageDialog(addAmigos, "Seleccione un usuario para añadir como amigo.", "Advertencia", JOptionPane.WARNING_MESSAGE);
             }

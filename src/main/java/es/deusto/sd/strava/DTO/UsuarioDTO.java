@@ -27,7 +27,7 @@ public class UsuarioDTO implements Serializable{
     private String token;
     private ArrayList<EntrenamientoDTO> entrenamientos;
     private HashMap<RetoDTO, String> retos;
-    private ArrayList<UsuarioDTO> amigos;
+    private ArrayList<Integer> amigos;
     private String proveedor; // Nuevo atributo
 
     
@@ -40,15 +40,15 @@ public class UsuarioDTO implements Serializable{
 
 
 
-	public ArrayList<UsuarioDTO> getAmigos() {
+	public ArrayList<Integer> getAmigos() {
 		return amigos;
 	}
 
 
 
 
-	public void setAmigos(ArrayList<UsuarioDTO> amigos) {
-		this.amigos = amigos;
+	public void setAmigos(ArrayList<Integer> amigosDT) {
+		this.amigos = amigosDT;
 	}
 
 

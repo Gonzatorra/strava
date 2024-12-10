@@ -37,9 +37,9 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     
 
     @Override
-	public ArrayList<UsuarioDTO> getAmigos(UsuarioDTO usuario) throws RemoteException {
+	public ArrayList<Integer> getAmigos(UsuarioDTO usuario) throws RemoteException {
 		// TODO Auto-generated method stub
-		return (ArrayList<UsuarioDTO>) usuarioService.getAmigos(usuario);
+		return (ArrayList<Integer>) usuarioService.getAmigos(usuario);
 	}
 
     

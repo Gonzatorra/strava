@@ -26,9 +26,9 @@ public class UsuarioAssembler {
         dto.setFecCMax(usuario.getFecCMax());
         dto.setFecCReposo(usuario.getFecCReposo());
         
-        ArrayList<UsuarioDTO> amigosDT = new ArrayList<UsuarioDTO>();
-        for (Usuario u: usuario.getAmigos()) {
-        	amigosDT.add(UsuarioAssembler.toDTO(u));
+        ArrayList<Integer> amigosDT = new ArrayList<Integer>();
+        for (Integer uID: usuario.getAmigos()) {
+        	amigosDT.add(uID);
         }
         dto.setAmigos(amigosDT);
         
@@ -69,9 +69,9 @@ public class UsuarioAssembler {
 	    usuario.setToken(usuarioDTO.getToken());
 	    usuario.setProveedor(usuarioDTO.getProveedor());
 
-	    ArrayList<Usuario> amigosD = new ArrayList<Usuario>();
-        for (UsuarioDTO u: usuarioDTO.getAmigos()) {
-        	amigosD.add(UsuarioAssembler.toDomain(u));
+	    ArrayList<Integer> amigosD = new ArrayList<>();
+        for (Integer uID: usuarioDTO.getAmigos()) {
+        	amigosD.add(uID);
         }
         usuario.setAmigos(amigosD);
         

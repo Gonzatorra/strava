@@ -26,7 +26,7 @@ public interface IRemoteFacade extends Remote {
     void logout(String token) throws RemoteException;
     void eliminarUsuario(int userId) throws RemoteException;
     void actualizarUsuario(UsuarioDTO usuarioDTO) throws RemoteException;
-    ArrayList<UsuarioDTO> getAmigos(UsuarioDTO usuario) throws RemoteException;
+    ArrayList<Integer> getAmigos(UsuarioDTO usuario) throws RemoteException;
     UsuarioService getUsuarioService() throws RemoteException;
     HashMap<Integer, UsuarioDTO> getUsuarios() throws RemoteException;
     

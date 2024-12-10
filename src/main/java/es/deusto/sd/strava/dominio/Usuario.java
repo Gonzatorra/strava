@@ -24,16 +24,16 @@ public class Usuario implements Serializable{
     private String token;
     private ArrayList<Entrenamiento> entrenamientos;
     private HashMap<Reto, String> retos;
-    private ArrayList<Usuario> amigos;
+    private ArrayList<Integer> amigos;
     private String proveedor; //Inicio sesion proveedor
     
 	
 	
-	public ArrayList<Usuario> getAmigos() {
+	public ArrayList<Integer> getAmigos() {
 		return amigos;
 	}
 
-	public void setAmigos(ArrayList<Usuario> amigos) {
+	public void setAmigos(ArrayList<Integer> amigos) {
 		this.amigos = amigos;
 	}
 
@@ -46,7 +46,7 @@ public class Usuario implements Serializable{
 	//sin valores opcionales
 	public Usuario(int id, String username, String email, String contrasena,
 			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
-			HashMap<Reto, String> retos, ArrayList<Usuario> amigos) {
+			HashMap<Reto, String> retos, ArrayList<Integer> amigos) {
 		super();
 		this.id = id;
 		this.username = username;
@@ -63,7 +63,7 @@ public class Usuario implements Serializable{
 	public Usuario(int id, String username, String email, String contrasena,
 			String nombre, float peso, float altura, java.util.Date fNacimiento,
 			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
-			HashMap<Reto, String> retos, ArrayList<Usuario> amigos) {
+			HashMap<Reto, String> retos, ArrayList<Integer> amigos) {
 		super();
 		this.id = id;
 		this.username = username;

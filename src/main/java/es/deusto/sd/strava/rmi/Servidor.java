@@ -73,8 +73,10 @@ public class Servidor {
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@gmail.com", "Ana");
             EntrenamientoDTO entreno = servidor.facade.crearEntreno(usuario, "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
             challengers.add(usuario);
+            facade.actualizarUsuario(usuario);
             RetoDTO reto= servidor.facade.crearReto("PrimerReto", fecha2, fecha1, 10, 30, "running", usuario, challengers);
             usuario.getEntrenamientos().add(entreno);
+            facade.actualizarUsuario(usuario);
             usuario.getRetos().put(reto, "prueba");
             facade.actualizarUsuario(usuario);
             
