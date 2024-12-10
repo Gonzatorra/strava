@@ -18,7 +18,7 @@ public class RetoDTO implements Serializable{
     private LocalDateTime fecFin; 
     private float objetivoDistancia;
     private float objetivoTiempo;
-    private List<UsuarioDTO> participantes;
+    private ArrayList<Integer> participantes;
 
     //constructor
     public RetoDTO() {
@@ -59,7 +59,7 @@ public class RetoDTO implements Serializable{
         return objetivoTiempo;
     }
 
-    public List<UsuarioDTO> getParticipantes() {
+    public ArrayList<Integer> getParticipantes() {
         return participantes;
     }
 
@@ -96,7 +96,7 @@ public class RetoDTO implements Serializable{
         this.objetivoTiempo = objetivoTiempo;
     }
 
-    public void setParticipantes(List<UsuarioDTO> participantes) {
+    public void setParticipantes(ArrayList<Integer> participantes) {
         this.participantes = participantes;
     }
    

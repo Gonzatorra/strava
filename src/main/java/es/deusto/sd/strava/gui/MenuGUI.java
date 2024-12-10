@@ -757,7 +757,7 @@ class MainAppGUI extends JFrame {
         acceptedPanel.add(filterPanel, BorderLayout.NORTH);
 
         // Llenar el modelo inicial basado en el criterio seleccionado
-        HashMap<RetoDTO, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
+        //HashMap<RetoDTO, String> retosAceptados = usuario.getRetos(); // Asumiendo que usuario.getRetos() devuelve un HashMap<Reto, String>
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         Runnable updateTable = () -> {
@@ -766,13 +766,26 @@ class MainAppGUI extends JFrame {
             // Limpiar todas las filas del modelo
             acceptedModel.setRowCount(0);
 
+            UsuarioDTO usuario2 = null;
+			try {
+				usuario2 = facade.getUsuarios().get(usuario.getId());
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			try {
+				HashMap<Integer, RetoDTO> retosActualizados = facade.visualizarReto();
+			} catch (RemoteException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
             // Filtrar retos basados en el criterio seleccionado
-            for (RetoDTO r : retosAceptados.keySet()) {
-                String estado = retosAceptados.get(r);
+            for (RetoDTO r :  usuario2.getRetos().keySet()) {
+                String estado =  usuario2.getRetos().get(r);
 
                 if ("Todos".equals(criteria) || criteria.equals(estado)) {
 
-                	List<EntrenamientoDTO> entrenamientos = usuario.getEntrenamientos().stream()
+                	List<EntrenamientoDTO> entrenamientos = usuario2.getEntrenamientos().stream()
                             .filter(e -> e.getDeporte().equalsIgnoreCase(r.getDeporte())) 
                             .collect(Collectors.toList());
                         double totalDistance = entrenamientos.stream()
@@ -1196,8 +1209,10 @@ class MainAppGUI extends JFrame {
                         new ArrayList<>()
                     );
 
+                    RetoDTO retoActualizado= facade.visualizarReto().get(retoActual.getId());
+                    
                     // Agregar el nuevo reto al Map
-                    usuario.getRetos().put(retoActual, "prueba");
+                    usuario.getRetos().put(retoActualizado, "prueba");
 
                     // Actualizar la tabla
                     acceptedModel.setValueAt(titleField.getText(), selectedRow, 1);
@@ -1242,9 +1257,12 @@ class MainAppGUI extends JFrame {
                     if (usuario.equals(retosD.get(retoId).getUsuarioCreador())) {
                         //eliminar reto completo
                         System.out.println("El creador elimina el reto.");
-                        for(UsuarioDTO participante: retosD.get(retoId).getParticipantes()) {
-                        	participante.getRetos().remove(retosD.get(retoId).getId());
-                        	facade.actualizarUsuario(participante);
+                        HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+                        for(UsuarioDTO participante: usuarios.values()) {
+                        	if (participante.getId()==retoId) {
+	                        	participante.getRetos().remove(retosD.get(retoId).getId());
+	                        	facade.actualizarUsuario(participante);
+                        	}
                      
                         }
                         facade.eliminarReto(usuario, retosD.get(retoId));
@@ -1254,24 +1272,25 @@ class MainAppGUI extends JFrame {
                     	
                     	
                     	ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
-                        for (UsuarioDTO u: retosD.get(retoId).getParticipantes()) {
-                        	if(u.getId()==usuario.getId()) {
-                            	usuario.getRetos().remove(retosD.get(retoId));
+                    	HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
+                        for(UsuarioDTO participante: usuarios.values()) {
+                        	if (participante.getId()==retoId) {
+	                        	participante.getRetos().remove(retosD.get(retoId).getId());
+	                        	facade.actualizarUsuario(participante);
                         	}
-                        	else {
-                        		participantesDTO.add(u);
-                        	}
+                     
                         }
-                        
+                        ArrayList<Integer> IDs = new ArrayList<Integer>();
+                        for(UsuarioDTO u: participantesDTO) {
+                        	IDs.add(u.getId());
+                        }
                     	facade.actualizarReto(retosD.get(retoId),retosD.get(retoId).getNombre(),
                     			retosD.get(retoId).getFecIni(), 
                     			retosD.get(retoId).getFecFin(), retosD.get(retoId).getObjetivoDistancia(), 
                     			retosD.get(retoId).getObjetivoTiempo(), 
                     			retosD.get(retoId).getUsuarioCreador(),
-                    			retosD.get(retoId).getDeporte(), participantesDTO);
-                    	
-                    	facade.actualizarUsuario(usuario);
-                    	
+                    			retosD.get(retoId).getDeporte(), IDs);
+                   
                     	facade.eliminarReto(usuario, retosD.get(retoId));
                     	
                         System.out.println("El usuario se elimina del reto.");
@@ -1382,24 +1401,36 @@ class MainAppGUI extends JFrame {
                     RetoDTO retoSeleccionado = retosDisponibles.get(idReto);
 
                     // Verificar si el usuario ya ha aceptado el reto
-                    if (!retoSeleccionado.getParticipantes().stream().anyMatch(participante -> participante.getUsername().equals(usuario.getUsername()))) {
+                    if (!retoSeleccionado.getParticipantes().stream().anyMatch(participanteID -> participanteID.equals(usuario.getId()))) {
                     	
                     	
                   
-                        retoSeleccionado.getParticipantes().add(usuario);
+                        retoSeleccionado.getParticipantes().add(usuario.getId());
                     	
                         
                         ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
-                        for (UsuarioDTO u: retoSeleccionado.getParticipantes()) {
-                        	participantesDTO.add(u);
+                        HashMap<Integer, UsuarioDTO> usuarios = null;
+						try {
+							usuarios = facade.getUsuarios();
+						} catch (RemoteException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
+                        for (UsuarioDTO u: usuarios.values()){
+                        	if(retoSeleccionado.getParticipantes().contains(u.getId())) {
+                        		participantesDTO.add(u);
+                        	}
                         }
-                        
+                        ArrayList<Integer> particID= new ArrayList<Integer>();
+                        for (UsuarioDTO u: participantesDTO){
+                        	particID.add(u.getId());
+                        }
                         
                         try {
 							facade.actualizarReto(retoSeleccionado,retoSeleccionado.getNombre(),
 									retoSeleccionado.getFecIni(), retoSeleccionado.getFecFin(), retoSeleccionado.getObjetivoDistancia(),
 									retoSeleccionado.getObjetivoTiempo(), retoSeleccionado.getUsuarioCreador(), 
-									retoSeleccionado.getDeporte(),participantesDTO);
+									retoSeleccionado.getDeporte(),particID);
 						} catch (RemoteException e1) {
 							// TODO Auto-generated catch block
 							e1.printStackTrace();

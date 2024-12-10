@@ -165,7 +165,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public List<UsuarioDTO> obtenerClasificacion(RetoDTO reto) throws RemoteException {
+	public List<Integer> obtenerClasificacion(RetoDTO reto) throws RemoteException {
 		return retoService.obtenerClasificacion(reto);
 	}
 
@@ -177,7 +177,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
 	@Override
 	public void actualizarReto(RetoDTO reto, String nombre, LocalDateTime fechaIni, LocalDateTime fechaFin, float distancia,
-			float tiempo, UsuarioDTO usuarioCreador, String deporte, List<UsuarioDTO> participantes) throws RemoteException {
+			float tiempo, UsuarioDTO usuarioCreador, String deporte, ArrayList<Integer> participantes) throws RemoteException {
 		retoService.actualizarReto(reto, nombre, fechaIni, fechaFin, distancia, tiempo, usuarioCreador, deporte, participantes);
 	}
 

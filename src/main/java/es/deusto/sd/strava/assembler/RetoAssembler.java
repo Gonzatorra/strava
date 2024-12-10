@@ -18,14 +18,7 @@ public class RetoAssembler {
 		 	dto.setFecFin(reto.getFecFin());
 		 	dto.setObjetivoDistancia(reto.getObjetivoDistancia());
 		 	dto.setObjetivoTiempo(reto.getObjetivoTiempo());
-		 	
-		 	if(reto.getParticipantes() != null) {
-		 		ArrayList<UsuarioDTO> particDTO= new ArrayList<>();
-		 		for (Usuario p: reto.getParticipantes()) {
-		 			particDTO.add(UsuarioAssembler.toDTO(p));
-		 		}
-		 		dto.setParticipantes(particDTO);
-		 	}
+		 	dto.setParticipantes(reto.getParticipantes());
 		 	return dto;
 	    }
 	 
@@ -39,14 +32,8 @@ public class RetoAssembler {
 	    	reto.setFecFin(retoDTO.getFecFin());
 	    	reto.setObjetivoDistancia(retoDTO.getObjetivoDistancia());
 	    	reto.setObjetivoTiempo(retoDTO.getObjetivoTiempo());
-	    	if(reto.getParticipantes() != null) {
-		 		ArrayList<Usuario> particD= new ArrayList<>();
-		 		for (UsuarioDTO p: retoDTO.getParticipantes()) {
-		 			particD.add(UsuarioAssembler.toDomain(p));
-		 		}
-		 		reto.setParticipantes(particD);
-		 	}
-	    	return reto;
+	    	reto.setParticipantes(retoDTO.getParticipantes());
+		 	return reto;
 	    }
 
 }

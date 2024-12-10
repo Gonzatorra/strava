@@ -17,7 +17,7 @@ public class Reto implements Serializable{
     private LocalDateTime fecFin;
     private float objetivoDistancia;
     private float objetivoTiempo;
-    private List<Usuario> participantes;
+    private ArrayList<Integer> participantes;
 
     //constructores
     public Reto() {
@@ -25,7 +25,7 @@ public class Reto implements Serializable{
     }
 
     public Reto(int id, String deporte, Usuario usuarioCreador, String nombre, LocalDateTime fecIni, LocalDateTime fecFin,
-                float objetivoDistancia, float objetivoTiempo, List<Usuario> participantes) {
+                float objetivoDistancia, float objetivoTiempo, ArrayList<Integer> participantes) {
         this.id = id;
         this.deporte = deporte;
         this.usuarioCreador = usuarioCreador;
@@ -102,17 +102,17 @@ public class Reto implements Serializable{
         this.objetivoTiempo = objetivoTiempo;
     }
 
-    public List<Usuario> getParticipantes() {
+    public ArrayList<Integer> getParticipantes() {
         return participantes;
     }
 
-    public void setParticipantes(List<Usuario> participantes) {
+    public void setParticipantes(ArrayList<Integer> participantes) {
         this.participantes = participantes;
     }
 
     //metodos
     public void crearReto(String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia, float objetivoTiempo,
-            String deporte, Usuario usuarioCreador, List<Usuario> participantes) {
+            String deporte, Usuario usuarioCreador, ArrayList<Integer> participantes) {
     	this.nombre = nombre;
     	this.fecIni = fecIni;
     	this.fecFin = fecFin;
@@ -125,7 +125,7 @@ public class Reto implements Serializable{
     
     
     public Reto actualizarReto( String nombre, LocalDateTime fecIni, LocalDateTime fecFin, float objetivoDistancia,
-                               float objetivoTiempo, Usuario usuarioCreador, String deporte, List<Usuario> participantes) {
+                               float objetivoTiempo, Usuario usuarioCreador, String deporte, ArrayList<Integer> participantes) {
         System.out.println("Se actualiza el reto");
 
         this.setNombre(nombre);
@@ -159,14 +159,14 @@ public class Reto implements Serializable{
 
     public void aceptarReto(Usuario usuario) {
         System.out.println("El usuario acepta el reto y se añade a la lista");
-        this.getParticipantes().add(usuario);
+        this.getParticipantes().add(usuario.getId());
     }
 
     public void calcularProgreso(Usuario usuario) {
         System.out.println("Se calcula el progreso del usuario");
     }
 
-    public List<Usuario> obtenerClasificacion() {
+    public ArrayList<Integer> obtenerClasificacion() {
         System.out.println("Se devuelve la clasificación de todos los usuarios del reto");
         return this.getParticipantes();
     }

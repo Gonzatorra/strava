@@ -111,7 +111,7 @@ public class UsuarioService {
 
     
 
-    public List<EntrenamientoDTO> getEntrenosUsuario(UsuarioDTO usuario, double fechaIni, double fechaFin) {
+    /*public List<EntrenamientoDTO> getEntrenosUsuario(UsuarioDTO usuario, double fechaIni, double fechaFin) {
         System.out.println("Devuelve entrenamientos del usuario");
         return null;
     }
@@ -120,7 +120,7 @@ public class UsuarioService {
         System.out.println("Devuelve retos del usuario");
         
         return null;
-    }
+    }*/
     
     
     public static HashMap<Integer, UsuarioDTO> getUsuarios() {
