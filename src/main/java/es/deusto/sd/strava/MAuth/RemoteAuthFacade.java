@@ -31,7 +31,7 @@ public class RemoteAuthFacade implements IRemoteAuthFacade {
     }
 
     @Override
-    public String login(String username, String password) throws RemoteException {
+    public String loginUser(String username, String password) throws RemoteException {
         if (userStore.containsKey(username) && userStore.get(username).equals(password)) {
             String token = UUID.randomUUID().toString();
             tokenStore.put(token, username);

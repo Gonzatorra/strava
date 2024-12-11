@@ -5,7 +5,6 @@ import es.deusto.sd.strava.auth.IAuthServiceGateway;
 
 public class ServicioAutentificacion {
     private static ServicioAutentificacion instancia;
-
     private ServicioAutentificacion() {}
 
     public static ServicioAutentificacion getInstancia() {

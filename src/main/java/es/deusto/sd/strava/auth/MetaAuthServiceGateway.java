@@ -4,7 +4,7 @@ public class MetaAuthServiceGateway implements IAuthServiceGateway {
     
 	@Override
     public boolean autenticar(String username, String password, String token) {
-        return token != null && token.startsWith("meta_") && !username.equals("") && !password.equals("");
+        return //token != null && token.startsWith("meta_") && !username.equals("") && !password.equals("");
     }
 
     @Override
