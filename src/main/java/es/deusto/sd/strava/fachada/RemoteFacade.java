@@ -112,13 +112,25 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
         if (result != null) {
             UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setToken(result);
             usuario.setUsername(username);
             usuario.setContrasena(password);
             usuario.setProveedor(proveedor);
             usuario.setEntrenamientos(new ArrayList<>());
             usuario.setRetos(new HashMap<>());
             usuario.setAmigos(new ArrayList<>());
-            usuarioService.registrarUsuario(usuario);
+            boolean encontrado= false;
+            for (UsuarioDTO u: usuarioService.getUsuarios().values()) {
+            	if(u.getUsername().equals(usuario.getUsername())) encontrado=true;
+            }
+            if (!encontrado) {
+            	usuarioService.registrarUsuario(usuario);
+            }
+            else {
+            	for (UsuarioDTO u: usuarioService.getUsuarios().values()) {
+            		if (u.getUsername().equals(usuario.getUsername())) return u;
+            	}
+            }
             return usuario;
         } else {
             System.out.println("Autenticacion fallida para usuario: " + username + " con proveedor: " + proveedor);
@@ -127,7 +139,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     }
 
    
-
+    /*
     private UsuarioDTO autenticacionGoogle(String username, String password) {
         try {
             String result = externoService.verifyGoogle(username, password);
@@ -171,7 +183,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
             e.printStackTrace();
         }
         return null;
-    }
+    }*/
 
 
     @Override
