@@ -8,11 +8,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class AuthServer {
+import es.deusto.sd.strava.DTO.EntrenamientoDTO;
+import es.deusto.sd.strava.DTO.RetoDTO;
+import es.deusto.sd.strava.DTO.UsuarioDTO;
+
+public class AuthServerGoogle {
 
     private static RemoteAuthFacade facade;
 
-    public AuthServer() {
+    public AuthServerGoogle() {
         try {
             this.facade = new RemoteAuthFacade();
         } catch (RemoteException e) {
@@ -32,7 +36,7 @@ public class AuthServer {
                 registry = LocateRegistry.createRegistry(1100);
             }
 
-            AuthServer server = new AuthServer();
+            AuthServerGoogle server = new AuthServerGoogle();
 
             IRemoteAuthFacade stub = (IRemoteAuthFacade) UnicastRemoteObject.exportObject(server.facade, 0);
             registry.rebind("RemoteAuthFacade", stub);
@@ -41,5 +45,7 @@ public class AuthServer {
         } catch (Exception e) {
             e.printStackTrace();
         }
+        
+        
     }
 }

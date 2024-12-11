@@ -24,6 +24,11 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
     private ServicioAutentificacion servicioAutentificacion;
+    
+    private static final String MOCK_GOOGLE_USER = "user@google.com";
+    private static final String MOCK_GOOGLE_PASSWORD = "google";
+    private static final String MOCK_META_USER = "user@meta.com";
+    private static final String MOCK_META_PASSWORD = "meta";
 
 
     public RemoteFacade() throws RemoteException {
@@ -95,28 +100,46 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     
     @Override
     public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
-    	try {
-    		if(!username.equals("")) {
-	            UsuarioDTO usuario = usuarioService.getUsuarios().values().stream()
-	                    .filter(u -> u.getUsername().equals(username))
-	                    .findFirst()
-	                    .orElse(null);
-	
-	            if (usuario == null) {
-	                UsuarioDTO newUser = usuarioService.registrar(username, password, username + "@" + proveedor.toLowerCase() + ".com", proveedor);
-	                System.out.println("User registered with provider: " + proveedor);
-	                return newUser;
-	            } else if (!password.equals(usuario.getContrasena())) {
-	                throw new RemoteException("Incorrect password for user: " + username);
-	            }
-    	
-            return usuario;
-    		}
-        } catch (Exception e) {
-            throw new RemoteException("Error during login with provider: " + proveedor, e);
+        // Simula lógica según proveedor
+        if ("Google".equals(proveedor)) {
+            return autenticacionGoogle(username, password);
+        } else if ("Meta".equals(proveedor)) {
+            return autenticacionMeta(username, password);
         }
-		return null;
+        return null; // Usuario no válido o proveedor no soportado
     }
+
+   
+
+    private UsuarioDTO autenticacionGoogle(String username, String password) {
+        // Simulación de lógica para Google (mock)
+        if (MOCK_GOOGLE_USER.equals(username) && MOCK_GOOGLE_PASSWORD.equals(password)) {
+            UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setUsername(username);
+            usuario.setContrasena(password);
+            usuario.setProveedor("Google");
+            return usuario;
+        } else {
+            System.out.println("Autenticación fallida para el usuario: " + username);
+            return null;
+        }
+    }
+
+
+    private UsuarioDTO autenticacionMeta(String username, String password) {
+        // Simulación de lógica para Meta (mock)
+        if (MOCK_META_USER.equals(username) && MOCK_META_PASSWORD.equals(password)) {
+            UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setUsername(username);
+            usuario.setContrasena(password);
+            usuario.setProveedor("Meta");
+            return usuario;
+        } else {
+            System.out.println("Autenticación fallida para el usuario: " + username);
+            return null;
+        }
+    }
+
 
     @Override
     public void logout(String token) throws RemoteException {

@@ -1,4 +1,4 @@
-package es.deusto.sd.strava.GAuth;
+package es.deusto.sd.strava.MAuth;
 
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
@@ -8,11 +8,11 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class AuthServer {
+public class AuthServerMeta {
 
     private static RemoteAuthFacade facade;
 
-    public AuthServer() {
+    public AuthServerMeta() {
         try {
             this.facade = new RemoteAuthFacade();
         } catch (RemoteException e) {
@@ -24,15 +24,15 @@ public class AuthServer {
         try {
             Registry registry = null;
             try {
-                registry = LocateRegistry.getRegistry(1100);
+                registry = LocateRegistry.getRegistry(1101);
                 registry.list(); 
                 System.out.println("RMI registry already exists.");
             } catch (RemoteException e) {
                 System.out.println("Creating new RMI registry.");
-                registry = LocateRegistry.createRegistry(1100);
+                registry = LocateRegistry.createRegistry(1101);
             }
 
-            AuthServer server = new AuthServer();
+            AuthServerMeta server = new AuthServerMeta();
 
             IRemoteAuthFacade stub = (IRemoteAuthFacade) UnicastRemoteObject.exportObject(server.facade, 0);
             registry.rebind("RemoteAuthFacade", stub);
