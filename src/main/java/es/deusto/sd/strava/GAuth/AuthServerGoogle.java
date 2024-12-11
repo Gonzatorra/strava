@@ -14,11 +14,11 @@ import es.deusto.sd.strava.DTO.UsuarioDTO;
 
 public class AuthServerGoogle {
 
-    private static RemoteAuthFacade facade;
+    private static RemoteAuthFacadeG facade;
 
     public AuthServerGoogle() {
         try {
-            this.facade = new RemoteAuthFacade();
+            this.facade = new RemoteAuthFacadeG();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -38,8 +38,8 @@ public class AuthServerGoogle {
 
             AuthServerGoogle servidor = new AuthServerGoogle();
 
-            IRemoteAuthFacade stub = (IRemoteAuthFacade) UnicastRemoteObject.exportObject(servidor.facade, 0);
-            registry.rebind("RemoteAuthFacade", stub);
+            IRemoteAuthFacadeG stub = (IRemoteAuthFacadeG) UnicastRemoteObject.exportObject(servidor.facade, 0);
+            registry.rebind("RemoteAuthFacadeG", stub);
 
             System.out.println("AuthServer is ready and waiting for connections...");
             

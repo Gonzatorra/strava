@@ -5,13 +5,13 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
-public class RemoteAuthFacade implements IRemoteAuthFacade {
+public class RemoteAuthFacadeM implements IRemoteAuthFacadeM {
 
     private final Map<String, String> userStore = new HashMap<>();
     private final Map<String, String> tokenStore = new HashMap<>();
     private final Map<String, String> userInfoStore = new HashMap<>();
 
-    public RemoteAuthFacade() throws RemoteException {
+    public RemoteAuthFacadeM() throws RemoteException {
         //usuarios de prueba
         userStore.put("user1", "password1");
         userInfoStore.put("user1", "User One, user1@example.com");

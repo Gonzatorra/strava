@@ -8,11 +8,12 @@ import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
-import es.deusto.sd.strava.GAuth.IRemoteAuthFacade;
+import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
+import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
 
 public class ServicioExternosBridge {
-	private static IRemoteAuthFacade fachadaExternaG;
-	private static IRemoteAuthFacade fachadaExternaM;
+	private static IRemoteAuthFacadeG fachadaExternaG;
+	private static IRemoteAuthFacadeM fachadaExternaM;
 
 	public ServicioExternosBridge() {
 		// Conecta al registro RMI en los puertos correspondientes
@@ -26,7 +27,7 @@ public class ServicioExternosBridge {
 		        System.out.println("Exportación anterior de fachadaExternaG descartada.");
 		    }
 		    // Buscar y asignar el objeto remoto
-		    fachadaExternaG = (IRemoteAuthFacade) registry.lookup("RemoteAuthFacade");
+		    fachadaExternaG = (IRemoteAuthFacadeG) registry.lookup("RemoteAuthFacadeG");
 		    System.out.println("Conexión exitosa al RemoteAuthFacade en el puerto 1100.");
 
 		    // Conexión al registro RMI en el puerto 1101
@@ -37,7 +38,7 @@ public class ServicioExternosBridge {
 		        System.out.println("Exportación anterior de fachadaExternaM descartada.");
 		    }
 		    // Buscar y asignar el objeto remoto
-		    fachadaExternaM = (IRemoteAuthFacade) registry.lookup("RemoteAuthFacade");
+		    fachadaExternaM = (IRemoteAuthFacadeM) registry.lookup("RemoteAuthFacadeM");
 		    System.out.println("Conexión exitosa al RemoteAuthFacade en el puerto 1101.");
 
 		} catch (RemoteException e) {

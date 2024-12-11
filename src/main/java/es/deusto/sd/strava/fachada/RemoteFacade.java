@@ -3,7 +3,7 @@ package es.deusto.sd.strava.fachada;
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
-import es.deusto.sd.strava.GAuth.IRemoteAuthFacade;
+import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
 import es.deusto.sd.strava.assembler.RetoAssembler;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.servicios.*;

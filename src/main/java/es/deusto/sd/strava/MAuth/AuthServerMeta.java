@@ -10,11 +10,11 @@ import java.util.UUID;
 
 public class AuthServerMeta {
 
-    private static RemoteAuthFacade facade;
+    private static RemoteAuthFacadeM facade;
 
     public AuthServerMeta() {
         try {
-            this.facade = new RemoteAuthFacade();
+            this.facade = new RemoteAuthFacadeM();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
@@ -34,8 +34,8 @@ public class AuthServerMeta {
 
             AuthServerMeta servidor = new AuthServerMeta();
 
-            IRemoteAuthFacade stub = (IRemoteAuthFacade) UnicastRemoteObject.exportObject(servidor.facade, 0);
-            registry.rebind("RemoteAuthFacade", stub);
+            IRemoteAuthFacadeM stub = (IRemoteAuthFacadeM) UnicastRemoteObject.exportObject(servidor.facade, 0);
+            registry.rebind("RemoteAuthFacadeM", stub);
             
             facade.registerUser("maria123", "claveMaria", "maria123@gmail.com");
             facade.registerUser("jose456", "claveJose", "jose456@gmail.com");
