@@ -25,11 +25,12 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
     private ServicioAutentificacion servicioAutentificacion;
+    private ServicioExternosBridge externoService;
     
-    private static final String MOCK_GOOGLE_USER = "user@google.com";
+    /*private static final String MOCK_GOOGLE_USER = "user@google.com";
     private static final String MOCK_GOOGLE_PASSWORD = "google";
     private static final String MOCK_META_USER = "user@meta.com";
-    private static final String MOCK_META_PASSWORD = "meta";
+    private static final String MOCK_META_PASSWORD = "meta";*/
 
 
     public RemoteFacade() throws RemoteException {
@@ -37,6 +38,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         this.usuarioService = new UsuarioService();  //crear instancia del servicio
         this.entrenamientoService = new EntrenamientoService();
         this.retoService = new RetoService();
+        this.externoService= new ServicioExternosBridge();
     }
     
     
@@ -114,12 +116,18 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     private UsuarioDTO autenticacionGoogle(String username, String password) {
         // Simulación de lógica para Google (mock)
-    	
-        if (MOCK_GOOGLE_USER.equals(username) && MOCK_GOOGLE_PASSWORD.equals(password)) {
+    	if(externoService.verifyGoogle(username, password)!= null) {
+        //if (MOCK_GOOGLE_USER.equals(username) && MOCK_GOOGLE_PASSWORD.equals(password)) {
             UsuarioDTO usuario = new UsuarioDTO();
             usuario.setUsername(username);
             usuario.setContrasena(password);
             usuario.setProveedor("Google");
+            usuario.setEntrenamientos(new ArrayList<EntrenamientoDTO>());
+            usuario.setRetos(new HashMap<RetoDTO, String>());
+            usuario.setAmigos(new ArrayList<Integer>());
+            
+            usuarioService.registrarUsuario(usuario);
+            
             return usuario;
         } else {
             System.out.println("Autenticación fallida para el usuario: " + username);
@@ -130,11 +138,18 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     private UsuarioDTO autenticacionMeta(String username, String password) {
         // Simulación de lógica para Meta (mock)
-        if (MOCK_META_USER.equals(username) && MOCK_META_PASSWORD.equals(password)) {
+    	if(externoService.verifyMeta(username, password)!= null) {
+        //if (MOCK_META_USER.equals(username) && MOCK_META_PASSWORD.equals(password)) {
             UsuarioDTO usuario = new UsuarioDTO();
             usuario.setUsername(username);
             usuario.setContrasena(password);
             usuario.setProveedor("Meta");
+            usuario.setEntrenamientos(new ArrayList<EntrenamientoDTO>());
+            usuario.setRetos(new HashMap<RetoDTO, String>());
+            usuario.setAmigos(new ArrayList<Integer>());
+            
+            usuarioService.registrarUsuario(usuario);
+            
             return usuario;
         } else {
             System.out.println("Autenticación fallida para el usuario: " + username);
