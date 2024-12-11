@@ -37,7 +37,7 @@ public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
             tokenStore.put(token, username);
             return token;
         }
-        return "Invalid credentials";
+        return null;
     }
 
     @Override

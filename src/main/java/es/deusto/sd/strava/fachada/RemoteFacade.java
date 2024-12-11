@@ -24,7 +24,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private UsuarioService usuarioService;
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
-    private ServicioAutentificacion servicioAutentificacion;
+    //private ServicioAutentificacion servicioAutentificacion;
     private ServicioExternosBridge externoService;
     
     /*private static final String MOCK_GOOGLE_USER = "user@google.com";
@@ -103,58 +103,74 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     
     @Override
     public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
-        // Simula lógica según proveedor
+        String result = null;
         if ("Google".equals(proveedor)) {
-            return autenticacionGoogle(username, password);
+            result = externoService.verifyGoogle(username, password);
         } else if ("Meta".equals(proveedor)) {
-            return autenticacionMeta(username, password);
+            result = externoService.verifyMeta(username, password);
         }
-        return null; // Usuario no válido o proveedor no soportado
+
+        if (result != null) {
+            UsuarioDTO usuario = new UsuarioDTO();
+            usuario.setUsername(username);
+            usuario.setContrasena(password);
+            usuario.setProveedor(proveedor);
+            usuario.setEntrenamientos(new ArrayList<>());
+            usuario.setRetos(new HashMap<>());
+            usuario.setAmigos(new ArrayList<>());
+            usuarioService.registrarUsuario(usuario);
+            return usuario;
+        } else {
+            System.out.println("Autenticacion fallida para usuario: " + username + " con proveedor: " + proveedor);
+            return null;
+        }
     }
 
    
 
     private UsuarioDTO autenticacionGoogle(String username, String password) {
-        // Simulación de lógica para Google (mock)
-    	if(externoService.verifyGoogle(username, password)!= null) {
-        //if (MOCK_GOOGLE_USER.equals(username) && MOCK_GOOGLE_PASSWORD.equals(password)) {
-            UsuarioDTO usuario = new UsuarioDTO();
-            usuario.setUsername(username);
-            usuario.setContrasena(password);
-            usuario.setProveedor("Google");
-            usuario.setEntrenamientos(new ArrayList<EntrenamientoDTO>());
-            usuario.setRetos(new HashMap<RetoDTO, String>());
-            usuario.setAmigos(new ArrayList<Integer>());
-            
-            usuarioService.registrarUsuario(usuario);
-            
-            return usuario;
-        } else {
-            System.out.println("Autenticación fallida para el usuario: " + username);
-            return null;
+        try {
+            String result = externoService.verifyGoogle(username, password);
+            if (result != null) {
+                UsuarioDTO usuario = new UsuarioDTO();
+                usuario.setUsername(username);
+                usuario.setContrasena(password);
+                usuario.setProveedor("Google");
+                usuario.setEntrenamientos(new ArrayList<>());
+                usuario.setRetos(new HashMap<>());
+                usuario.setAmigos(new ArrayList<>());
+                usuarioService.registrarUsuario(usuario);
+                return usuario;
+            } else {
+                System.out.println("Autenticación fallida para el usuario: " + username);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
 
     private UsuarioDTO autenticacionMeta(String username, String password) {
-        // Simulación de lógica para Meta (mock)
-    	if(externoService.verifyMeta(username, password)!= null) {
-        //if (MOCK_META_USER.equals(username) && MOCK_META_PASSWORD.equals(password)) {
-            UsuarioDTO usuario = new UsuarioDTO();
-            usuario.setUsername(username);
-            usuario.setContrasena(password);
-            usuario.setProveedor("Meta");
-            usuario.setEntrenamientos(new ArrayList<EntrenamientoDTO>());
-            usuario.setRetos(new HashMap<RetoDTO, String>());
-            usuario.setAmigos(new ArrayList<Integer>());
-            
-            usuarioService.registrarUsuario(usuario);
-            
-            return usuario;
-        } else {
-            System.out.println("Autenticación fallida para el usuario: " + username);
-            return null;
+        try {
+            String result = externoService.verifyMeta(username, password);
+            if (result != null) {
+                UsuarioDTO usuario = new UsuarioDTO();
+                usuario.setUsername(username);
+                usuario.setContrasena(password);
+                usuario.setProveedor("Meta");
+                usuario.setEntrenamientos(new ArrayList<>());
+                usuario.setRetos(new HashMap<>());
+                usuario.setAmigos(new ArrayList<>());
+                usuarioService.registrarUsuario(usuario);
+                return usuario;
+            } else {
+                System.out.println("Autenticación fallida para el usuario: " + username);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
+        return null;
     }
 
 

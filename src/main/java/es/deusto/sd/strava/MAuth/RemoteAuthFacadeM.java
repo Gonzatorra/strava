@@ -37,7 +37,7 @@ public class RemoteAuthFacadeM implements IRemoteAuthFacadeM {
             tokenStore.put(token, username);
             return token;
         }
-        return "Invalid credentials";
+        return null;
     }
 
     @Override
