@@ -3,6 +3,8 @@ package es.deusto.sd.strava.gui;
 import javax.swing.*;
 import es.deusto.sd.strava.*;
 import es.deusto.sd.strava.DTO.*;
+import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
+import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
 import es.deusto.sd.strava.assembler.EntrenamientoAssembler;
 import es.deusto.sd.strava.assembler.RetoAssembler;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
@@ -41,6 +43,8 @@ public class MenuGUI extends JFrame {
 
     private static final Color ORANGE_ACCENT = new Color(255, 87, 34);
     private IRemoteFacade facade;
+    private IRemoteAuthFacadeG facadeG;
+    private IRemoteAuthFacadeM facadeM;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
     public MenuGUI(IRemoteFacade facade) {
@@ -348,6 +352,16 @@ class MainAppGUI extends JFrame {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
+            	usuario.setToken(""); // o null
+            	if(usuario.getProveedor()=="Google") {
+					//implementar button logout eliminar token
+
+            	}
+            	else if(usuario.getProveedor()=="Meta"){
+            		//implementar button logout eliminar token
+            	}
+            	
+            	
                 JOptionPane.showMessageDialog(profilePanel, "Sesión cerrada correctamente.");
                 dispose();
                 new MenuGUI(facade).setVisible(true);
