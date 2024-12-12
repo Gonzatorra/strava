@@ -77,6 +77,7 @@ public class RetoService {
     	RetoAssembler.toDomain(reto).eliminarReto(UsuarioAssembler.toDomain(usuario));
     	if(usuario.getId()==reto.getUsuarioCreador().getId()) {
     		retos.remove(reto.getId());
+    		
     	}
     	else {
     		//retos.put(reto.getId(), reto);

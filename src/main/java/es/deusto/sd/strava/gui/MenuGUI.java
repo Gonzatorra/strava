@@ -1274,15 +1274,17 @@ class MainAppGUI extends JFrame {
                 try {
                     int retoId = (int) acceptedModel.getValueAt(selectedRow, 0);
                     HashMap<Integer,RetoDTO> retosD= facade.visualizarReto();
-                    
-                    if (usuario.equals(retosD.get(retoId).getUsuarioCreador())) {
+                    RetoDTO r= retosD.get(retoId);
+                    if (usuario.equals(r.getUsuarioCreador())) {
                         //eliminar reto completo
                         System.out.println("El creador elimina el reto.");
-                        HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
-                        for(UsuarioDTO participante: usuarios.values()) {
-                        	if (participante.getId()==retoId) {
-	                        	participante.getRetos().remove(retosD.get(retoId).getId());
-	                        	facade.actualizarUsuario(participante);
+                        ArrayList<Integer> participantes = r.getParticipantes();
+                        for(Integer participante: participantes) {
+                        	if (r.getParticipantes().contains(participante)) {
+                            	UsuarioDTO usu= facade.getUsuarios().get(participante);
+	                        	usu.getRetos().remove(r.getId());
+	                        	facade.actualizarUsuario(usu);
+	                        	
                         	}
                      
                         }
@@ -1290,7 +1292,6 @@ class MainAppGUI extends JFrame {
                         
                     } else {
                         //eliminar al participante de la lista
-                    	
                     	
                     	ArrayList<UsuarioDTO> participantesDTO= new ArrayList<>();
                     	HashMap<Integer, UsuarioDTO> usuarios = facade.getUsuarios();
