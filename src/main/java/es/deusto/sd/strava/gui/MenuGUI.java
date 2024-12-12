@@ -19,6 +19,8 @@ import es.deusto.sd.strava.servicios.UsuarioService;
 import java.awt.*;
 import java.rmi.Naming;
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
@@ -47,8 +49,11 @@ public class MenuGUI extends JFrame {
     private IRemoteAuthFacadeM facadeM;
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
-    public MenuGUI(IRemoteFacade facade) {
+    public MenuGUI(IRemoteFacade facade, IRemoteAuthFacadeG facadeG, IRemoteAuthFacadeM facadeM) {
         this.facade = facade;
+        this.facadeG = facadeG;
+        this.facadeM = facadeM;
+         
         setTitle("Strava - Login / Registro");
         setSize(500, 300);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -241,7 +246,14 @@ public class MenuGUI extends JFrame {
     public static void main(String[] args) {
         try {
             IRemoteFacade facade = (IRemoteFacade) Naming.lookup("rmi://localhost/RemoteFacade");
-            SwingUtilities.invokeLater(() -> new MenuGUI(facade).setVisible(true));
+
+            Registry registryG = LocateRegistry.getRegistry("localhost", 1100);
+            IRemoteAuthFacadeG facadeG = (IRemoteAuthFacadeG) registryG.lookup("RemoteAuthFacadeG");
+
+            Registry registryM = LocateRegistry.getRegistry("localhost", 1101);
+            IRemoteAuthFacadeM facadeM = (IRemoteAuthFacadeM) registryM.lookup("RemoteAuthFacadeM");
+
+            SwingUtilities.invokeLater(() -> new MenuGUI(facade, facadeG, facadeM).setVisible(true));
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -253,12 +265,21 @@ class MainAppGUI extends JFrame {
     private static final Color ORANGE_ACCENT = new Color(255, 87, 34);
     private UsuarioDTO usuario;
     private IRemoteFacade facade;
+    private IRemoteAuthFacadeG facadeG;
+    private IRemoteAuthFacadeM facadeM;
 
     public MainAppGUI(UsuarioDTO usuario) {
 
-        this.usuario = usuario;
+    	this.usuario = usuario;
         try {
             facade = (IRemoteFacade) Naming.lookup("rmi://localhost/RemoteFacade");
+
+            Registry registryG = LocateRegistry.getRegistry("localhost", 1100);
+            facadeG = (IRemoteAuthFacadeG) registryG.lookup("RemoteAuthFacadeG");
+            
+            Registry registryM = LocateRegistry.getRegistry("localhost", 1101);
+            facadeM = (IRemoteAuthFacadeM) registryM.lookup("RemoteAuthFacadeM");
+
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -352,20 +373,23 @@ class MainAppGUI extends JFrame {
             );
 
             if (confirm == JOptionPane.YES_OPTION) {
-            	usuario.setToken(""); // o null
-            	if(usuario.getProveedor()=="Google") {
-					//implementar button logout eliminar token
+                try {
+                    if ("Google".equals(usuario.getProveedor())) {
+                        facadeG.logout(usuario.getUsername());
+                    } else if ("Meta".equals(usuario.getProveedor())) {
+                        facadeM.logout(usuario.getUsername());
+                    } else {
+                        facade.logout(usuario.getUsername());
+                    }
 
-            	}
-            	else if(usuario.getProveedor()=="Meta"){
-            		//implementar button logout eliminar token
-            	}
-            	
-            	
-                JOptionPane.showMessageDialog(profilePanel, "Sesión cerrada correctamente.");
-                dispose();
-                new MenuGUI(facade).setVisible(true);
-                
+                    usuario.setToken(null); // Clear the token locally
+                    JOptionPane.showMessageDialog(profilePanel, "Sesión cerrada correctamente.");
+                    dispose();
+                    new MenuGUI(facade, facadeG, facadeM).setVisible(true);
+                } catch (RemoteException ex) {
+                    JOptionPane.showMessageDialog(profilePanel, "Error al cerrar sesión: " + ex.getMessage());
+                    ex.printStackTrace();
+                }
             }
         });
         buttonPanel.add(logoutButton);
