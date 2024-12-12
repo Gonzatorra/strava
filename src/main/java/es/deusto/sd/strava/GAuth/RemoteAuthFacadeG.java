@@ -11,9 +11,9 @@ import es.deusto.sd.strava.servicios.UsuarioService;
 
 public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
 
-    private final Map<String, String> userStore = new HashMap<>();
-    private final Map<String, String> tokenStore = new HashMap<>(); //tuplas de username, token. usuarios activos
-    private final Map<String, String> userInfoStore = new HashMap<>();
+    static private  Map<String, String> userStore = new HashMap<>();
+    static private  Map<String, String> tokenStore = new HashMap<>(); //tuplas de username, token. usuarios activos
+    static private  Map<String, String> userInfoStore = new HashMap<>();
     private ServicioAutentificacion servicioAutenticacion;
     UsuarioService servicioUsu;
 

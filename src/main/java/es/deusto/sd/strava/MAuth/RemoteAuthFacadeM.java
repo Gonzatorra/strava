@@ -11,9 +11,9 @@ import es.deusto.sd.strava.servicios.UsuarioService;
 
 public class RemoteAuthFacadeM implements IRemoteAuthFacadeM {
 
-    private final Map<String, String> userStore = new HashMap<>();
-    private final Map<String, String> tokenStore = new HashMap<>();
-    private final Map<String, String> userInfoStore = new HashMap<>();
+    static private final Map<String, String> userStore = new HashMap<>();
+    static private final Map<String, String> tokenStore = new HashMap<>();
+    static private final Map<String, String> userInfoStore = new HashMap<>();
     private ServicioAutentificacion servicioAutenticacion;
     UsuarioService servicioUsu;
 
