@@ -787,7 +787,6 @@ class MainAppGUI extends JFrame {
 
             // Limpiar todas las filas del modelo
             acceptedModel.setRowCount(0);
-
             UsuarioDTO usuario2 = null;
 			try {
 				usuario2 = facade.getUsuarios().get(usuario.getId());

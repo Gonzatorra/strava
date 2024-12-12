@@ -92,17 +92,14 @@ public class Servidor {
             LocalDate fecha = LocalDate.of(2024, 8, 23);
             LocalDateTime fecha1 = LocalDateTime.now();
             LocalDateTime fecha2 = LocalDateTime.of(2024, 8, 23, 0, 0);
-            List<UsuarioDTO> challengers = new ArrayList<UsuarioDTO>();
             
             //Usuario 1
             UsuarioDTO usuario= servidor.facade.registrarUsuario("ana123", "hola", "ana123@strava.com", "Ana", "Strava");
             EntrenamientoDTO entreno = servidor.facade.crearEntreno(usuario, "MiPrimerEntrenamiento","running", 10.0, fecha, (float) 14.5, 0.0);
+            List<UsuarioDTO> challengers = new ArrayList<UsuarioDTO>();
             challengers.add(usuario);
             facade.actualizarUsuario(usuario);
-            RetoDTO reto= servidor.facade.crearReto("PrimerReto", fecha2, fecha1, 10, 30, "running", usuario, challengers);
             usuario.getEntrenamientos().add(entreno);
-            facade.actualizarUsuario(usuario);
-            usuario.getRetos().put(reto, "prueba");
             facade.actualizarUsuario(usuario);
             
             
@@ -111,9 +108,7 @@ public class Servidor {
             EntrenamientoDTO entreno2 = facade.crearEntreno(usuario2, "EntrenoAvanzado", "cycling", 20.0, fecha, 18.0f, 5.0);
             List<UsuarioDTO> challengers2 = new ArrayList<UsuarioDTO>();
             challengers2.add(usuario2);
-            RetoDTO reto2 = facade.crearReto("RetoCiclismo", fecha1, fecha2, 20, 50, "cycling", usuario2, challengers2);
             usuario2.getEntrenamientos().add(entreno2);
-            usuario2.getRetos().put(reto2, "superado");
             facade.actualizarUsuario(usuario2);
 
             // Usuario 3
@@ -121,9 +116,7 @@ public class Servidor {
             EntrenamientoDTO entreno3 = facade.crearEntreno(usuario3, "EntrenoMatutino", "swimming", 5.0, fecha, 12.0f, 1.0);
             List<UsuarioDTO> challengers3 = new ArrayList<UsuarioDTO>();
             challengers3.add(usuario3);
-            RetoDTO reto3 = facade.crearReto("RetoNatacion", fecha1, fecha2, 5, 15, "swimming", usuario3, challengers3);
             usuario3.getEntrenamientos().add(entreno3);
-            usuario3.getRetos().put(reto3, "pendiente");
             facade.actualizarUsuario(usuario3);
 
             // Usuarios 4 al 10
