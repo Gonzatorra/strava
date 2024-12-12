@@ -57,6 +57,7 @@ public class Usuario implements Serializable{
 		this.entrenamientos = entrenamientos;
 		this.retos = retos;
 		this.amigos = amigos;
+		this.proveedor= proveedor;
 		
 	}
 	

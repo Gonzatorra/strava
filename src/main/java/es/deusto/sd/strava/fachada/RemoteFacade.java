@@ -14,6 +14,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import javax.swing.JOptionPane;
+
 public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     public UsuarioService usuarioService;
@@ -126,6 +128,9 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	        
 	        return u;
 	        }
+        else {
+            System.out.println("Login fallido con plataforma: " + plataforma + " para usuario con proveedor: " + proveedor);
+        }
         return null;
        /* if (token != null) {
             UsuarioDTO usuario = new UsuarioDTO();

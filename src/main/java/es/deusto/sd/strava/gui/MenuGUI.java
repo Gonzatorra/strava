@@ -81,7 +81,7 @@ public class MenuGUI extends JFrame {
             JOptionPane.showMessageDialog(this, "Error de conexión con el servidor. Por favor, intente nuevamente.");
             ex.printStackTrace();
         } catch (Exception ex) {
-            JOptionPane.showMessageDialog(this, "Error inesperado: " + ex.getMessage());
+            JOptionPane.showMessageDialog(this, "Usuario no encontrado");
             ex.printStackTrace();
         }
     }
