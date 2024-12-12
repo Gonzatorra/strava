@@ -245,12 +245,6 @@ public class MenuGUI extends JFrame {
         try {
             IRemoteFacade facade = (IRemoteFacade) Naming.lookup("rmi://localhost/RemoteFacade");
 
-            Registry registryG = LocateRegistry.getRegistry("localhost", 1100);
-            IRemoteAuthFacadeG facadeG = (IRemoteAuthFacadeG) registryG.lookup("RemoteAuthFacadeG");
-
-            Registry registryM = LocateRegistry.getRegistry("localhost", 1101);
-            IRemoteAuthFacadeM facadeM = (IRemoteAuthFacadeM) registryM.lookup("RemoteAuthFacadeM");
-
             SwingUtilities.invokeLater(() -> new MenuGUI(facade).setVisible(true));
         } catch (Exception e) {
             e.printStackTrace();
