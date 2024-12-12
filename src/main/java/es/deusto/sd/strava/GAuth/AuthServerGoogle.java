@@ -14,7 +14,7 @@ import es.deusto.sd.strava.DTO.UsuarioDTO;
 
 public class AuthServerGoogle {
 
-    private static RemoteAuthFacadeG facade;
+    public static RemoteAuthFacadeG facade;
 
     public AuthServerGoogle() {
         try {
@@ -44,13 +44,7 @@ public class AuthServerGoogle {
             System.out.println("AuthServer is ready and waiting for connections...");
             
             
-            facade.registerUser("daniel333", "claveDaniel", "daniel333@gmail.com");
-            facade.registerUser("susana555", "claveSusana", "susana555@gmail.com");
-            facade.registerUser("manuel111", "claveManuel", "manuel111@gmail.com");
-            facade.registerUser("isabel999", "claveIsabel", "isabel999@gmail.com");
-            facade.registerUser("andres444", "claveAndres", "andres444@gmail.com");
-            facade.registerUser("clara777", "claveClara", "clara777@gmail.com");
-            facade.registerUser("pablo888", "clavePablo", "pablo888@gmail.com");
+            
             
             
         } catch (Exception e) {

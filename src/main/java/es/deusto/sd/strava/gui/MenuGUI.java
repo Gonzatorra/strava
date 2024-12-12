@@ -201,7 +201,7 @@ public class MenuGUI extends JFrame {
                 String email = emailField.getText();
                 String name = nameField.getText();
 
-                UsuarioDTO usuario = facade.registrarUsuario(username, password, email, name);
+                UsuarioDTO usuario = facade.registrarUsuario(username, password, email, name, "Strava");
                 if (usuario != null) {
                     JOptionPane.showMessageDialog(this, "Usuario registrado con éxito: " + usuario.getUsername());
                     

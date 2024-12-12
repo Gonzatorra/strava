@@ -45,7 +45,7 @@ public class Usuario implements Serializable{
 	
 	//sin valores opcionales
 	public Usuario(int id, String username, String email, String contrasena,
-			String nombre, String token, ArrayList<Entrenamiento> entrenamientos,
+			String nombre, String token, String proveedor, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos, ArrayList<Integer> amigos) {
 		super();
 		this.id = id;

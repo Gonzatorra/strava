@@ -20,7 +20,7 @@ import java.util.UUID;
 
 public interface IRemoteFacade extends Remote {
 	//usuario
-    UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre) throws RemoteException;
+    UsuarioDTO registrarUsuario(String username, String contrasena, String email, String nombre, String proveedor) throws RemoteException;
     UsuarioDTO login(String email, String contrasena) throws RemoteException;
     UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException;
     void logout(String token) throws RemoteException;

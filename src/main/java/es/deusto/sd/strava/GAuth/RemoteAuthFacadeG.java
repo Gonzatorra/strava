@@ -5,20 +5,19 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.servicios.ServicioAutentificacion;
+import es.deusto.sd.strava.servicios.UsuarioService;
+
 public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
 
     private final Map<String, String> userStore = new HashMap<>();
-    private final Map<String, String> tokenStore = new HashMap<>();
+    private final Map<String, String> tokenStore = new HashMap<>(); //tuplas de username, token. usuarios activos
     private final Map<String, String> userInfoStore = new HashMap<>();
+    private ServicioAutentificacion servicioAutenticacion;
+    UsuarioService servicioUsu;
 
-    public RemoteAuthFacadeG() throws RemoteException {
-        //usuarios de prueba
-        userStore.put("user1", "password1");
-        userInfoStore.put("user1", "User One, user1@example.com");
-
-        userStore.put("user2", "password2");
-        userInfoStore.put("user2", "User Two, user2@example.com");
-    }
+    public RemoteAuthFacadeG() throws RemoteException {}
 
     @Override
     public String registerUser(String username, String password, String email) throws RemoteException {
@@ -31,19 +30,29 @@ public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
     }
 
     @Override
-    public String loginUser(String username, String password) throws RemoteException {
+    public String loginUser(String username, String password, String proveedor) throws RemoteException {
         if (userStore.containsKey(username) && userStore.get(username).equals(password)) {
-            String token = UUID.randomUUID().toString();
-            tokenStore.put(token, username);
-            return token;
+        	if(tokenStore.get(username)!= null ) 
+            {
+        		String token= servicioAutenticacion.autenticar(username, password, "Google", proveedor);
+        		tokenStore.put(token, username);
+        		UsuarioDTO usuario= servicioUsu.obtenerUsuarioPorNombre(username);
+        		servicioUsu.actualizarUsuario(usuario);
+        		
+        		return token;
+            }
+        	else {
+        		return tokenStore.get(username);
+        	}
+        	
+            
+            
         }
         return null;
     }
+    
+    
 
-    @Override
-    public boolean validateToken(String token) throws RemoteException {
-        return tokenStore.containsKey(token);
-    }
 
     @Override
     public String getUserInfo(String token) throws RemoteException {

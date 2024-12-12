@@ -1,15 +1,10 @@
 package es.deusto.sd.strava.fachada;
 
 import es.deusto.sd.strava.DTO.EntrenamientoDTO;
+
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
-import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
-import es.deusto.sd.strava.assembler.RetoAssembler;
-import es.deusto.sd.strava.assembler.UsuarioAssembler;
 import es.deusto.sd.strava.servicios.*;
-import es.deusto.sd.strava.dominio.Entrenamiento;
-import es.deusto.sd.strava.dominio.Reto;
-import es.deusto.sd.strava.dominio.Usuario;
 
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -21,11 +16,13 @@ import java.util.List;
 
 public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
-    private UsuarioService usuarioService;
+    public UsuarioService usuarioService;
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
-    //private ServicioAutentificacion servicioAutentificacion;
+    private ServicioAutentificacion servicioAutentificacion;
     private ServicioExternosBridge externoService;
+    
+    private static HashMap<UsuarioDTO, String> tokensActivos = new HashMap<>();
     
     /*private static final String MOCK_GOOGLE_USER = "user@google.com";
     private static final String MOCK_GOOGLE_PASSWORD = "google";
@@ -39,6 +36,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         this.entrenamientoService = new EntrenamientoService();
         this.retoService = new RetoService();
         this.externoService= new ServicioExternosBridge();
+        this.servicioAutentificacion= new ServicioAutentificacion();
     }
     
     
@@ -80,7 +78,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
 
 	@Override
-	public UsuarioDTO registrarUsuario(String username, String password, String email, String nombre) throws RemoteException {
+	public UsuarioDTO registrarUsuario(String username, String password, String email, String nombre, String proveedor) throws RemoteException {
 	    UsuarioDTO usuario = usuarioService.getUsuarios().values().stream()
 	            .filter(u -> u.getUsername().equals(username))
 	            .findFirst()
@@ -91,28 +89,47 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	        return usuario;
 	    }
 
-	    return usuarioService.registrar(username, password, email, nombre);
+	    return usuarioService.registrar(username, password, email, nombre, proveedor);
 	}
 
     @Override
     public UsuarioDTO login(String username, String contrasena) throws RemoteException {
-        
-        return usuarioService.login(username, contrasena);
+    	UsuarioDTO u= usuarioService.login(username, contrasena);
+    	if(u.getToken()!=null | !u.getToken().equals("")) {
+    		return u;
+    	}
+    	else {
+	    	u.setToken(servicioAutentificacion.autenticar(username, contrasena, "Strava", u.getProveedor()));
+	    	usuarioService.actualizarUsuario(u);
+	    	UsuarioDTO usu= usuarioService.getUsuarios().get(u.getId());
+	    	tokensActivos.put(usu, usu.getToken());
+	    	return usu;
+    	}
        
     }
     
     @Override
-    public UsuarioDTO loginConProveedor(String username, String password, String proveedor) throws RemoteException {
-        String result = null;
-        if ("Google".equals(proveedor)) {
-            result = externoService.verifyGoogle(username, password);
-        } else if ("Meta".equals(proveedor)) {
-            result = externoService.verifyMeta(username, password);
-        }
-
-        if (result != null) {
+    public UsuarioDTO loginConProveedor(String username, String password, String plataforma) throws RemoteException {
+        String token = null;
+        String proveedor = usuarioService.obtenerUsuarioPorNombre(username).getProveedor();
+        if(plataforma.equals(proveedor)) {
+	        if ("Google".equals(plataforma)) {
+	        	token = externoService.verifyGoogle(username, password, proveedor);
+	        } else if ("Meta".equals(plataforma)) {
+	        	token = externoService.verifyMeta(username, password, proveedor);
+	        }
+	        
+	        UsuarioDTO usu= usuarioService.obtenerUsuarioPorNombre(username);
+	        usu.setToken(token);
+	        usuarioService.actualizarUsuario(usu);
+	        UsuarioDTO u= usuarioService.getUsuarios().get(usu.getId());
+	        
+	        return u;
+	        }
+        return null;
+       /* if (token != null) {
             UsuarioDTO usuario = new UsuarioDTO();
-            usuario.setToken(result);
+            usuario.setToken(token);
             usuario.setUsername(username);
             usuario.setContrasena(password);
             usuario.setProveedor(proveedor);
@@ -135,7 +152,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         } else {
             System.out.println("Autenticacion fallida para usuario: " + username + " con proveedor: " + proveedor);
             return null;
-        }
+        }*/
     }
 
    

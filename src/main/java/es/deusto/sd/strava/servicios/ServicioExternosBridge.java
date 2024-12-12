@@ -52,18 +52,20 @@ public class ServicioExternosBridge {
         System.out.println("ServicioExternosBridge inicializado.");
     }
 	
-	public String verifyGoogle(String username, String pass) {
+	public String verifyGoogle(String username, String pass, String proveedor) {
 	    try {
-	        return fachadaExternaG.loginUser(username, pass);
+	        String token= fachadaExternaG.loginUser(username, pass, proveedor);
+	        return token;	        
 	    } catch (RemoteException e) {
 	        e.printStackTrace();
 	    }
 	    return null;
 	}
 	
-	public String verifyMeta(String username, String pass) {
+	public String verifyMeta(String username, String pass, String proveedor) {
 	    try {
-	        return fachadaExternaM.loginUser(username, pass);
+	        String token= fachadaExternaM.loginUser(username, pass, proveedor);
+	        return token;
 	    } catch (RemoteException e) {
 	        e.printStackTrace();
 	    }

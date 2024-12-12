@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 import javax.swing.JOptionPane;
 
@@ -16,10 +17,11 @@ import es.deusto.sd.strava.dominio.Usuario;
 
 public class UsuarioService {
 
-    private static HashMap<Integer, UsuarioDTO> usuarios = new HashMap<>(); 
-    private static int idCounter = 1;  //para signar IDs unicos
-    private static UsuarioService instancia;
-    private UsuarioDTO usuarioAutenticado; // Usuario actualmente autenticado
+    public static HashMap<Integer, UsuarioDTO> usuarios = new HashMap<>(); 
+    public static int idCounter = 1;  //para signar IDs unicos
+    public static UsuarioService instancia;
+    
+    
     
     public UsuarioService() {
         usuarios = new HashMap<>();
@@ -27,18 +29,19 @@ public class UsuarioService {
         System.out.println("UsuarioService inicializado.");
     }
 
-    public UsuarioDTO registrar(String username, String contrasena, String email, String nombre) {
+    public UsuarioDTO registrar(String username, String contrasena, String email, String nombre, String proveedor) {
         int nuevoId = idCounter++;
-        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
+        Usuario usuario = new Usuario(nuevoId, username, email, contrasena, nombre, null, proveedor, new ArrayList<>(), new HashMap<>(), new ArrayList<>());
         usuarios.put(UsuarioAssembler.toDTO(usuario).getId(), UsuarioAssembler.toDTO(usuario));
         System.out.println("Usuario registrado: " + username);
         return UsuarioAssembler.toDTO(usuario);
     }
 
     public UsuarioDTO login(String username, String contrasena) {
-        for (UsuarioDTO usuario : usuarios.values()) {
+    	for (UsuarioDTO usuario : usuarios.values()) {
             if (usuario.getUsername().equals(username) && usuario.getContrasena().equals(contrasena)) {
                 System.out.println("Login exitoso para: " + username);
+                
                 return usuario;
             }
         }
@@ -58,9 +61,6 @@ public class UsuarioService {
         System.out.println("Token no encontrado");
     }
 
-    private String generateToken() {
-        return "token-" + System.currentTimeMillis(); 
-    }
 
     public void eliminarUsuario(UsuarioDTO usuario) {
         if (usuario != null) {
@@ -118,18 +118,6 @@ public class UsuarioService {
     }
 
     
-
-    /*public List<EntrenamientoDTO> getEntrenosUsuario(UsuarioDTO usuario, double fechaIni, double fechaFin) {
-        System.out.println("Devuelve entrenamientos del usuario");
-        return null;
-    }
-
-    public ArrayList<RetoDTO> getRetosUsuario(UsuarioDTO usuario, String estado) {
-        System.out.println("Devuelve retos del usuario");
-        
-        return null;
-    }*/
-    
     
     public static HashMap<Integer, UsuarioDTO> getUsuarios() {
 		return usuarios;
@@ -155,18 +143,7 @@ public class UsuarioService {
         return instancia;
     }
 
-    public UsuarioDTO obtenerUsuarioAutenticado() {
-        return usuarioAutenticado;
-    }
-
-    public void autenticarUsuario(UsuarioDTO usuario, String token) {
-        usuario.setToken(token); // Actualiza el token del usuario
-        this.usuarioAutenticado = usuario;
-    }
-
-    public boolean esTokenValido(String token) {
-        return usuarioAutenticado != null && usuarioAutenticado.getToken().equals(token);
-    }
+    
     
     public Map<Integer, Float> calcularProgreso(UsuarioDTO usuarioDTO) throws RemoteException {
         Map<Integer, Float> progresoPorReto = new HashMap<>();
