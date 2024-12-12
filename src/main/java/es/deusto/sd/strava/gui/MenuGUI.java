@@ -573,7 +573,7 @@ class MainAppGUI extends JFrame {
                         .orElseThrow(() -> new IllegalArgumentException("Entrenamiento no encontrado"));
 
                     // Update the entrenamiento via facade
-                    facade.actualizarEntreno(entrenamientoToUpdate, title, sport, duration, distance);
+                    facade.actualizarEntreno(entrenamientoToUpdate, usuario, title, sport, duration, distance);
 
                     // Update the entrenamiento in the user's list
                     entrenamientoToUpdate.setTitulo(title);

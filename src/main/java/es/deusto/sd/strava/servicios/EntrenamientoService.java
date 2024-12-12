@@ -28,13 +28,13 @@ public class EntrenamientoService {
 			entrenoIdxUsuario.put(usuario.getId(), 0);
 		}
 		entrenoIdxUsuario.put(usuario.getId(), idUEntreno+1);
-		EntrenamientoDTO entreno = new EntrenamientoDTO(idUEntreno+1, usuario, titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
+		EntrenamientoDTO entreno = new EntrenamientoDTO(idUEntreno+1, usuario.getUsername(), titulo, deporte, (float) distancia, fechaIni, horaInicio, duracion);
 		return entreno;
 	}
 
 
-	public void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) {
-	    for (EntrenamientoDTO e : entrenamiento.getUsuario().getEntrenamientos()) {
+	public void actualizarEntreno(EntrenamientoDTO entrenamiento, UsuarioDTO usu, String titulo, String deporte, double distancia, double duracion) {
+	    for (EntrenamientoDTO e : usu.getEntrenamientos()) {
 	        if (e.getId() == entrenamiento.getId()) {
 	            e.setTitulo(titulo);
 	            e.setDeporte(deporte);

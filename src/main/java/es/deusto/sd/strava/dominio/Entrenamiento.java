@@ -9,7 +9,7 @@ public class Entrenamiento implements Serializable{
     //atributos   
 	
     private int id;
-    private Usuario usuario;
+    private String username;
     private String titulo;
     private String deporte;
     private double distancia;
@@ -18,10 +18,10 @@ public class Entrenamiento implements Serializable{
     private double duracion;
 
     //constructores
-    public Entrenamiento(int id, Usuario usuario, String titulo, String deporte, double distancia, 
+    public Entrenamiento(int id, String username, String titulo, String deporte, double distancia, 
                           LocalDate fecIni, float horaIni, double duracion) {
         this.id = id;
-        this.usuario = usuario;
+        this.username = username;
         this.titulo = titulo;
         this.deporte = deporte;
         this.distancia = distancia;
@@ -41,12 +41,12 @@ public class Entrenamiento implements Serializable{
         this.id = id;
     }
 
-    public Usuario getUsuario() {
-        return usuario;
+    public String getUsuario() {
+        return username;
     }
 
-    public void setUsuario(Usuario usuario) {
-        this.usuario = usuario;
+    public void setUsuario(String username) {
+        this.username = username;
     }
 
     public String getTitulo() {

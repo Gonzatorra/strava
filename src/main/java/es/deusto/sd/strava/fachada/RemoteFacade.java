@@ -334,8 +334,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 	}
 
 	@Override
-	public void actualizarEntreno(EntrenamientoDTO entrenamiento, String titulo, String deporte, double distancia, double duracion) throws RemoteException {
-		//entrenamientoService.actualizarEntreno(entrenamiento, titulo, deporte, distancia, duracion);
+	public void actualizarEntreno(EntrenamientoDTO entrenamiento, UsuarioDTO usu, String titulo, String deporte, double distancia, double duracion) throws RemoteException {
+		entrenamientoService.actualizarEntreno(entrenamiento, usu, titulo, deporte, distancia, duracion);
 		
 	}
 
