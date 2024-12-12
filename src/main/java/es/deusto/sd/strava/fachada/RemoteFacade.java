@@ -30,7 +30,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private IRemoteAuthFacadeG facadeG;
     private IRemoteAuthFacadeM facadeM;
     
-    private static HashMap<UsuarioDTO, String> tokensActivos = new HashMap<>();
+    private static HashMap<String, String> tokensActivos = new HashMap<>();
     
     /*private static final String MOCK_GOOGLE_USER = "user@google.com";
     private static final String MOCK_GOOGLE_PASSWORD = "google";
@@ -117,17 +117,22 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
 
     @Override
     public UsuarioDTO login(String username, String contrasena) throws RemoteException {
+    	for (UsuarioDTO u: usuarioService.getUsuarios().values()) {
+    		if (u.getUsername().equals(username)) {
+    			if(tokensActivos.get(username)!=null) {
+    	    		return u;
+    	    	
+    	    	}
+    			break;
+    		}
+    	}
     	UsuarioDTO u= usuarioService.login(username, contrasena);
-    	if(u.getToken()!=null | !u.getToken().equals("")) {
-    		return u;
-    	}
-    	else {
-	    	u.setToken(servicioAutentificacion.autenticar(username, contrasena, "Strava", u.getProveedor()));
-	    	usuarioService.actualizarUsuario(u);
-	    	UsuarioDTO usu= usuarioService.getUsuarios().get(u.getId());
-	    	tokensActivos.put(usu, usu.getToken());
-	    	return usu;
-    	}
+    	u.setToken(servicioAutentificacion.autenticar(username, contrasena, "Strava", u.getProveedor()));
+	    usuarioService.actualizarUsuario(u);
+	    UsuarioDTO usu= UsuarioService.getUsuarios().get(u.getId());
+	    tokensActivos.put(usu.getUsername(), usu.getToken());
+	    return usu;
+    	
        
     }
     
@@ -240,13 +245,19 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     public void logout(String username) throws RemoteException {
         UsuarioDTO usuario = usuarioService.obtenerUsuarioPorNombre(username);
         if (usuario != null) {
+        	String token= usuario.getToken();
             String proveedor = usuario.getProveedor();
             if ("Google".equals(proveedor)) {
                 facadeG.logout(username);
             } else if ("Meta".equals(proveedor)) {
                 facadeM.logout(username);
             }
-            usuarioService.logout(username);
+            else {
+            	
+            	usuarioService.logout(token);
+            	tokensActivos.remove(username);
+            }
+            
             System.out.println("Logout completo para el usuario: " + username);
         } else {
             System.out.println("Usuario no encontrado para logout: " + username);

@@ -3,6 +3,8 @@ package es.deusto.sd.strava.dominio;
 import java.io.Serializable;
 import java.time.LocalDate;
 
+import es.deusto.sd.strava.DTO.UsuarioDTO;
+
 public class Entrenamiento implements Serializable{
     //atributos   
 	
