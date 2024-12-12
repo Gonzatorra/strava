@@ -118,7 +118,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     @Override
     public UsuarioDTO login(String username, String contrasena) throws RemoteException {
     	for (UsuarioDTO u: usuarioService.getUsuarios().values()) {
-    		if (u.getUsername().equals(username)) {
+    		if (u.getUsername().equals(username) && u.getProveedor().equals("Strava")) {
+    			System.out.println(u.getUsername()+u.getProveedor());
     			if(tokensActivos.get(username)!=null) {
     	    		return u;
     	    	
@@ -126,12 +127,16 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     			break;
     		}
     	}
-    	UsuarioDTO u= usuarioService.login(username, contrasena);
-    	u.setToken(servicioAutentificacion.autenticar(username, contrasena, "Strava", u.getProveedor()));
-	    usuarioService.actualizarUsuario(u);
-	    UsuarioDTO usu= UsuarioService.getUsuarios().get(u.getId());
-	    tokensActivos.put(usu.getUsername(), usu.getToken());
-	    return usu;
+    	UsuarioDTO usu= usuarioService.obtenerUsuarioPorNombre(username);
+    	if(usu.getProveedor().equals("Strava")) {
+	    	UsuarioDTO u= usuarioService.login(username, contrasena);
+	    	u.setToken(servicioAutentificacion.autenticar(username, contrasena, "Strava", u.getProveedor()));
+		    usuarioService.actualizarUsuario(u);
+		    UsuarioDTO usu2= UsuarioService.getUsuarios().get(u.getId());
+		    tokensActivos.put(usu2.getUsername(), usu2.getToken());
+		    return usu;
+    	}
+		return null;
     	
        
     }
@@ -253,7 +258,6 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
                 facadeM.logout(username);
             }
             else {
-            	
             	usuarioService.logout(token);
             	tokensActivos.remove(username);
             }

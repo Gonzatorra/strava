@@ -63,7 +63,7 @@ public class Usuario implements Serializable{
 	
 	public Usuario(int id, String username, String email, String contrasena,
 			String nombre, float peso, float altura, java.util.Date fNacimiento,
-			float frecCMax, float frecCReposo, String token, ArrayList<Entrenamiento> entrenamientos,
+			float frecCMax, float frecCReposo, String token, String proveedor, ArrayList<Entrenamiento> entrenamientos,
 			HashMap<Reto, String> retos, ArrayList<Integer> amigos) {
 		super();
 		this.id = id;
@@ -80,6 +80,7 @@ public class Usuario implements Serializable{
 		this.entrenamientos = entrenamientos;
 		this.retos = retos;
 		this.amigos = amigos;
+		this.proveedor= proveedor;
 		
 	}
 	

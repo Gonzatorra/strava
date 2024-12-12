@@ -35,7 +35,7 @@ public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
         	if(tokenStore.get(username)!= null ) 
             {
         		String token= servicioAutenticacion.autenticar(username, password, "Google", proveedor);
-        		tokenStore.put(token, username);
+        		tokenStore.put(username, token);
         		UsuarioDTO usuario= servicioUsu.obtenerUsuarioPorNombre(username);
         		servicioUsu.actualizarUsuario(usuario);
         		
@@ -61,13 +61,4 @@ public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
         }
     }
 
-
-    @Override
-    public String getUserInfo(String token) throws RemoteException {
-        String username = tokenStore.get(token);
-        if (username != null && userInfoStore.containsKey(username)) {
-            return userInfoStore.get(username);
-        }
-        return "Invalid token";
-    }
 }
