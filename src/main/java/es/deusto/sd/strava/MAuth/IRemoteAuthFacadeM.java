@@ -9,4 +9,6 @@ public interface IRemoteAuthFacadeM extends Remote {
     String loginUser(String username, String password, String proveedor) throws RemoteException;
 
     String getUserInfo(String token) throws RemoteException;
+
+	void logout(String username) throws RemoteException;
 }

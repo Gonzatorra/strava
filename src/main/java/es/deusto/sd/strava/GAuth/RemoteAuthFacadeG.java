@@ -51,7 +51,15 @@ public class RemoteAuthFacadeG implements IRemoteAuthFacadeG {
         return null;
     }
     
-    
+    @Override
+    public void logout(String username) throws RemoteException {
+        if (tokenStore.containsKey(username)) {
+            tokenStore.remove(username);
+            System.out.println("Token eliminado para usuario de Google: " + username);
+        } else {
+            System.out.println("No se encontró token para el usuario: " + username);
+        }
+    }
 
 
     @Override

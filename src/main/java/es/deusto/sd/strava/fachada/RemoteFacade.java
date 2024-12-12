@@ -4,9 +4,13 @@ import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
+import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
+import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
 import es.deusto.sd.strava.servicios.*;
 
 import java.rmi.RemoteException;
+import java.rmi.registry.LocateRegistry;
+import java.rmi.registry.Registry;
 import java.rmi.server.UnicastRemoteObject;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -23,6 +27,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private RetoService retoService;
     private ServicioAutentificacion servicioAutentificacion;
     private ServicioExternosBridge externoService;
+    private IRemoteAuthFacadeG facadeG;
+    private IRemoteAuthFacadeM facadeM;
     
     private static HashMap<UsuarioDTO, String> tokensActivos = new HashMap<>();
     
@@ -39,7 +45,22 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         this.retoService = new RetoService();
         this.externoService= new ServicioExternosBridge();
         this.servicioAutentificacion= new ServicioAutentificacion();
+        
+        try {
+            Registry registryG = LocateRegistry.getRegistry("localhost", 1100);
+            this.facadeG = (IRemoteAuthFacadeG) registryG.lookup("RemoteAuthFacadeG");
+            System.out.println("RemoteAuthFacadeG vinculado correctamente.");
+
+            Registry registryM = LocateRegistry.getRegistry("localhost", 1101);
+            this.facadeM = (IRemoteAuthFacadeM) registryM.lookup("RemoteAuthFacadeM");
+            System.out.println("RemoteAuthFacadeM vinculado correctamente.");
+
+        } catch (Exception e) {
+            System.err.println("Error al inicializar facades para Google y Meta: " + e.getMessage());
+            e.printStackTrace();
+        }
     }
+    
     
     
     
@@ -207,13 +228,32 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         return null;
     }*/
 
-
+    /*
     @Override
     public void logout(String token) throws RemoteException {
         
         usuarioService.logout(token);
     }
-
+	*/
+    
+    @Override
+    public void logout(String username) throws RemoteException {
+        UsuarioDTO usuario = usuarioService.obtenerUsuarioPorNombre(username);
+        if (usuario != null) {
+            String proveedor = usuario.getProveedor();
+            if ("Google".equals(proveedor)) {
+                facadeG.logout(username);
+            } else if ("Meta".equals(proveedor)) {
+                facadeM.logout(username);
+            }
+            usuarioService.logout(username);
+            System.out.println("Logout completo para el usuario: " + username);
+        } else {
+            System.out.println("Usuario no encontrado para logout: " + username);
+        }
+    }
+    
+    
     @Override
     public void eliminarUsuario(int userId) throws RemoteException {
         UsuarioDTO usu = usuarioService.getUsuarios().get(userId); 

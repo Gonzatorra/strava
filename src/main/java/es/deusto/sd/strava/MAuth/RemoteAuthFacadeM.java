@@ -50,6 +50,16 @@ public class RemoteAuthFacadeM implements IRemoteAuthFacadeM {
         }
         return null;
     }
+    
+    @Override
+    public void logout(String username) throws RemoteException {
+        if (tokenStore.containsKey(username)) {
+            tokenStore.remove(username);
+            System.out.println("Token eliminado para usuario de Meta: " + username);
+        } else {
+            System.out.println("No se encontró token para el usuario: " + username);
+        }
+    }
 
     
     @Override

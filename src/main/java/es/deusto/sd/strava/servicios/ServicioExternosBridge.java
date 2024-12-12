@@ -71,4 +71,23 @@ public class ServicioExternosBridge {
 	    }
 	    return null;
 	}
+	
+	public void logoutGoogle(String username) {
+	    try {
+	        fachadaExternaG.logout(username);
+	        System.out.println("Logout en Google exitoso para: " + username);
+	    } catch (RemoteException e) {
+	        e.printStackTrace();
+	    }
+	}
+
+	public void logoutMeta(String username) {
+	    try {
+	        fachadaExternaM.logout(username);
+	        System.out.println("Logout en Meta exitoso para: " + username);
+	    } catch (RemoteException e) {
+	        e.printStackTrace();
+	    }
+	}
+	
 }
