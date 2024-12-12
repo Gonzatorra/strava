@@ -1474,6 +1474,12 @@ class MainAppGUI extends JFrame {
 							e1.printStackTrace();
 						}
                         usuario.getRetos().put(retoSeleccionado, "En Progreso");
+                        try {
+							facade.actualizarUsuario(usuario);
+						} catch (RemoteException e1) {
+							// TODO Auto-generated catch block
+							e1.printStackTrace();
+						}
                         // Agregar el reto a la lista de retos aceptados
                         acceptedModel.addRow(new Object[]{
                             retoSeleccionado.getId(),
