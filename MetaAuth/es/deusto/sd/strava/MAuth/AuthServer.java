@@ -14,12 +14,12 @@ public class AuthServer {
 
     public AuthServer() {
         try {
-            this.facade = new RemoteAuthFacade();
+            //Singleton
+            this.facade = RemoteAuthFacade.getInstance();
         } catch (RemoteException e) {
             e.printStackTrace();
         }
     }
-
     public static void main(String[] args) {
         try {
             Registry registry = null;

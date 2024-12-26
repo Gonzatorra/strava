@@ -1,27 +1,24 @@
 package es.deusto.sd.strava.MAuth;
 
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-
 public class AuthClient {
     public static void main(String[] args) {
         try {
-            Registry registry = LocateRegistry.getRegistry("localhost", 1099);
-            IRemoteAuthFacade authFacade = (IRemoteAuthFacade) registry.lookup("RemoteAuthFacade");
+            //Crear una instancia del Gateway
+            AuthGateway authGateway = new AuthGateway("localhost", 1099);
 
             //Registrar usuario
-            System.out.println(authFacade.registerUser("newuser", "newpass", "newuser@example.com"));
+            System.out.println(authGateway.registerUser("newuser", "newpass", "newuser@example.com"));
 
             //LogIn y obtener token
-            String token = authFacade.login("newuser", "newpass");
+            String token = authGateway.login("newuser", "newpass");
             System.out.println("Token: " + token);
 
-            //validar token
-            boolean isValid = authFacade.validateToken(token);
+            //Validar token
+            boolean isValid = authGateway.validateToken(token);
             System.out.println("Token valid: " + isValid);
 
-            //Obtener info usuario
-            String userInfo = authFacade.getUserInfo(token);
+            //Obtener información del usuario
+            String userInfo = authGateway.getUserInfo(token);
             System.out.println("User Info: " + userInfo);
 
         } catch (Exception e) {
