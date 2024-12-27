@@ -35,6 +35,9 @@ public class ClientHandler extends Thread {
                 case "GETINFO":
                     response = server.getUserInfo(parts[1]);
                     break;
+                case "LOGOUT":
+                	response = server.logout(parts[1]);
+                	break;
                 default:
                     response = "Invalid action";
             }

@@ -63,13 +63,14 @@ public class AuthServer {
         return "Invalid token";
     }
     
-    public synchronized void logout(String token) {
+    public synchronized String logout(String token) {
         if (tokenStore.containsKey(token)) {
             tokenStore.remove(token);
-            System.out.println("Logout successful for token: " + token);
+            return ("Logout successful for token: " + token);
         } else {
-            System.out.println("Invalid token for logout: " + token);
+            return("Invalid token for logout: " + token);
         }
+        
     }
     public static void main(String[] args) {
         new AuthServer().start();
