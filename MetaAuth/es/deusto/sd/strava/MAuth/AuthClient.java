@@ -4,7 +4,7 @@ public class AuthClient {
     public static void main(String[] args) {
         try {
             //Crear una instancia del Gateway
-            AuthGateway authGateway = new AuthGateway("localhost", 1099);
+            AuthGateway authGateway = new AuthGateway("localhost", 1101);
 
             //Registrar usuario
             System.out.println(authGateway.registerUser("newuser", "newpass", "newuser@example.com"));

@@ -1,5 +1,6 @@
 package es.deusto.sd.strava.servicios;
 
+import java.io.IOException;
 import java.rmi.AccessException;
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
@@ -9,11 +10,11 @@ import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 
 import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
-import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
+import es.deusto.sd.strava.MAuth.MetaAuthClient;
 
 public class ServicioExternosBridge {
 	private static IRemoteAuthFacadeG fachadaExternaG;
-	private static IRemoteAuthFacadeM fachadaExternaM;
+	private static MetaAuthClient metaAuthClient;
 
 	public ServicioExternosBridge() {
 		// Conecta al registro RMI en los puertos correspondientes
@@ -30,24 +31,17 @@ public class ServicioExternosBridge {
 		    fachadaExternaG = (IRemoteAuthFacadeG) registry.lookup("RemoteAuthFacadeG");
 		    System.out.println("Conexión exitosa al RemoteAuthFacade en el puerto 1100.");
 
-		    // Conexión al registro RMI en el puerto 1101
-		    registry = LocateRegistry.getRegistry("localhost", 1101);
-		    if (fachadaExternaM != null) {
-		        // Descartar exportación anterior si la hay
-		        UnicastRemoteObject.unexportObject(fachadaExternaM, true);
-		        System.out.println("Exportación anterior de fachadaExternaM descartada.");
-		    }
-		    // Buscar y asignar el objeto remoto
-		    fachadaExternaM = (IRemoteAuthFacadeM) registry.lookup("RemoteAuthFacadeM");
-		    System.out.println("Conexión exitosa al RemoteAuthFacade en el puerto 1101.");
+		 // Inicialización de MetaAuthClient (no es remoto)
+		    metaAuthClient = new MetaAuthClient("localhost", 1101);
+            System.out.println("Conexión exitosa a MetaAuthClient en el puerto 1101.");
 
-		} catch (RemoteException e) {
-		    System.err.println("Error al conectar con el registro RMI: " + e.getMessage());
-		    e.printStackTrace();
-		} catch (NotBoundException e) {
-		    System.err.println("El objeto 'RemoteAuthFacade' no está registrado en el registro RMI: " + e.getMessage());
-		    e.printStackTrace();
-		}
+        } catch (RemoteException e) {
+            System.err.println("Error al conectar con el registro RMI: " + e.getMessage());
+            e.printStackTrace();
+        } catch (Exception e) {
+            System.err.println("Error en la inicialización: " + e.getMessage());
+            e.printStackTrace();
+        }
 
         System.out.println("ServicioExternosBridge inicializado.");
     }
@@ -62,15 +56,15 @@ public class ServicioExternosBridge {
 	    return null;
 	}
 	
-	public String verifyMeta(String username, String pass, String proveedor) {
-	    try {
-	        String token= fachadaExternaM.loginUser(username, pass, proveedor);
-	        return token;
-	    } catch (RemoteException e) {
-	        e.printStackTrace();
-	    }
-	    return null;
-	}
+	public String verifyMeta(String username, String pass, String proveedor) throws IOException {
+        try {
+            String token = metaAuthClient.login(username, pass);
+            return token;
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
 	
 	public void logoutGoogle(String username) {
 	    try {
@@ -81,9 +75,9 @@ public class ServicioExternosBridge {
 	    }
 	}
 
-	public void logoutMeta(String username) {
+	public void logoutMeta(String username) throws IOException {
 	    try {
-	        fachadaExternaM.logout(username);
+	    	metaAuthClient.logout(username);
 	        System.out.println("Logout en Meta exitoso para: " + username);
 	    } catch (RemoteException e) {
 	        e.printStackTrace();

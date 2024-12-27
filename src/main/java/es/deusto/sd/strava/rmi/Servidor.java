@@ -5,8 +5,7 @@ import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
 import es.deusto.sd.strava.GAuth.RemoteAuthFacadeG;
-import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
-import es.deusto.sd.strava.MAuth.RemoteAuthFacadeM;
+import es.deusto.sd.strava.MAuth.MetaAuthClient;
 import es.deusto.sd.strava.assembler.EntrenamientoAssembler;
 import es.deusto.sd.strava.assembler.RetoAssembler;
 import es.deusto.sd.strava.assembler.UsuarioAssembler;
@@ -31,7 +30,7 @@ public class Servidor {
     private static RemoteFacade facade;
     protected static HashMap<UsuarioDTO, String> tokenActivos;
     static IRemoteAuthFacadeG facadeG;
-    static IRemoteAuthFacadeM facadeM; 
+    static MetaAuthClient metaAuthClient; 
 
     public Servidor() {
         try {
@@ -64,15 +63,9 @@ public class Servidor {
 
             
             // Buscar la instancia de RemoteAuthFacadeM en el registro del puerto 1101
-            Registry authRegistryM = LocateRegistry.getRegistry("localhost", 1101);
-            facadeM = (IRemoteAuthFacadeM) authRegistryM.lookup("RemoteAuthFacadeM");
+            metaAuthClient = new MetaAuthClient("localhost", 1101);
+            System.out.println("MetaAuthClient inicializado correctamente.");
 
-            System.out.println("RemoteAuthFacadeM vinculado correctamente desde AuthServerMeta.");
-
-            
-            
-            
-            
             //crear servidor
             Servidor servidor = new Servidor();
 
@@ -146,13 +139,13 @@ public class Servidor {
             facadeG.registerUser("pablo888", "clavePablo", "pablo888@gmail.com");
             
             
-            facadeM.registerUser("maria123", "claveMaria", "maria123@meta.com");
-            facadeM.registerUser("jose456", "claveJose", "jose456@meta.com");
-            facadeM.registerUser("lucia789", "claveLucia", "lucia789@meta.com");
-            facadeM.registerUser("carlos111", "claveCarlos", "carlos111@meta.com");
-            facadeM.registerUser("ana222", "claveAna", "ana222@meta.com");
-            facadeM.registerUser("david333", "claveDavid", "david333@meta.com");
-            facadeM.registerUser("laura444", "claveLaura", "laura444@meta.com");
+            metaAuthClient.registerUser("maria123", "claveMaria", "maria123@meta.com");
+            metaAuthClient.registerUser("jose456", "claveJose", "jose456@meta.com");
+            metaAuthClient.registerUser("lucia789", "claveLucia", "lucia789@meta.com");
+            metaAuthClient.registerUser("carlos111", "claveCarlos", "carlos111@meta.com");
+            metaAuthClient.registerUser("ana222", "claveAna", "ana222@meta.com");
+            metaAuthClient.registerUser("david333", "claveDavid", "david333@meta.com");
+            metaAuthClient.registerUser("laura444", "claveLaura", "laura444@meta.com");
 
 
             UsuarioDTO usuario11 = facade.registrarUsuario("daniel333", "claveDaniel", "daniel333@gmail.com", "Daniel", "Google");

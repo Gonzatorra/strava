@@ -3,16 +3,16 @@ package es.deusto.sd.strava.MAuth;
 import java.io.*;
 import java.net.*;
 
-public class AuthGateway {
+public class MetaAuthClient {
     private final String host;
     private final int port;
 
-    public AuthGateway(String host, int port) {
+    public MetaAuthClient(String host, int port) {
         this.host = host;
         this.port = port;
     }
 
-    private String sendRequest(String request) throws IOException {
+    public String sendRequest(String request) throws IOException {
         try (Socket socket = new Socket(host, port);
              PrintWriter out = new PrintWriter(socket.getOutputStream(), true);
              BufferedReader in = new BufferedReader(new InputStreamReader(socket.getInputStream()))) {
@@ -36,5 +36,10 @@ public class AuthGateway {
 
     public String getUserInfo(String token) throws IOException {
         return sendRequest("GETINFO;" + token);
+    }
+    
+    public void logout(String username) throws IOException {
+        sendRequest("LOGOUT;" + username);
+        System.out.println("Logout exitoso para el usuario: " + username);
     }
 }

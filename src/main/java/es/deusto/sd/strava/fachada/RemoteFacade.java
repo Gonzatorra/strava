@@ -5,9 +5,10 @@ import es.deusto.sd.strava.DTO.EntrenamientoDTO;
 import es.deusto.sd.strava.DTO.RetoDTO;
 import es.deusto.sd.strava.DTO.UsuarioDTO;
 import es.deusto.sd.strava.GAuth.IRemoteAuthFacadeG;
-import es.deusto.sd.strava.MAuth.IRemoteAuthFacadeM;
+import es.deusto.sd.strava.MAuth.MetaAuthClient;
 import es.deusto.sd.strava.servicios.*;
 
+import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
@@ -26,9 +27,9 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
     private EntrenamientoService entrenamientoService;
     private RetoService retoService;
     private ServicioAutentificacion servicioAutentificacion;
-    private ServicioExternosBridge externoService;
+    //private ServicioExternosBridge externoService;
     private IRemoteAuthFacadeG facadeG;
-    private IRemoteAuthFacadeM facadeM;
+    //private IRemoteAuthFacadeM facadeM;
     
     private static HashMap<String, String> tokensActivos = new HashMap<>();
     
@@ -43,7 +44,7 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         this.usuarioService = new UsuarioService();  //crear instancia del servicio
         this.entrenamientoService = new EntrenamientoService();
         this.retoService = new RetoService();
-        this.externoService= new ServicioExternosBridge();
+        //this.externoService= new ServicioExternosBridge();
         this.servicioAutentificacion= new ServicioAutentificacion();
         
         try {
@@ -51,9 +52,8 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
             this.facadeG = (IRemoteAuthFacadeG) registryG.lookup("RemoteAuthFacadeG");
             System.out.println("RemoteAuthFacadeG vinculado correctamente.");
 
-            Registry registryM = LocateRegistry.getRegistry("localhost", 1101);
-            this.facadeM = (IRemoteAuthFacadeM) registryM.lookup("RemoteAuthFacadeM");
-            System.out.println("RemoteAuthFacadeM vinculado correctamente.");
+            MetaAuthClient metaAuthClient = new MetaAuthClient("localhost", 1101);
+            System.out.println("MetaAuthClient inicializado correctamente para el servidor Meta.");
 
         } catch (Exception e) {
             System.err.println("Error al inicializar facades para Google y Meta: " + e.getMessage());
@@ -147,9 +147,16 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
         String proveedor = usuarioService.obtenerUsuarioPorNombre(username).getProveedor();
         if(plataforma.equals(proveedor)) {
 	        if ("Google".equals(plataforma)) {
-	        	token = externoService.verifyGoogle(username, password, proveedor);
+	        	//token = externoService.verifyGoogle(username, password, proveedor);
 	        } else if ("Meta".equals(plataforma)) {
-	        	token = externoService.verifyMeta(username, password, proveedor);
+	        	try {
+	                MetaAuthClient metaAuthClient = new MetaAuthClient("localhost", 1101);
+	                token = metaAuthClient.login(username, password);
+	                System.out.println("Login realizado correctamente en Meta.");
+	            } catch (IOException e) {
+	                System.err.println("Error durante el login en Meta: " + e.getMessage());
+	                e.printStackTrace();
+	            }
 	        }
 	        
 	        UsuarioDTO usu= usuarioService.obtenerUsuarioPorNombre(username);
@@ -255,7 +262,14 @@ public class RemoteFacade extends UnicastRemoteObject implements IRemoteFacade {
             if ("Google".equals(proveedor)) {
                 facadeG.logout(username);
             } else if ("Meta".equals(proveedor)) {
-                facadeM.logout(username);
+            	 try {
+            	        MetaAuthClient metaAuthClient = new MetaAuthClient("localhost", 1101);
+            	        metaAuthClient.sendRequest("LOGOUT;" + username);
+            	        System.out.println("Logout realizado correctamente en Meta.");
+            	    } catch (IOException e) {
+            	        System.err.println("Error durante el logout en Meta: " + e.getMessage());
+            	        e.printStackTrace();
+            	    }
             }
             else {
             	usuarioService.logout(token);

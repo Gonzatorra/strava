@@ -1,45 +1,77 @@
 package es.deusto.sd.strava.MAuth;
 
-import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
-import java.rmi.server.UnicastRemoteObject;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+import java.io.*;
+import java.net.*;
+import java.util.*;
 
 public class AuthServer {
-
-    private static RemoteAuthFacade facade;
+    private static final int PORT = 1101; // Puerto del servidor
+    private final Map<String, String> userStore = new HashMap<>();
+    private final Map<String, String> tokenStore = new HashMap<>();
+    private final Map<String, String> userInfoStore = new HashMap<>();
 
     public AuthServer() {
-        try {
-            //Singleton
-            this.facade = RemoteAuthFacade.getInstance();
-        } catch (RemoteException e) {
+        // Usuarios de prueba
+        userStore.put("user1", "password1");
+        userInfoStore.put("user1", "User One, user1@example.com");
+
+        userStore.put("user2", "password2");
+        userInfoStore.put("user2", "User Two, user2@example.com");
+    }
+
+    public void start() {
+        try (ServerSocket serverSocket = new ServerSocket(PORT)) {
+            System.out.println("AuthServer is running on port " + PORT);
+
+            while (true) {
+                Socket clientSocket = serverSocket.accept();
+                new ClientHandler(clientSocket, this).start();
+            }
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
-    public static void main(String[] args) {
-        try {
-            Registry registry = null;
-            try {
-                registry = LocateRegistry.getRegistry(1099);
-                registry.list(); 
-                System.out.println("RMI registry already exists.");
-            } catch (RemoteException e) {
-                System.out.println("Creating new RMI registry.");
-                registry = LocateRegistry.createRegistry(1099);
-            }
 
-            AuthServer server = new AuthServer();
-
-            IRemoteAuthFacade stub = (IRemoteAuthFacade) UnicastRemoteObject.exportObject(server.facade, 0);
-            registry.rebind("RemoteAuthFacade", stub);
-
-            System.out.println("AuthServer is ready and waiting for connections...");
-        } catch (Exception e) {
-            e.printStackTrace();
+    public synchronized String login(String username, String password) {
+        if (userStore.containsKey(username) && userStore.get(username).equals(password)) {
+            String token = UUID.randomUUID().toString();
+            tokenStore.put(token, username);
+            return token;
         }
+        return "Invalid credentials";
+    }
+
+    public synchronized String registerUser(String username, String password, String email) {
+        if (userStore.containsKey(username)) {
+            return "User already exists";
+        }
+
+        userStore.put(username, password);
+        userInfoStore.put(username, username + ", " + email);
+        return "User registered successfully";
+    }
+
+    public synchronized boolean validateToken(String token) {
+        return tokenStore.containsKey(token);
+    }
+
+    public synchronized String getUserInfo(String token) {
+        String username = tokenStore.get(token);
+        if (username != null && userInfoStore.containsKey(username)) {
+            return userInfoStore.get(username);
+        }
+        return "Invalid token";
+    }
+    
+    public synchronized void logout(String token) {
+        if (tokenStore.containsKey(token)) {
+            tokenStore.remove(token);
+            System.out.println("Logout successful for token: " + token);
+        } else {
+            System.out.println("Invalid token for logout: " + token);
+        }
+    }
+    public static void main(String[] args) {
+        new AuthServer().start();
     }
 }
